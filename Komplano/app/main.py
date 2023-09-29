@@ -7,25 +7,23 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from sqlalchemy import text
-
-from .src.user import router
-
-from .src.authentication import router
-from .src.mediaitem import router
-
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi.middleware.gzip import GZipMiddleware
-
 from redis import asyncio as aioredis
 
-from .core.db.database import Base, get_engine
+from .src.user import router as user_router
+from .src.authentication import router as auth_router
+from .src.mediaitem import router as mediaitem_router
+from .src.thumbnail import router as thumbnail_router
 
-from .src.thumbnail import router
-from .core.config import get_settings
-from .src.thumbnail import tasks
+from .src.thumbnail import tasks as thumbnail_tasks
 from .src.filmliste import tasks as filmliste_tasks
 from .src.search import tasks as search_tasks
+
+from .core.db.database import Base, get_engine
+from .core.config import get_settings
+
 from .celery import app as celery_app
 
 load_dotenv()
@@ -64,17 +62,18 @@ if get_settings().environment != "test":
 
 Base.metadata.create_all(bind=get_engine())
 
-app.include_router(router.router)
-app.include_router(router.router)
-app.include_router(router.router)
-app.include_router(router.router)
+# app.include_router(user_router.router)
+app.include_router(auth_router.router)
+app.include_router(mediaitem_router.router)
+app.include_router(thumbnail_router.router)
+
 
 @app.on_event("startup")
 async def startup_event():
     redis = aioredis.from_url("redis://redis")
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     # start the celery worker
-    subprocess.Popen(["pipenv", "run", "celery", "-A", "app.celery", "worker", "--loglevel=info"])
+    #subprocess.Popen(["pipenv", "run", "celery", "-A", "app.celery", "worker", "--loglevel=info"])
     
     # we have to wait for the celery worker to start up
     print("Waiting for celery worker to start up...")
