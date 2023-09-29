@@ -3,8 +3,8 @@ from . import service
 from fastapi_cache.decorator import cache
 
 
-from ..search import service
 from ..mediaitem import schemas
+from . import service
 from . import tasks
 
 router = APIRouter(
