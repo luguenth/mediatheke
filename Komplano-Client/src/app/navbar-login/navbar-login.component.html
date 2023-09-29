@@ -1,0 +1,32 @@
+<!-- Moved the button to be inside the 'login-container' div -->
+<div [ngClass]="showLoginForm ? 'login-container-open' : 'login-container-closed'">
+  <button class="login-toggle" (click)="toggleLogin()">
+    <i-bs [name]="showLoginForm ? 
+      ((userService.isAuthenticated$ | async) ? 'arrow-right-circle-fill' : 'arrow-right') : 
+      ((userService.isAuthenticated$ | async) ? 'arrow-left-circle-fill' : 'arrow-left')" width="24"
+      height="24"></i-bs>
+  </button>
+
+  <div class="login-container" *ngIf="showLoginForm">
+    <ng-container *ngIf="userService.isAuthenticated$ | async; else loggedInTemplate">
+      <div class="logged-in-container">
+        <span class="user-greet" *ngIf="userService.username$ | async as user">
+          Hello, {{user}}! <i-bs name="person-circle"></i-bs>
+        </span>
+        <button class="logout-button" (click)="onLogout()">
+          <i-bs name="box-arrow-right"></i-bs>
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #loggedInTemplate>
+      <form class="login-form" (submit)="onSubmit()">
+        <input type="text" placeholder="Username" [(ngModel)]="username" name="username" required>
+        <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required>
+        <button type="submit" [class.shake]="showErrorAnimation"><i-bs
+            [name]="tooManyLoginAttempts ? 'exclamation-triangle' : 'house-door'" width="24"
+            height="24"></i-bs></button>
+      </form>
+    </ng-template>
+  </div>
+</div>

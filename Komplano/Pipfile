@@ -1,0 +1,40 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+uvicorn = "*"
+python-dotenv = "*"
+pytest = "*"
+requests = "*"
+pytest-dotenv = "*"
+python-multipart = "*"
+python-jose = "*"
+python-dateutil = "*"
+pydantic = {extras = ["email"], version = "*"}
+passlib = {extras = ["bcrypt"], version = "*"}
+pydantic-settings = "*"
+celery = {extras = ["redis"], version = "*"}
+alembic = "*"
+psycopg = "*"
+opencv-python = "*"
+slowapi = "*"
+ijson = "*"
+scikit-learn = "*"
+nltk = "*"
+unidecode = "*"
+openai = "*"
+json5 = "*"
+typesense = "*"
+bs4 = "*"
+beautifulsoup4 = "*"
+fastapi-cache2 = {extras = ["redis"], version = "*"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

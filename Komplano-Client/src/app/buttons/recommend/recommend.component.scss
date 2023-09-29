@@ -1,0 +1,35 @@
+.command-button {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    background-color: var(--color-background);
+    color: var(--color-text);
+
+    &:hover {
+        background-color: var(--color-contrast-background);
+        color: var(--color-contrast-text);
+    }
+
+
+}
+
+.videocard-recommend-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    z-index: 3;
+    color: var(--color-always-white);
+}
+
+.videocard:hover .videocard-recommend-button {
+    display: block;
+}
+
+:host ::ng-deep popover-container {
+    top: -12px !important;
+    margin-left: 0px;
+}

@@ -1,0 +1,254 @@
+.grid-wrapper {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 20px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+
+        .container {
+            max-width: unset;
+        }
+    }
+}
+
+.left-column {
+    .container {
+        margin-bottom: 20px;
+    }
+
+    .video.container {
+        padding: unset;
+    }
+
+    h2 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .channel-name,
+    .description,
+    p {
+        color: #666;
+    }
+
+    a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .commands.container {
+        display: flex;
+        padding: 0;
+    }
+
+    .command-button {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        border: none;
+        background-color: var(--color-background);
+        color: var(--color-text);
+
+        &:hover {
+            background-color: var(--color-contrast-background);
+            color: var(--color-contrast-text);
+        }
+    }
+
+    app-share {
+        flex: 1;
+    }
+
+    app-recommend {
+        flex: 1;
+    }
+}
+
+.right-column {
+    .video-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .loading-text,
+    .loading-spinner {
+        margin-top: 20px;
+    }
+}
+
+.container {
+    background-color: #fff;
+    border: 3px solid #000;
+
+
+}
+
+.details {
+    padding: 20px;
+    background-color: #fff;
+    border-top: 3px solid #333;
+
+    .video-header {
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .channel-name,
+    .date,
+    .topic,
+    .duration {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .channel-name {
+        margin-bottom: 20px;
+    }
+
+    .description {
+        margin-bottom: 10px;
+        font-size: 16px;
+        color: #555;
+    }
+
+    a {
+        color: #007bff;
+    }
+
+    .website-link {
+        font-size: 14px;
+        font-style: italic;
+    }
+}
+
+
+.loading,
+.recommended {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 336px;
+    padding: 15px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.loading-text {
+    text-align: center;
+    color: #666;
+}
+
+.website-link {
+    font-style: italic;
+}
+
+.container {
+    @media (max-width: 1600px) {
+        margin-right: auto;
+    }
+
+    margin-right: unset;
+}
+
+.series {
+    padding: 0;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+progress {
+    height: 20px;
+    border: none;
+    background-color: #fff;
+    overflow: hidden;
+    border: 3px solid #000;
+
+    &::-webkit-progress-bar {
+        background-color: #fff;
+    }
+
+    &::-webkit-progress-value {
+        background-color: #000
+    }
+
+    &::-moz-progress-bar {
+        background-color: #000;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    thead {
+        background-color: #000;
+        color: #fff;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    tr:hover {
+        background-color: #000;
+        color: #fff;
+        cursor: pointer;
+
+
+
+        progress {
+            background-color: #000;
+            border: 3px solid #fff;
+
+            &::-webkit-progress-value {
+                background-color: #fff;
+            }
+
+            &::-moz-progress-bar {
+                background-color: #fff;
+            }
+
+            &::-webkit-progress-bar {
+                background-color: #000;
+            }
+
+            &::-moz-progress-bar {
+                background-color: #fff;
+            }
+        }
+
+    }
+}
+
+.current {
+    background-color: var(--color-key-yellow);
+}

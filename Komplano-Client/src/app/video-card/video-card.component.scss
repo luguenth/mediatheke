@@ -1,0 +1,135 @@
+.videocard {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    overflow: hidden;
+    transition: transform 0.3s ease, z-index 0s 0.3s ease;
+    cursor: pointer;
+}
+
+.videocard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(to bottom, transparent, #00ffea31);
+    z-index: 1;
+    /* Ensure the gradient is below the title and duration */
+}
+
+.videocard-link {
+    position: relative;
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+    /* Removes the default underline for hyperlinks */
+}
+
+.videocard-img-top {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s ease;
+}
+
+.videocard-meta {
+    position: absolute;
+    bottom: 8px;
+    left: 4px;
+    z-index: 3;
+    transition: opacity 0.3s ease;
+}
+
+.videocard-title {
+    /* Add some spacing between topic and title */
+    color: var(--color-always-black);
+    font-size: 1.2rem;
+    margin-left: 10px;
+    margin-bottom: 4px;
+    margin-right: 10px;
+
+    font-weight: bold;
+    line-height: 1.2;
+    display: block;
+    background-color: white;
+    border: 3px solid var(--color-key-yellow);
+    padding: 3px 6px;
+}
+
+.videocard-topic {
+    color: var(--color-always-black);
+    background-color: var(--color-key-magenta);
+    padding: 4px 6px;
+    margin-left: 10px;
+    margin-bottom: -3px;
+    margin-right: 60px;
+    border-radius: 0;
+    font-size: 0.8rem;
+    line-height: 1.1;
+    border: 3px solid var(--color-key-yellow);
+    display: inline-block;
+
+}
+
+.videocard-duration {
+    position: absolute;
+    color: var(--color-contrast-text);
+    border-radius: 0;
+    top: 10px;
+    right: 10px;
+    padding: 4px 6px;
+    background: black;
+    font-size: 0.8rem;
+    font-weight: bold;
+    line-height: 1.2;
+    z-index: 2;
+    /* Ensure the duration is above the gradient */
+
+}
+
+.videocard__image-error {
+    color: var(--color-contrast-text);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.5rem;
+    background: var(--color-badge-background);
+    z-index: 1;
+    position: relative;
+}
+
+
+
+.videocard:hover .videocard-img-top {
+    transform: scale(1.1);
+}
+
+progress {
+    top: -16px;
+    position: relative;
+    width: 100%;
+    border-radius: 0;
+    border: none;
+    z-index: 100;
+    background-color: transparent;
+    height: 5px;
+
+    &::-webkit-progress-bar {
+        background-color: transparent;
+    }
+
+    &::-webkit-progress-value {
+        background-color: var(--color-key-magenta);
+    }
+
+    &::-moz-progress-bar {
+        background-color: var(--color-key-magenta);
+    }
+
+    &::-ms-fill {
+        background-color: var(--color-key-magenta);
+    }
+}

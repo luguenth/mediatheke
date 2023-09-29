@@ -1,0 +1,21 @@
+.wrapper {
+    padding: 30px;
+    padding-top: 150px;
+    max-width: 1600px;
+    margin: auto;
+
+    @media screen and (max-width: 768px) {
+        padding-top: 55px;
+    }
+}
+
+/* make input big poppy flat and rounded corners */
+input {
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1.2rem;
+    background-color: var(--color-primary);
+    color: var(--color-bright);
+    margin-bottom: 10px;
+}

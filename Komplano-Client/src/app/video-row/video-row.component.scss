@@ -1,0 +1,58 @@
+h5 {
+    font-family: var(--font-family-head);
+    margin-top: 2rem;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    color: var(--color-text);
+}
+
+/* space between title and the topic div */
+.topic {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--color-text);
+    /* space between text and icon */
+}
+
+.topic a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.description {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-bottom: 3.5rem;
+    color: var(--color-text);
+}
+
+/* The styles you provided */
+.horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    white-space: pre-line;
+    padding-bottom: 12px;
+    margin-bottom: 5rem;
+
+    /* when under 1600px, make the scroll bar appear */
+    @media (max-width: 1600px) {
+        margin-left: -30px;
+        margin-right: -30px;
+    }
+}
+
+.video-card-wrapper {
+    flex: 0 0 auto;
+    margin-right: 2px;
+}

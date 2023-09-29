@@ -1,0 +1,39 @@
+<footer class="footer py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 d-flex justify-content-center justify-content-md-start mb-3 mb-md-0">
+        <a href="/"><img src="assets/logo-dark.svg" alt="mediatheke Logo"></a>
+
+      </div>
+      <div class="col-md-6">
+        <ul class="list-inline text-center text-md-right mb-0">
+          <li class="list-inline-item mx-2"><a href="mailto:hi@mediatheke.org"><i-bs name="mailbox2"
+                class="bi-envelope"></i-bs></a></li>
+          <li class="list-inline-item mx-2"><a href="/about-us"><i-bs name="people" class="bi-people"></i-bs></a></li>
+          <li class="list-inline-item mx-2"><a href="https://github.com/Codezeit" target="_blank"><i-bs name="github"
+                class="bi-github"></i-bs></a></li>
+          <li class="list-inline-item mx-2"><a href="/api/docs"><i-bs name="book" class="bi-book"></i-bs></a></li>
+          <!-- switch dark light mode-->
+          <!-- <li class="list-inline-item mx-2">
+            <div class="theme-switch-wrapper">
+              <label class="theme-switch" for="checkbox">
+                <input type="checkbox" [checked]="isLightTheme" (change)="onThemeSwitchChange()" id="checkbox">
+                <div class="slider round"></div>
+              </label>
+            </div>
+          </li> 
+        make a toggle for the theme switcher with two icons, no checkbox-->
+
+          <li class="list-inline-item mx-2">
+            <div class="theme-switch-wrapper">
+              <label class="theme-switch" for="checkbox">
+                <input type="checkbox" [checked]="isLightTheme" (change)="onThemeSwitchChange()" id="checkbox">
+                <div class="slider round"></div>
+              </label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>

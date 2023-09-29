@@ -1,0 +1,55 @@
+.iframe-wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding-top: 56.25%;
+    /* 16:9 aspect ratio */
+}
+
+.iframe-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-player {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+    /* 16:9 aspect ratio */
+}
+
+.quality-slider {
+    position: absolute;
+    top: 10px; // Adjust based on your needs
+    left: 10px; // Adjust based on your needs
+    z-index: 10; // Ensure it's on top of the video
+    border: 3px solid #000;
+}
+
+.list-group-item {
+    cursor: pointer;
+    padding: 5px 10px;
+    /* make look more 3d button */
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 0 !important;
+    border: none !important;
+
+}
+
+.list-group-item.active {
+    background-color: #ffe100;
+    border-color: #000;
+    color: #454545;
+}
+
+.list-group-item:hover {
+    background-color: #000;
+    color: #fff;
+
+}

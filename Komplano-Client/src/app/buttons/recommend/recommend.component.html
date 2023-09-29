@@ -1,0 +1,16 @@
+<ng-container *ngIf="userService.role$ | async as role">
+    <ng-container *ngIf="role === 'admin'">
+        <a class="videocard-recommend-button" *ngIf="isEmbedded; else notEmbedded"
+            (click)="toggleRecommendation(); $event.stopPropagation()"
+            [popover]="isRecommended ? 'Empfehlung entfernen' : 'Empfehlen'" triggers="mouseenter:mouseleave"
+            [placement]="'right'">
+            <i-bs [name]="isRecommended ? 'star-fill' : 'star'" width="24" height="24"></i-bs>
+        </a>
+
+        <ng-template #notEmbedded>
+            <button class="command-button" [ngClass]="{ 'active': isRecommended }" (click)="toggleRecommendation()">
+                <i-bs [name]="isRecommended ? 'star-fill' : 'star'" width="24" height="24"></i-bs>
+                Empfehlen</button>
+        </ng-template>
+    </ng-container>
+</ng-container>

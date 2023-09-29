@@ -1,0 +1,17 @@
+<div #wrapperElement *ngIf="video" class="video-container" (mouseenter)="showSlider = true"
+    (mouseleave)="showSlider = false">
+    <div class="video-player">
+        <video #videoElement id="videoElement" class="video-js vjs-default-skin" width="100%" height="auto" controls
+            preload="auto" (timeupdate)="emitCurrentTime()"> <!-- Source will be added dynamically
+            -->
+        </video>
+        <div class="quality-slider" *ngIf="showSlider">
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item" *ngFor="let quality of availableQualities"
+                    [ngClass]="{ 'active': quality === curr_quality }" (click)="changeQuality(quality, $event)">
+                    {{ quality }}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

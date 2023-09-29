@@ -1,0 +1,25 @@
+<div class="video-result-grid">
+    <div class="video-result-grid__item" *ngFor="let video of videos">
+        <div class="video-container">
+            <app-video-card [video]="video" [details]="false"></app-video-card>
+            <div class="video-details">
+
+                <!--
+                    ## Title (if series episode? and season?) - Time since upload
+                    (muted) Channel name
+                    Description
+                -->
+                <div class="video-details__title">
+                    <span class="title-text">{{ video.title }}</span>
+                    <span class="series-episode" *ngIf="video.episode_number">S{{ video.episode_number }}E{{
+                        video.season_number }}</span>
+                    <span class="time-since-upload">{{ video| since }}</span>
+
+                    <a class="channel-name" (click)="mediaService.goToChannel(video)">{{ video.channel }}</a>
+
+                    <span class="description">{{ video.description }}</span>
+
+                </div>
+            </div>
+        </div>
+    </div>

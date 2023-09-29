@@ -1,0 +1,25 @@
+.footer {
+    margin-top: 100px;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--color-contrast-background);
+    color: var(--color-highlight);
+
+    a {
+        color: var(--color-primary);
+    }
+}
+
+img {
+    /*invert the logo */
+    height: 50px;
+}
+
+.container {
+    max-width: 1600px;
+    margin: auto;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}

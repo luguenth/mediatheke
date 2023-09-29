@@ -1,0 +1,4 @@
+<h3>{{topic}}</h3>
+<div *ngIf="videos$ | async as videos">
+  <app-video-result-grid [videos]="videos"></app-video-result-grid>
+</div>

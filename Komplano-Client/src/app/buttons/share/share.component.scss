@@ -1,0 +1,36 @@
+.command-button {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    background-color: var(--color-background);
+    color: var(--color-text);
+
+    &:hover {
+        background-color: var(--color-contrast-background);
+        color: var(--color-contrast-text);
+    }
+
+
+}
+
+
+input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+input[type="text"] {
+    width: 100%;
+}
+
+button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}

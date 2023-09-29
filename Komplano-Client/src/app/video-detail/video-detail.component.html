@@ -1,0 +1,101 @@
+<div *ngIf="!video" class="loading">
+  <div class="spinner-border loading-text text-center" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+  <div class="text-center">
+    <p>Loading video...</p>
+  </div>
+</div>
+
+<div class="grid-wrapper">
+  <div class="left-column">
+    <div *ngIf="video" class="video container">
+      <app-video-player [video]="video" (currentTime)="setCurrentTime($event)" [urlTime]="urlTime"></app-video-player>
+    </div>
+
+    <div *ngIf="video" class="commands container">
+      <ng-container *ngIf="userService.role$ | async as role">
+        <app-recommend [video]="video" *ngIf="role === 'admin'"></app-recommend>
+        <button class="command-button" (click)="mightBeASeries()">
+          <i-bs name="list" width="24" height="24" *ngIf="!isSeriesLoading"></i-bs>
+          <div class="spinner-grow" role="status" *ngIf="isSeriesLoading" style="width: 20px; height: 20px;">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <span *ngIf="isSeries"> Nicht mehr als Serie markieren</span>
+          <span *ngIf="!isSeries"> Als Serie markieren</span>
+          <!-- add spinner as long as isSeriesLoading-->
+        </button>
+      </ng-container>
+      <ng-container *ngIf="video?.url_video_descriptive_audio">
+        Descriptive Audio:
+      </ng-container>
+      <app-share [currentTime]="currentTime"> </app-share>
+    </div>
+
+    <!-- Series Navigation -->
+    <div class="series container" *ngIf="video?.series_name">
+      <!-- series-nav.component.html -->
+
+      <div *ngIf="seriesVideos && seriesVideos.length > 0" class="series-nav">
+        <table>
+          <thead>
+            <tr>
+              <th>Season</th>
+              <th>Episode</th>
+              <th>Title</th>
+              <th>Watched</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let episode of seriesVideos" [ngClass]="{ 'current': video?.id === episode?.id }"
+              (click)="navigateToEpisode(episode)">
+              <td>{{episode?.season_number}}</td>
+              <td>{{episode?.episode_number}}</td>
+              <td>{{episode.title}}</td>
+              <td>
+                <ng-container *ngIf="storageService.getVideoProgress(episode) as progress">
+                  <progress *ngIf="progress > 0 && progress < 95" [value]="progress" max="100"></progress>
+                  <i-bs *ngIf="progress >= 95" name="check-circle-fill" width="24" height="24"></i-bs>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- Video Details -->
+    <div class="details container" *ngIf="video">
+      <div class="video-header">
+        <div class="topic">
+          <a [routerLink]="['/topic', video.topic]"> {{ video.topic }}</a>
+        </div>
+        <h2>{{ video.title }}</h2>
+      </div>
+      <div class="channel-name">Erschienen auf <a [href]="video.channel" target="_blank">{{ video.channel }}</a>
+        am {{ video.date | date }}</div>
+      <p class="description">{{ video.description }}</p>
+      <div class="row">
+      </div>
+      <div class="website-link"><a [href]="video.url_website" target="_blank">Hier geht's zur
+          {{video.channel}}-Website</a>
+      </div>
+    </div>
+  </div>
+  <div class="right-column">
+    <div *ngIf="video" class="recommended container">
+      <div class="video-list">
+        <app-video-card *ngFor="let video of recommendedVideos" [video]="video"></app-video-card>
+        <div *ngIf="recommendedVideos.length == 0" class="loading">
+          <div class="spinner-border text-primary text-center loading-spinner" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="loading-text text-center">
+            <p>Loading recommended videos...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

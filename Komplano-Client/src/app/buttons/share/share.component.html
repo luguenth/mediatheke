@@ -1,0 +1,14 @@
+<button type="button" class="command-button" [popover]="shareComponent" [popoverTitle]="'Teile dieses Video'"
+    [outsideClick]="true" [placement]="'bottom'" (click)="generateShareLink()">
+    <i-bs name="share" width="24" height="24"></i-bs> Teilen
+</button>
+
+<ng-template #shareComponent>
+    <div>
+        <label>
+            <input type="checkbox" [(ngModel)]="includeTimestamp" (change)="toggleTimestamp()"> Include Timestamp
+        </label>
+        <input type="text" readonly [value]="shareLink">
+        <button (click)="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+</ng-template>

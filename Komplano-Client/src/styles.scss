@@ -1,0 +1,48 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+@import "~bootstrap/scss/bootstrap";
+
+/* Importing Datepicker SCSS file. */
+@import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
+
+:root {
+    /* define root colors */
+
+    --color-key-yellow: #ffe100;
+    --color-key-yellow-transparent: #ffe10080;
+    --color-key-cyan: #00ffe8;
+    --color-key-magenta: #ffb6eb;
+
+    --color-background-wrapper: #ffb6ec2a;
+    --color-background: #ffffff;
+    --color-text: #000000;
+    --color-contrast-background: #000000;
+    --color-contrast-text: #ffffff;
+
+    --color-highlight: var(--color-key-yellow);
+    --color-highlight-text: #000000;
+
+    --color-always-white: #ffffff;
+
+    --color-badge-background: #000000b7;
+}
+
+/* night mode */
+body[data-theme="dark"] {
+    --color-background: #000000;
+    --color-text: #ffffff;
+    --color-contrast-background: #ffffff;
+    --color-contrast-text: #000000;
+
+    --color-highlight: var(--color-key-cyan);
+    --color-highlight-text: #000000;
+
+    --color-badge-background: #ffffffb7;
+    background-color: var(--color-background);
+}
+
+/* light mode */
+body[data-theme="light"] {
+    background-color: var(--color-background-wrapper);
+}

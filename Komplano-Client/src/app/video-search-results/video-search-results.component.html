@@ -1,0 +1,7 @@
+<!-- Add this div to display suggestions in a grid -->
+<div class="result-wrap" *ngIf="searchService.suggestions$ | async as suggestions">
+    <div class="suggestions" *ngIf="suggestions.length > 0">
+        <h2 class="suggestions-header">Suchergebnisse</h2>
+        <app-video-result-list [videos]="suggestions"></app-video-result-list>
+    </div>
+</div>

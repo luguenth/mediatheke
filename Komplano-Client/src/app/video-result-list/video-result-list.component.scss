@@ -1,0 +1,50 @@
+.video-result-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.video-result-grid__item {
+    margin: 10px 0;
+}
+
+.video-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.video-thumbnail {
+    flex: 1;
+    max-width: 50%;
+    margin-right: 10px;
+}
+
+.video-details {
+    flex: 1;
+    color: white;
+    margin-left: 30px;
+}
+
+.title-text {
+    font-size: 1.5em;
+    font-weight: bold;
+    display: block;
+}
+
+.series-episode {
+    font-size: 1.2em;
+
+}
+
+.time-since-upload {
+    font-size: 0.8em;
+}
+
+.channel-name {
+    font-size: 0.8em;
+    display: block;
+}
+
+.description {
+    font-size: 0.8em;
+    display: block;
+}

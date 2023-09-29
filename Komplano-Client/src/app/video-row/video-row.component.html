@@ -1,0 +1,14 @@
+<h5>{{ title }} 
+  <div *ngIf="topic" class="topic">
+    <a [routerLink]="['/topic', topic]">
+      <i-bs class="topic-link" name="view-list"
+      height="1.5rem" width="1.5rem"></i-bs>
+    </a>
+  </div>
+</h5>
+<div class="description">{{ description }}</div>
+<div class="horizontal-scroll">
+  <div *ngFor="let video of videos" class="video-card-wrapper">
+    <app-video-card [video]="video"></app-video-card>
+  </div>
+</div>

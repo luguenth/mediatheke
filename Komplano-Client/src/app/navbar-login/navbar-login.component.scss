@@ -1,0 +1,152 @@
+.login-form {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto; // One column takes up remaining space, and the second one takes as much as needed
+    grid-template-rows: auto auto; // Two rows
+
+    input[type="text"],
+    input[type="password"] {
+        grid-column: 1; // First column
+        grid-row: auto; // Auto placement in rows
+    }
+
+    input[type="text"] {
+        border-bottom: 3px solid var(--color-contrast-text);
+        border-right: 3px solid var(--color-contrast-text);
+        border-left: 3px solid var(--color-contrast-text);
+    }
+
+    input[type="password"] {
+        border-right: 3px solid var(--color-contrast-text);
+        border-left: 3px solid var(--color-contrast-text);
+    }
+
+    button[type="submit"] {
+        grid-column: 2; // Second column
+        grid-row: 1 / span 2; // Spanning two rows
+        align-self: center; // Vertically center the button
+        padding: 10px 20px;
+    }
+
+    input::placeholder {
+        color: var(--color-contrast-text);
+    }
+}
+
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-3px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+button {
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--color-contrast-background);
+    background-color: transparent;
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+.login-container-open,
+.login-container-closed {
+    display: flex; // Flex layout to have elements side-by-side
+    align-items: center; // Vertically align the button and the login container
+}
+
+.login-toggle {
+    margin-right: 1rem; // Add some space between the button and the login form
+}
+
+.login-container {
+    background-color: var(--color-contrast-background);
+    color: var(--color-contrast-text);
+    margin-right: -30px;
+    height: 100%;
+    width: 100%;
+}
+
+.login-container-open {
+    padding-right: 30px;
+    height: 100%;
+
+    @media (max-width: 1600px) {
+        padding-right: 0px;
+    }
+
+    input {
+        border: none;
+        background-color: transparent;
+        color: var(--color-contrast-text);
+        padding: 5px;
+        font-size: 100%;
+
+        &::placeholder {
+            font-weight: 100;
+            font-size: 1.7rem;
+            text-transform: lowercase;
+            color: grey;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    button {
+        color: var(--color-contrast-text);
+    }
+
+    .login-toggle {
+        color: var(--color-contrast-background);
+    }
+}
+
+.login-container-closed {
+    padding-right: 30px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+}
+
+.logged-in-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+
+    .user-greet {
+        grid-column: 1;
+        font-size: 1rem;
+        color: var(--color-contrast-text);
+    }
+
+    .logout-button {
+        grid-column: 2;
+        align-self: center;
+        padding: 10px 20px;
+        color: var(--color-contrast-text);
+        background-color: transparent;
+    }
+}

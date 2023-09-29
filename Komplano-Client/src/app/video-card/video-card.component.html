@@ -1,0 +1,17 @@
+<div class="videocard" (click)="mediaService.goToVideo(video)" [style.background-color]="backgroundColor">
+  <div class="videocard-img-top" [ngStyle]="{'background-image': 'url(' + this.imgSrc + ')'}"
+    (error)="handleImageError()">
+  </div>
+
+  <div class="videocard-duration">{{ video.duration | duration }}</div>
+
+  <div class="videocard-meta" *ngIf="details">
+    <a class="videocard-topic" (click)="mediaService.goToTopic(video.topic)">
+      {{ video.topic }}
+    </a>
+    <span class="videocard-title">{{ video.title }}</span>
+  </div>
+  <progress [value]="storageService.getVideoProgress(video)" max="100" class="videocard-progress"></progress>
+  <app-recommend [video]="video" [isEmbedded]="true"></app-recommend>
+
+</div>
