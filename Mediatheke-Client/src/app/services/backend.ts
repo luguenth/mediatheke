@@ -119,7 +119,11 @@ export class BackendService {
     }
 
     getSeriesFromEpisode(id: string): Observable<IVideo[]> {
-        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/series?media_item_id=${id}`);
+        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/serie?media_item_id=${id}`);
+    }
+
+    getAllSeries(): Observable<IVideo[]> {
+        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/series?skip=0&limit=10&random_order=true`);
     }
 
     getThumbnail(urlItem: IVideoThumbnailUrl): Observable<IVideoThumbnailUrl> {
