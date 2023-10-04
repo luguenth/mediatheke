@@ -1,0 +1,77 @@
+services:
+  database:
+    image: "postgres:latest"
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - 6379:6379
+    env_file:
+      - .env
+
+  server:
+    build:
+      context: ./Mediatheke
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - redis
+      - typesense
+    volumes:
+      - ./Mediatheke:/Mediatheke
+    restart: always
+
+  client:
+    build:
+      context: ./Mediatheke-Client
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./Mediatheke-Client/src:/app/src
+      - ./Mediatheke-Client/angular.json:/app/angular.json
+      - ./Mediatheke-Client/tsconfig.json:/app/tsconfig.json
+    depends_on:
+      - server
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./Configuration/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./Configuration/certs:/etc/nginx/ssl
+    depends_on:
+      - server
+
+  typesense:
+    image: typesense/typesense:0.25.0
+    restart: on-failure
+    ports:
+      - "8108:8108"
+    volumes:
+      - ./typesense-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8108/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: "--data-dir /data --api-key=xyz --enable-cors"
+
+volumes:
+  db-data:
+    driver: local
+  event-data:
+    driver: local
