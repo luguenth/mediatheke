@@ -71,7 +71,6 @@ for mediaitem in mediaitems:
                     'season_number': season_number,
                     'episode_number': episode_number,
                     'series_name': series_name,
-                    'channel': channel,
                 })
                 break
     if "audiodes" in mediaitem.title.lower():

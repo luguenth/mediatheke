@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from fastapi_cache.decorator import cache
-
+import logging
 
 from ...core.db.database import get_db
 from ..authentication import service as auth
@@ -56,6 +56,18 @@ def read_media_items(
     media_items = mediaitem_crud.get_all_media_items(db, **common_params)
     return media_items
 
+@router.get("/series", response_model=list[schemas.MediaItem])
+def read_media_items_series(
+        common_params: dict = Depends(common_parameters),
+        db: Session = Depends(get_db)
+        ):
+    """Returns a list of media items."""
+    logging.info("Getting series")
+    media_items = mediaitem_crud.get_first_episodes_of_all_series(db, **common_params)
+    logging.info(f"Found {len(media_items)} series")
+    if media_items is None:
+        raise HTTPException(status_code=404, detail="MediaItem not found")
+    return media_items
 
 #text seach with the recommendation engine
 @router.get("/search/recommended", response_model=list[schemas.MediaItem])
@@ -94,8 +106,9 @@ def search_media_items(
         return_items.append(schemas.MediaItem(**item))
     return return_items
 
-@router.get("/series", response_model=list[schemas.MediaItem])
-def read_media_items_series(
+@cache(expire=ttls["1_day"])
+@router.get("/serie", response_model=list[schemas.MediaItem])
+def read_all_media_items_series(
         media_item_id: int,
         db: Session = Depends(get_db)
         ):
