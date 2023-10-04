@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { home_topics } from '../topics';
 
 @Component({
   selector: 'app-home',
@@ -7,18 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  videoRows = [
-    {
-      title: 'Emmpfohlen von der Community',
-      description: 'Jedes Mitglied der Community kann Videos empfehlen, die dann hier angezeigt werden.',
-      topic: undefined,
-    },
-    {
-      title: 'Babylon Berlin',
-      description: 'In Babylon Berlin wird die Geschichte des Kriminalkommissars Gereon Rath erzählt, der im Berlin der 1920er Jahre ermittelt.',
-      topic: 'babylon berlin'
-    },
-  ];
+  videoRows = home_topics;
 
   constructor() { }
 
