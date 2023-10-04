@@ -30,6 +30,14 @@
     border: 3px solid #000;
 }
 
+.audio {
+    position: absolute;
+    right: 10px; // Adjust based on your needs
+    left: unset;
+    z-index: 10; // Ensure it's on top of the video
+    border: 3px solid #000;
+}
+
 .list-group-item {
     cursor: pointer;
     padding: 5px 10px;
@@ -40,6 +48,10 @@
     border-radius: 0 !important;
     border: none !important;
 
+}
+
+.audio-item {
+    border-left: 3px solid #000 !important;
 }
 
 .list-group-item.active {

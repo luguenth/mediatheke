@@ -23,8 +23,6 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   isSeries: boolean = false;
   isSeriesLoading: boolean = false;
 
-
-
   constructor(
     private route: ActivatedRoute,
     private backendService: BackendService,

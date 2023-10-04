@@ -25,6 +25,8 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
   curr_quality = VideoQuality.BASE;
   viewInitialized = false;
   showSlider = false;
+  hasDescriptiveAudio = false;
+  descriptiveAudioEnabled = false;
 
   constructor(
     private storageService: StorageService
@@ -59,7 +61,14 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.video?.url_video_hd) {
       this.availableQualities.push(VideoQuality.HD);
     }
+    if (this.video?.url_video_descriptive_audio !== null) {
+      this.hasDescriptiveAudio = true;
+    } else {
+      this.hasDescriptiveAudio = false;
+    }
   }
+
+
 
   changeQuality(newQuality: VideoQuality, event: Event): void {
     event.stopPropagation();  // Stop event bubbling to avoid video pause
@@ -68,6 +77,12 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
       this.curr_quality = newQuality;
       this.setVideoSource(currentTime);
     }
+  }
+
+  changeAudioTrack(event: Event): void {
+    event.stopPropagation();  // Stop event bubbling to avoid video pause
+    this.descriptiveAudioEnabled = !this.descriptiveAudioEnabled;
+    this.setVideoSource(this.getCurrentVideoTime());
   }
 
   setVideoSource(currentTime: number = 0): void {
@@ -131,27 +146,29 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
     if (!this.video) {
       return '';
     }
-    let base = this.video.url_video;
-    let newUrl = '';
 
     switch (quality) {
       case VideoQuality.BASE:
-        return base;
+        if (this.descriptiveAudioEnabled) {
+          return this.video.url_video_descriptive_audio;
+        }
+        return this.video.url_video;
 
       case VideoQuality.SMALL:
-        newUrl = this.video.url_video_low;
-        break;
+        if (this.descriptiveAudioEnabled) {
+          return this.video.url_video_low_descriptive_audio;
+        }
+        return this.video.url_video_low;
 
       case VideoQuality.HD:
-        newUrl = this.video.url_video_hd;
-        break;
+        if (this.descriptiveAudioEnabled) {
+          return this.video.url_video_hd_descriptive_audio;
+        }
+        return this.video.url_video_hd;
 
       default:
-        return base;
+        return this.video.url_video;
     }
-
-    base = newUrl;
-    return base;
   }
 
   toggleFullscreen(): void {
