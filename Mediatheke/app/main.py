@@ -2,15 +2,13 @@
 import subprocess
 import asyncio
 
+from redis import asyncio as aioredis
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-from sqlalchemy import text
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
-from fastapi.middleware.gzip import GZipMiddleware
-from redis import asyncio as aioredis
+from dotenv import load_dotenv
 
 from .src.user import router as user_router
 from .src.authentication import router as auth_router
@@ -76,13 +74,13 @@ async def startup_event():
     #subprocess.Popen(["pipenv", "run", "celery", "-A", "app.celery", "worker", "--loglevel=info"])
     
     # we have to wait for the celery worker to start up
-    print("Waiting for celery worker to start up...")
+    #print("Waiting for celery worker to start up...")
     
-    filmliste_tasks.import_filmliste.delay()
-    search_tasks.init_typesense.delay()
+    print(filmliste_tasks.import_filmliste.delay())
+    print(search_tasks.init_typesense.delay())
 
-@app.on_event("shutdown")
+""" @app.on_event("shutdown")
 async def shutdown_event():
     # shutdown the celery worker
     subprocess.Popen(["pkill", "-f", "celery"])
-    print("Celery worker shut down")
+    print("Celery worker shut down") """

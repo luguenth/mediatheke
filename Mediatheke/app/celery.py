@@ -1,7 +1,7 @@
 # celery.py
 from celery import Celery
 
-app = Celery('Komplano', broker='redis://redis:6379/0')
+app = Celery('Mediatheke', broker='redis://redis:6379/0')
 app.conf.broker_url = 'redis://redis:6379/0'
 
 app.conf.update({

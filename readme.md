@@ -50,14 +50,16 @@ Mediatheke is an online viewer that taps into the "Filmliste" from the Mediathek
 
 ### Overview
 
-The application is split into multiple containers:
+This application is split into multiple containers. The following table gives an overview of the containers and their purpose:
 
-| Container | Description | internal address | external address |
-|-----------|-------------|------------------|------------------|
-| [Client](https://github.com/codezeit/Mediatheke-Client) | The frontend of Mediatheke | http://client:4200 | http://localhost |
-| [Server](https://github.com/codezeit/Mediatheke-Server) | The backend of Mediatheke | http://server:8000 | http://localhost/api |
-| [Database](https://hub.docker.com/_/postgres) | The database of Mediatheke | postgres://postgres:postgres@database:5432/postgres | - |
-| [nginx](https://hub.docker.com/_/nginx) | The reverse proxy for the frontend and backend | - | http://localhost |
+| Container | Purpose |
+| --- | --- |
+| database | Postgres database to store all data |
+| redis | Redis database for celery tasks and caching |
+| server | Backend server (FastAPI) |
+| client | Frontend client (Angular) |
+| nginx | Reverse proxy to serve the client and server on the same port |
+| typesense | Search engine for the media library |
 
 ## Contributing
 

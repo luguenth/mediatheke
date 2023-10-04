@@ -27,7 +27,7 @@ services:
       - redis
       - typesense
     volumes:
-      - ./Komplano:/Mediatheke
+      - ./Mediatheke:/Mediatheke
     restart: always
 
   client:
@@ -35,9 +35,9 @@ services:
     env_file:
       - .env
     volumes:
-      - ./Komplano-Client/src:/app/src
-      - ./Komplano-Client/angular.json:/app/angular.json
-      - ./Komplano-Client/tsconfig.json:/app/tsconfig.json
+      - ./Mediatheke-Client/src:/app/src
+      - ./Mediatheke-Client/angular.json:/app/angular.json
+      - ./Mediatheke-Client/tsconfig.json:/app/tsconfig.json
     depends_on:
       - server
 

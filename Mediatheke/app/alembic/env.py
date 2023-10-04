@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.mediaitem.model import MediaItem
-from Komplano.app.user.user import User
+from app.user.user import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

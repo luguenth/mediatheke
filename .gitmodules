@@ -1,6 +1,0 @@
-[submodule "Komplano-Server"]
-	path = Komplano
-	url = git@github.com:codezeit/Komplano.git
-[submodule "Komplano-Client"]
-	path = Komplano-Client
-	url = git@github.com:codezeit/Komplano-Client.git
