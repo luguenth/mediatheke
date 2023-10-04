@@ -1,6 +1,6 @@
 from ...celery import app
 from ..filmliste.parser import parse_filmliste
-from ..filmliste.crud import create_import_event
+from ..filmliste.crud import create_import_event, get_last_import_event
 from ..filmliste.model import FilmlisteImportEvent
 from ..mediaitem.crud import process_batch
 from ...core.db.database import get_new_db_session
@@ -10,9 +10,9 @@ import time
 import logging
 
 @app.task()
-def import_filmliste():
+def import_filmliste(full: bool = True):
   logging.info("Importing filmliste")
-  items, timestamp = parse_filmliste(full=True)
+  items, timestamp = parse_filmliste(full=full)
   BATCH_SIZE = 2500
   db = get_new_db_session()
   len_items = len(items)
@@ -36,5 +36,17 @@ def import_filmliste():
   
   import_event.media_item_count = added_items
   db.commit()
+
+@app.task()
+def check_for_updates():
+    db = get_new_db_session()
+    last_import_event = get_last_import_event(db)
+
+    if not last_import_event or (datetime.utcnow() - last_import_event.timestamp).total_seconds() > 14400:
+        # Import full Filmliste if no import has happened in the last 4 hours
+        import_filmliste(full=True)
+    else:
+        # Import diff Filmliste if an import has happened in the last 4 hours
+        import_filmliste(full=False)
 
 
