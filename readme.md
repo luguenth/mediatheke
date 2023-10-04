@@ -1,66 +1,76 @@
 # Mediatheke
 
-## Overview
+## Overview 🌐
 
-Mediatheke is an online viewer that taps into the "Filmliste" from the MediathekView Project (https://mediathekview.de/) to offer a streamlined way to search for and watch movies and series from German public TV stations. This project is still in development.
+Mediatheke is an online viewer, still in its alpha phase, that taps into the "Filmliste" from [MediathekView Project](https://mediathekview.de/). The goal is simple: make it easier to search and stream movies and series from German public TV. If you're interested in the project and want to help, feel free to jump in. All contributions are appreciated.
 
+### Features ✔️
 
-### Features
+- [x] **Search Functionality**: Quickly locate movies and series from German public TV.
+  
+- [x] **Online Viewer**: Stream content directly.
+  
+- [x] **Background Jobs**: "Filmliste" updates happen automatically to keep the library fresh.
+  
+- [x] **User Authentication**: Extra security measures for both content and user settings.
+  
+- [x] **Recommendations**: Suggest and share favorites with others.
+  
+- [x] **Similar Content**: Find more of what you enjoy based on your viewing history.
 
-- [x] Search Functionality: Easily search for movies and series from German public TV stations.
+- [ ] **User Preferences**: In the works—soon you'll be able to save your go-to movies and series to a personal watchlist.
+  
+- [ ] **Registration**: Also in the works—registration coming soon. Currently, it's by invitation only.
 
-- [x] Online Viewer: Offers the ability to watch selected movies and series online.
+### Known Issues
 
-- [x] Background Jobs: Automatic updating of the "Filmliste" to keep the content up-to-date.
+- [ ] Search bar acts up if you leave the start page.
+  
+- [ ] Some content can't be played due to unsupported formats.
+  
+- [ ] Some content isn't imported yet, still figuring out why.
 
-- [x] User Authentication: Secure user authentication system to protect content and user preferences.
+Remember, this project is in its alpha stage, so expect some quirks. Contributions to fix these are more than welcome.
 
-- [x] Recommendations: Users can recommend movies and series to other users.
+## How to Get Started 🛠️
 
-- [x] Similar Content: Users can discover similar content based on the Video they are currently watching.
-
-- [ ] User Preferences: Ability to save movies and series to a personal watchlist.
-
-- [ ] Registration: Users can register to the platform. (Currently only admins can invite users)
-
-
-### Known Bugs
-
-- [ ] The search bar only works on the start page. When navigating to another page, the search bar does not work anymore.
-
-- [ ] Some Movies/Series are not playable. Because they have a currently not supported format.
-
-- [ ] Some Movies/Series are not imported. This is still to be investigated.
-
-## Development
-### Requirements
+### What You'll Need
 
 - Docker
 - Docker Compose
+- mkcert
 
-### Setup
+### Setup Steps
 
-1. Clone this repository `git clone --recursive https://github.com/codezeit/Mediatheke-Development.git`
-2. Copy `.env.example` to `.env` and edit it to your needs
-   ( right now we actually don't support any configuration directly in the
-   `.env` file in this layer. But we'll add it in the future )
-3. Run `docker-compose up -d` to start the containers or `docker-compose up` to
-   start the containers and watch the logs
-4. In the Browser go to https://localhost and accept the self-signed certificate
+1. Set Up Your Environment
+```
+cp .env.example .env
+```
+2. Make necessary changes to .env file as needed
 
-### Overview
+3. Fire Up the Containers
+```
+docker-compose up -d
+```
 
-This application is split into multiple containers. The following table gives an overview of the containers and their purpose:
+4. Trust the Certificates
+```
+mkcert -install
+mkcert -cert-file Configuration/certs/mediatheke.local.pem -key-file Configuration/certs/mediatheke.local-key.pem mediatheke.local
+```
+5. Open `https://mediatheke.local` in your web browser.
 
-| Container | Purpose |
-| --- | --- |
-| database | Postgres database to store all data |
-| redis | Redis database for celery tasks and caching |
-| server | Backend server (FastAPI) |
-| client | Frontend client (Angular) |
-| nginx | Reverse proxy to serve the client and server on the same port |
-| typesense | Search engine for the media library |
+### Container Roles 🔍
 
-## Contributing
+| Container  | What It Does             |
+|------------|--------------------------|
+| database   | Holds the data in Postgres|
+| redis      | Manages Celery tasks and caching|
+| server     | Handles the backend with FastAPI|
+| client     | Manages the frontend via Angular|
+| nginx      | Merges everything under one port with a reverse proxy|
+| typesense  | Takes care of search|
 
-You can contribute to this project by opening an issue or by creating a pull request.
+## Want to Contribute? 🤝
+
+The project is in its early stages and could use some extra hands. If you're interested in contributing, feel free to reach out. All contributions are welcome.
