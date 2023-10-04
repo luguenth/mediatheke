@@ -19,9 +19,16 @@ export class VideoRowComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.topic) {
-      this.backendService.getVideosByTopic(this.topic).subscribe(data => {
-        this.videos = data;
-      });
+      if (this.topic === "serien") {
+        this.backendService.getAllSeries().subscribe(data => {
+          this.videos = data;
+        }
+        );
+      } else {
+        this.backendService.getVideosByTopic(this.topic).subscribe(data => {
+          this.videos = data;
+        });
+      }
     } else {
       this.backendService.getAllRecommendations().subscribe(data => {
         this.videos = data;
