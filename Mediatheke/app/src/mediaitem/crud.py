@@ -1,6 +1,6 @@
 from typing import Union, List, TypeVar
 from sqlalchemy.orm import Session, Query
-from sqlalchemy import func, or_, text, tuple_
+from sqlalchemy import func, or_, text, tuple_, and_, asc
 from sqlalchemy.exc import IntegrityError
 from collections import defaultdict
 from unidecode import unidecode
@@ -296,3 +296,34 @@ def get_thumbnail(db: Session, media_item_id: int) -> str:
 def get_media_item_by_url(db: Session, url: str) -> MediaItem:
     return db.query(MediaItem).filter(MediaItem.url_website == url).first()
     
+def get_first_episodes_of_all_series(db: Session, skip: int = 0, limit: int = 100, **kwargs) -> List[MediaItem]:
+    # Subquery to find the minimum episode_number for each series
+    # This identifies the first episode for each series
+    subquery = (
+        db.query(
+            MediaItem.series_name,
+            func.min(MediaItem.episode_number).label("min_episode_number")
+        )
+        .filter(MediaItem.series_name.isnot(None), MediaItem.episode_number.isnot(None))
+        .group_by(MediaItem.series_name)
+        .subquery()
+    )
+    
+    # Main query joins with subquery to get details of the first episodes
+    # The 'and_' is necessary for multiple join conditions
+    query = (
+        db.query(MediaItem)
+        .join(
+            subquery,
+            and_(
+                MediaItem.series_name == subquery.c.series_name,
+                MediaItem.episode_number == subquery.c.min_episode_number
+            )
+        )
+        .order_by(asc(MediaItem.series_name))  # Sorting by series_name for readability
+    )
+
+    # Filter the query based on provided kwargs
+    query = _filter_query_by_params(query, **kwargs)
+    return query.offset(skip).limit(limit).all()
+
