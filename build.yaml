@@ -1,8 +1,6 @@
 services:
   database:
     image: "postgres:latest"
-    ports:
-      - 5432:5432
     env_file:
       - .env
     healthcheck:
@@ -13,8 +11,6 @@ services:
 
   redis:
     image: "redis:latest"
-    ports:
-      - 6379:6379
     env_file:
       - .env
 
@@ -59,8 +55,6 @@ services:
   typesense:
     image: typesense/typesense:0.25.0
     restart: on-failure
-    ports:
-      - "8108:8108"
     volumes:
       - ./typesense-data:/data
     healthcheck:
