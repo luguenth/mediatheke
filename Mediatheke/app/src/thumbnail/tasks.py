@@ -1,5 +1,6 @@
 # tasks.py or within services
 import subprocess
+import logging
 #import cv2
 from ...celery import app
 from ..mediaitem import crud
@@ -64,7 +65,7 @@ def persist_thumbnail(media_item_id, thumbnail_url):
     media_item.thumbnail = thumbnail_url
     db.commit()
     db.close()
-    print(f'Persisted thumbnail for media item with id {media_item_id}')
+    logging.info(f'Persisted thumbnail for media item with id {media_item_id}')
 
 
 @app.task()

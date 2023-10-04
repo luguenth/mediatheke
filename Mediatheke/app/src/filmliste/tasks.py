@@ -11,6 +11,11 @@ import logging
 
 @app.task()
 def import_filmliste(full: bool = True):
+  # get last import event
+  last_import_event = get_last_import_event()
+  if last_import_event and (datetime.utcnow() - last_import_event.timestamp).total_seconds() < 14400:
+    # Import diff Filmliste if an import has happened in the last 4 hours
+    full = False
   logging.info("Importing filmliste")
   items, timestamp = parse_filmliste(full=full)
   BATCH_SIZE = 2500

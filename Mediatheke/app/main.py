@@ -78,8 +78,8 @@ async def startup_event():
     print(filmliste_tasks.import_filmliste.delay())
     print(search_tasks.init_typesense.delay())
 
-""" @app.on_event("shutdown")
+@app.on_event("shutdown")
 async def shutdown_event():
     # shutdown the celery worker
     subprocess.Popen(["pkill", "-f", "celery"])
-    print("Celery worker shut down") """
+    print("Celery worker shut down")
