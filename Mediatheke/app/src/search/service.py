@@ -46,6 +46,9 @@ class SearchEngine:
             'url_subtitle': media_item.url_subtitle,
             'url_video_low': media_item.url_video_low,
             'url_video_hd': media_item.url_video_hd,
+            'url_video_descriptive_audio': media_item.url_video_descriptive_audio or "",
+            'url_video_low_descriptive_audio': media_item.url_video_low_descriptive_audio or "",
+            'url_video_hd_descriptive_audio': media_item.url_video_hd_descriptive_audio or "",
             'thumbnail': media_item.thumbnail or "",
             'episode_number': int(media_item.episode_number) if media_item.episode_number else 0,
             'season_number': int(media_item.season_number) if media_item.season_number else 0,
@@ -88,7 +91,6 @@ class SearchEngine:
           result = self.client.collections['mediaitems'].documents.import_(jsonl_str)
           if "success" not in result:
               print(f"Error while importing documents: {result}")
-             
       except Exception as e:
         print(f"Error while importing documents: {e}")      
       print(f"Size of media items index: {self.get_size()}")
