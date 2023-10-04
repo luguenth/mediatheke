@@ -15,7 +15,7 @@ import csv
 import json
 from datetime import datetime
 from time import time
-from ...db.database import get_new_db_session
+from ....core.db.database import get_new_db_session
 from ...mediaitem.model import MediaItem
 
 db = get_new_db_session()
