@@ -121,13 +121,13 @@ def parse_filmliste(full: bool = True) -> Tuple[List[dict], int]:
     
 
     print(f'Parsing Filmliste from {url}')
-    #response = requests.get(url)
-    #decompressed_data = lzma.decompress(response.content)
-    #content = decompressed_data.decode('utf-8')
+    response = requests.get(url)
+    decompressed_data = lzma.decompress(response.content)
+    content = decompressed_data.decode('utf-8')
     #debug for not loading all the time:
-    with open('Filmliste-akt', 'rb') as f:
-        response = f.read()
-    content = response.decode('utf-8')
+    #with open('Filmliste-akt', 'rb') as f:
+    #    response = f.read()
+    #content = response.decode('utf-8')
         
     print('Finished parsing Filmliste')
         

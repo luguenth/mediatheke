@@ -22,7 +22,7 @@ from .src.search import tasks as search_tasks
 from .core.db.database import Base, get_engine
 from .core.config import get_settings
 
-from .celery import app as celery_app
+from .celery import start as celery_app
 
 load_dotenv()
 
@@ -71,11 +71,10 @@ async def startup_event():
     redis = aioredis.from_url("redis://redis")
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     # start the celery worker
-    #subprocess.Popen(["pipenv", "run", "celery", "-A", "app.celery", "worker", "--loglevel=info"])
+    subprocess.Popen(["pipenv", "run", "celery", "-A", "app.celery", "worker", "--loglevel=info"])
     
     # we have to wait for the celery worker to start up
-    #print("Waiting for celery worker to start up...")
-    
+    print("Waiting for celery worker to start up...", flush=True)
     print(filmliste_tasks.import_filmliste.delay())
     print(search_tasks.init_typesense.delay())
 

@@ -4,7 +4,7 @@ import logging
 
 
 @app.task()
-def init_typesense(force_delete=False):
+def init_typesense(force_delete=True):
     logging.info("Initializing Typesense")
     search_engine = service.get_search_engine()
     

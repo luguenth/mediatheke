@@ -11,7 +11,8 @@ import logging
 
 @app.task()
 def import_filmliste():
-  items, timestamp = parse_filmliste(full=False)
+  logging.info("Importing filmliste")
+  items, timestamp = parse_filmliste(full=True)
   BATCH_SIZE = 2500
   db = get_new_db_session()
   len_items = len(items)
@@ -31,7 +32,7 @@ def import_filmliste():
     time_spent = time.time() - time_start
     time_spent_human_readable = time.strftime("%H:%M:%S", time.gmtime(time_spent))
     calculated_time_left = (len_items - i) * (time_spent / (i + 1))
-    logging.info(f"Processed batch {i} of {len_items}, Will be done in {time.strftime('%H:%M:%S', time.gmtime(calculated_time_left))}, Time spent: {time_spent_human_readable}", flush=True)
+    logging.info(f"Processed batch {i} of {len_items}, Will be done in {time.strftime('%H:%M:%S', time.gmtime(calculated_time_left))}, Time spent: {time_spent_human_readable}")
   
   import_event.media_item_count = added_items
   db.commit()
