@@ -16,6 +16,7 @@ import lzma
 from datetime import datetime, timezone
 from time import time
 from typing import List, Tuple
+from io import StringIO
 from ...core.config import get_settings
 
 def create_url_from_base(base_url: str, new_url: str) -> str:
@@ -106,52 +107,63 @@ def get_random_mirror() -> str:
 
     return mirrors[int(time()) % len(mirrors)]
 
+from io import StringIO
+
 def parse_filmliste(full: bool = True) -> Tuple[List[dict], int]:
     """
     Parses the Filmliste file and returns a list of media items and the timestamp of the last change.
     """
-
-    url = ''
     
+    url = ''
     if full:
         url = f'https://{get_random_mirror()}/Filmliste-akt.xz'
     else:
         url = f'https://{get_random_mirror()}/Filmliste-diff.xz'
-
     
-
     print(f'Parsing Filmliste from {url}')
-    response = requests.get(url)
-    decompressed_data = lzma.decompress(response.content)
-    content = decompressed_data.decode('utf-8')
-    #debug for not loading all the time:
-    #with open('Filmliste-akt', 'rb') as f:
-    #    response = f.read()
-    #content = response.decode('utf-8')
-        
-    print('Finished parsing Filmliste')
-        
-    lines = re.split(r'{"Filmliste":|,"X":|}$', content)
-    current_channel, current_topic = "", ""
-    line_number = 0
+    
     items = []
     timestamp = 0
-    print(f'Processing Filmliste with {len(lines)} lines')
-    for line in lines:
-        line_number += 1
-        if line_number == 1:
-            continue
-        if line_number == 2:
-            timestamp = handle_list_meta(line)
-            continue
+    
+    # Download and decompress in chunks.
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        decompressor = lzma.LZMADecompressor()
+        buffer = StringIO()  # Accumulates decompressed data
+        current_channel, current_topic = "", ""
+        line_number = 0
+        
+        for chunk in r.iter_content(chunk_size=8192):
+            decompressed_chunk = decompressor.decompress(chunk).decode('utf-8')
+            buffer.write(decompressed_chunk)
+            
+            while True:
+                line = buffer.readline().strip()
+                
+                # Check if we've reached the end of the buffer
+                if not line:
+                    # Push remaining content back into buffer and break
+                    buffer.seek(0)
+                    buffer.truncate(0)
+                    buffer.write(line)
+                    break
+                
+                line_number += 1
+                
+                if line_number == 1:
+                    continue
+                
+                if line_number == 2:
+                    timestamp = handle_list_meta(line)
+                    continue
 
-        current_channel, current_topic, entry = map_list_line_to_item(line, current_channel, current_topic)
-        if not entry.get('title'): 
-            continue
+                current_channel, current_topic, entry = map_list_line_to_item(line, current_channel, current_topic)
+                
+                if not entry.get('title'): 
+                    continue
+                
+                items.append(entry)
 
-        items.append(entry)
     print('Finished processing Filmliste')
     return items, timestamp
 
-if __name__ == "__main__":
-    parse_filmliste(full=False)
