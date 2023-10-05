@@ -13,8 +13,8 @@
                 </li>
                 <li class="list-group-item audio-item" [ngClass]="{ 'active': descriptiveAudioEnabled }"
                     *ngIf="hasDescriptiveAudio" (click)="changeAudioTrack($event)">
-                    <i-bs *ngIf="descriptiveAudioEnabled" name="volume-up-fill"></i-bs>
-                    <i-bs *ngIf="!descriptiveAudioEnabled" name="volume-mute-fill"></i-bs>
+                    <i-bs *ngIf="descriptiveAudioEnabled" name="ear-fill"></i-bs>
+                    <i-bs *ngIf="!descriptiveAudioEnabled" name="ear"></i-bs>
                 </li>
             </ul>
         </div>
