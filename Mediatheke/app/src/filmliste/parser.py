@@ -115,12 +115,27 @@ def stream_decompressed_lines(url: str):
     with requests.get(url, stream=True) as response:
         decompressor = lzma.LZMADecompressor()
         buffer = ""
+        left_over_bytes = b""  # Store leftover bytes that can't be decoded
+
         for chunk in response.iter_content(chunk_size=1024):
-            decompressed_chunk = decompressor.decompress(chunk).decode('utf-8')
-            buffer += decompressed_chunk
+            # Decompress and attempt to decode UTF-8, appending any leftover bytes from previous chunks
+            decompressed_chunk = decompressor.decompress(chunk)
+            try:
+                decoded_chunk = (left_over_bytes + decompressed_chunk).decode('utf-8')
+                left_over_bytes = b""
+            except UnicodeDecodeError:
+                # Keep the last byte and try to decode it with the next chunk
+                left_over_bytes = decompressed_chunk[-1:]
+                decompressed_chunk = decompressed_chunk[:-1]
+                decoded_chunk = (left_over_bytes + decompressed_chunk).decode('utf-8', 'ignore')
+                left_over_bytes = b""
+
+            buffer += decoded_chunk
+
             while '\n' in buffer:
                 line, buffer = buffer.split('\n', 1)
                 yield line
+
 
 def parse_filmliste(full: bool = True) -> Tuple[List[dict], int]:
     url = f'https://{get_random_mirror()}/Filmliste-{"akt" if full else "diff"}.xz'
