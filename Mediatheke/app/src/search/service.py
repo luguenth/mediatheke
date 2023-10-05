@@ -80,7 +80,7 @@ class SearchEngine:
     db.close()
 
     # Index the media items
-    batch_size = 5000  # Experiment with this number
+    batch_size = 2500  # Experiment with this number
     for i in range(0, len(media_items), batch_size):
       print("Indexing batch starting with index", i)
 
