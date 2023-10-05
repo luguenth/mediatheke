@@ -9,12 +9,11 @@ Patrick Hein (@bagbag)
 Kaspar V. (@casaper)
 """
 
+import json
+import re
 import requests
 import lzma
 from datetime import datetime, timezone
-import json
-from io import TextIOWrapper
-import re
 from time import time
 from typing import List, Tuple
 from ...core.config import get_settings
@@ -107,46 +106,38 @@ def get_random_mirror() -> str:
 
     return mirrors[int(time()) % len(mirrors)]
 
-def stream_decompressed_lines(url: str):
-    """
-    Generator function to yield decompressed lines from an xz compressed HTTP stream.
-    This minimizes RAM usage by processing each line as it is read.
-    """
-    with requests.get(url, stream=True) as response:
-        decompressor = lzma.LZMADecompressor()
-        buffer = ""
-        left_over_bytes = b""  # Store leftover bytes that can't be decoded
-
-        for chunk in response.iter_content(chunk_size=1024):
-            # Decompress and attempt to decode UTF-8, appending any leftover bytes from previous chunks
-            decompressed_chunk = decompressor.decompress(chunk)
-            try:
-                decoded_chunk = (left_over_bytes + decompressed_chunk).decode('utf-8')
-                left_over_bytes = b""
-            except UnicodeDecodeError:
-                # Keep the last byte and try to decode it with the next chunk
-                left_over_bytes = decompressed_chunk[-1:]
-                decompressed_chunk = decompressed_chunk[:-1]
-                decoded_chunk = (left_over_bytes + decompressed_chunk).decode('utf-8', 'ignore')
-                left_over_bytes = b""
-
-            buffer += decoded_chunk
-
-            while '\n' in buffer:
-                line, buffer = buffer.split('\n', 1)
-                yield line
-
-
 def parse_filmliste(full: bool = True) -> Tuple[List[dict], int]:
-    url = f'https://{get_random_mirror()}/Filmliste-{"akt" if full else "diff"}.xz'
-    print(f'Parsing Filmliste from {url}')
+    """
+    Parses the Filmliste file and returns a list of media items and the timestamp of the last change.
+    """
+
+    url = ''
     
-    line_number = 0
+    if full:
+        url = f'https://{get_random_mirror()}/Filmliste-akt.xz'
+    else:
+        url = f'https://{get_random_mirror()}/Filmliste-diff.xz'
+
+    
+
+    print(f'Parsing Filmliste from {url}')
+    response = requests.get(url)
+    decompressed_data = lzma.decompress(response.content)
+    content = decompressed_data.decode('utf-8')
+    #debug for not loading all the time:
+    #with open('Filmliste-akt', 'rb') as f:
+    #    response = f.read()
+    #content = response.decode('utf-8')
+        
+    print('Finished parsing Filmliste')
+        
+    lines = re.split(r'{"Filmliste":|,"X":|}$', content)
     current_channel, current_topic = "", ""
+    line_number = 0
     items = []
     timestamp = 0
-
-    for line in stream_decompressed_lines(url):
+    print(f'Processing Filmliste with {len(lines)} lines')
+    for line in lines:
         line_number += 1
         if line_number == 1:
             continue
@@ -155,10 +146,12 @@ def parse_filmliste(full: bool = True) -> Tuple[List[dict], int]:
             continue
 
         current_channel, current_topic, entry = map_list_line_to_item(line, current_channel, current_topic)
-        if not entry.get('title'):
+        if not entry.get('title'): 
             continue
 
         items.append(entry)
-        
     print('Finished processing Filmliste')
     return items, timestamp
+
+if __name__ == "__main__":
+    parse_filmliste(full=False)
