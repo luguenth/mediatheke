@@ -19,7 +19,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.svgElement.nativeElement.classList.add('active');
   }
 
 }
