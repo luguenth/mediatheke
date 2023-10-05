@@ -111,45 +111,39 @@ def parse_filmliste(full: bool = True) -> Tuple[List[dict], int]:
     Parses the Filmliste file and returns a list of media items and the timestamp of the last change.
     """
 
-    url = ''
-    
     if full:
         url = f'https://{get_random_mirror()}/Filmliste-akt.xz'
     else:
         url = f'https://{get_random_mirror()}/Filmliste-diff.xz'
 
-    
-
     print(f'Parsing Filmliste from {url}')
     response = requests.get(url)
     decompressed_data = lzma.decompress(response.content)
-    content = decompressed_data.decode('utf-8')
-    #debug for not loading all the time:
-    #with open('Filmliste-akt', 'rb') as f:
-    #    response = f.read()
-    #content = response.decode('utf-8')
-        
+    response = None  # Free memory right after it's no longer needed
+
+    line_gen = (line for line in re.split(r'{"Filmliste":|,"X":|}$', decompressed_data.decode('utf-8')))
+
+    decompressed_data = None  # Free memory right after it's no longer needed
+    
     print('Finished parsing Filmliste')
-        
-    lines = re.split(r'{"Filmliste":|,"X":|}$', content)
-    current_channel, current_topic = "", ""
-    line_number = 0
+
     items = []
     timestamp = 0
-    print(f'Processing Filmliste with {len(lines)} lines')
-    for line in lines:
-        line_number += 1
-        if line_number == 1:
+    current_channel, current_topic = "", ""
+
+    print(f'Processing Filmliste')
+    for line_number, line in enumerate(line_gen):
+        if line_number == 0:
             continue
-        if line_number == 2:
+        if line_number == 1:
             timestamp = handle_list_meta(line)
             continue
 
         current_channel, current_topic, entry = map_list_line_to_item(line, current_channel, current_topic)
-        if not entry.get('title'): 
+        if not entry.get('title'):
             continue
-
         items.append(entry)
+
     print('Finished processing Filmliste')
     return items, timestamp
 
