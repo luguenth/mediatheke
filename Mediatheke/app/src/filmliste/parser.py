@@ -9,14 +9,14 @@ Patrick Hein (@bagbag)
 Kaspar V. (@casaper)
 """
 
-import json
-import re
 import requests
 import lzma
 from datetime import datetime, timezone
+import json
+from io import TextIOWrapper
+import re
 from time import time
 from typing import List, Tuple
-from io import StringIO
 from ...core.config import get_settings
 
 def create_url_from_base(base_url: str, new_url: str) -> str:
@@ -107,63 +107,43 @@ def get_random_mirror() -> str:
 
     return mirrors[int(time()) % len(mirrors)]
 
-from io import StringIO
+def stream_decompressed_lines(url: str):
+    """
+    Generator function to yield decompressed lines from an xz compressed HTTP stream.
+    This minimizes RAM usage by processing each line as it is read.
+    """
+    with requests.get(url, stream=True) as response:
+        decompressor = lzma.LZMADecompressor()
+        buffer = ""
+        for chunk in response.iter_content(chunk_size=1024):
+            decompressed_chunk = decompressor.decompress(chunk).decode('utf-8')
+            buffer += decompressed_chunk
+            while '\n' in buffer:
+                line, buffer = buffer.split('\n', 1)
+                yield line
 
 def parse_filmliste(full: bool = True) -> Tuple[List[dict], int]:
-    """
-    Parses the Filmliste file and returns a list of media items and the timestamp of the last change.
-    """
-    
-    url = ''
-    if full:
-        url = f'https://{get_random_mirror()}/Filmliste-akt.xz'
-    else:
-        url = f'https://{get_random_mirror()}/Filmliste-diff.xz'
-    
+    url = f'https://{get_random_mirror()}/Filmliste-{"akt" if full else "diff"}.xz'
     print(f'Parsing Filmliste from {url}')
     
+    line_number = 0
+    current_channel, current_topic = "", ""
     items = []
     timestamp = 0
-    
-    # Download and decompress in chunks.
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        decompressor = lzma.LZMADecompressor()
-        buffer = StringIO()  # Accumulates decompressed data
-        current_channel, current_topic = "", ""
-        line_number = 0
+
+    for line in stream_decompressed_lines(url):
+        line_number += 1
+        if line_number == 1:
+            continue
+        if line_number == 2:
+            timestamp = handle_list_meta(line)
+            continue
+
+        current_channel, current_topic, entry = map_list_line_to_item(line, current_channel, current_topic)
+        if not entry.get('title'):
+            continue
+
+        items.append(entry)
         
-        for chunk in r.iter_content(chunk_size=8192):
-            decompressed_chunk = decompressor.decompress(chunk).decode('utf-8')
-            buffer.write(decompressed_chunk)
-            
-            while True:
-                line = buffer.readline().strip()
-                
-                # Check if we've reached the end of the buffer
-                if not line:
-                    # Push remaining content back into buffer and break
-                    buffer.seek(0)
-                    buffer.truncate(0)
-                    buffer.write(line)
-                    break
-                
-                line_number += 1
-                
-                if line_number == 1:
-                    continue
-                
-                if line_number == 2:
-                    timestamp = handle_list_meta(line)
-                    continue
-
-                current_channel, current_topic, entry = map_list_line_to_item(line, current_channel, current_topic)
-                
-                if not entry.get('title'): 
-                    continue
-                
-                items.append(entry)
-
     print('Finished processing Filmliste')
     return items, timestamp
-
