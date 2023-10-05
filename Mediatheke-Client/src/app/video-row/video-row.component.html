@@ -1,8 +1,7 @@
-<h5>{{ title }} 
-  <div *ngIf="topic" class="topic">
-    <a [routerLink]="['/topic', topic]">
-      <i-bs class="topic-link" name="view-list"
-      height="1.5rem" width="1.5rem"></i-bs>
+<h5>{{ title }}
+  <div *ngIf="options.type === 'topic'" class="topic">
+    <a [routerLink]="['/topic', options.payload]">
+      <i-bs class="topic-link" name="view-list" height="1.5rem" width="1.5rem"></i-bs>
     </a>
   </div>
 </h5>

@@ -64,3 +64,16 @@ export interface IVideoThumbnailUrl {
 
 export type IMediaItemSearchResponse = IVideo[];
 
+export interface IVideoOptions {
+    type: string;
+    payload: string | undefined;
+    skip: number;
+    limit: number;
+    random_order: boolean;
+}
+
+export interface IVideoRow {
+    title: string;
+    description: string;
+    options: IVideoOptions;
+}
