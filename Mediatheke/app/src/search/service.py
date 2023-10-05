@@ -86,6 +86,7 @@ class SearchEngine:
 
       batch = media_items[i:i+batch_size]
       jsonl_str = self.media_items_to_jsonl(batch)
+      del batch
       print("Uploading batch to Typesense")
       try:
           result = self.client.collections['mediaitems'].documents.import_(jsonl_str)
