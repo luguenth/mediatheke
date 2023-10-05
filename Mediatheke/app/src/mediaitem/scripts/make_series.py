@@ -22,56 +22,61 @@ db = get_new_db_session()
 series_file = open('series-formats.csv', 'r')
 series_reader = csv.reader(series_file, delimiter=';')
 series = []
-# ignore first line
+# Skip header
 next(series_reader)
 for row in series_reader:
     series.append(row)
 series_file.close()
 
-# get all mediaitems
+# Fetch all media items
 mediaitems = db.query(MediaItem).all()
-
-dry_run = False
 
 update_data = []
 update_titles = []
 items_to_remove = []
-# iterate over all mediaitems
+dry_run = False
+# Iterate through each media item to update its data
 for mediaitem in mediaitems:
-    #print(f'Processing mediaitem {mediaitem.id}/{len(mediaitems)}')
-    # iterate over all series patterns
     for series_pattern in series:
-        #print(series_pattern)
-        if series_pattern != []:
-            # get the regex
+        if series_pattern:
             regex = series_pattern[1]
-            # check if the regex matches
             match = re.search(regex, mediaitem.title)
-            if match:
-                # get the season number
-                with_season = series_pattern[3]
-                if with_season == 'true':
-                    season_number = match.group(1)
-                    episode_number = match.group(2)
-                else:
+            if match and mediaitem.topic == "Babylon Berlin":
+                print(f"Title: {mediaitem.title}")  # Debug: Print the title
+                print(f"Matching with {regex}")  # Debug: Print the regex that matched
+                print(f"Match groups: {match.groups()}")  # Debug: Print the match groups
+                
+                with_season = series_pattern[3] == 'true'
+                
+                season_digit = int(series_pattern[5])
+                episode_digit = int(series_pattern[6])
+                
+                if season_digit == 0:
                     season_number = None
-                    episode_number = match.group(1)
+                    episode_number = match.group(episode_digit)
+                else:
+                    season_number = match.group(season_digit)
+                    episode_number = match.group(episode_digit)
+                
+                # Debug: Print the season and episode numbers
+                print(f"Season Number: {season_number}, Episode Number: {episode_number}")
                 
                 series_identifier = series_pattern[2]
-                if series_identifier == 'topic':
-                    series_name = mediaitem.topic
-                else:
-                    #take media title but remove regex
-                    series_name = re.sub(regex, '', mediaitem.title)
-                # get the channel
+                series_name = mediaitem.topic if series_identifier == 'topic' else re.sub(regex, '', mediaitem.title)
+                
+                if series_name is not None:
+                    print(f"Series name is {series_name}")
+
                 channel = series_pattern[4]
-                # update the mediaitem
+                
+                # Store the data to be updated
                 update_data.append({
                     'id': mediaitem.id,
                     'season_number': season_number,
                     'episode_number': episode_number,
                     'series_name': series_name,
                 })
+                
                 break
     if "audiodes" in mediaitem.title.lower():
         # this has nothing to do with series, but we want to remove this mediaitem but add its urls to another mediaitem with the same title (but without "(Audiodes(c/k)ription) or " - Audiodes(c/k)ription" in the title)

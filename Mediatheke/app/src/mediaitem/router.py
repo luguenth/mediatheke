@@ -56,6 +56,17 @@ def read_media_items(
     media_items = mediaitem_crud.get_all_media_items(db, **common_params)
     return media_items
 
+@router.get("/serie", response_model=list[schemas.MediaItem])
+def read_all_media_items_series(
+        media_item_id: int,
+        db: Session = Depends(get_db)
+        ):
+    """Returns a list of media items."""
+    media_items = mediaitem_crud.get_all_series_items(db, media_item_id)
+    if media_items is None:
+        raise HTTPException(status_code=404, detail="MediaItem not found")
+    return media_items
+
 @router.get("/series", response_model=list[schemas.MediaItem])
 def read_media_items_series(
         common_params: dict = Depends(common_parameters),
@@ -106,17 +117,6 @@ def search_media_items(
         return_items.append(schemas.MediaItem(**item))
     return return_items
 
-@cache(expire=ttls["1_day"])
-@router.get("/serie", response_model=list[schemas.MediaItem])
-def read_all_media_items_series(
-        media_item_id: int,
-        db: Session = Depends(get_db)
-        ):
-    """Returns a list of media items."""
-    media_items = mediaitem_crud.get_all_series_items(db, media_item_id)
-    if media_items is None:
-        raise HTTPException(status_code=404, detail="MediaItem not found")
-    return media_items
 
 @router.get("/topic/{topic}", response_model=list[schemas.MediaItem])
 @cache(expire=ttls["1_day"])

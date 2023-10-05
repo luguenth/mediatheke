@@ -1,9 +1,7 @@
-example;regex;series_identifier;with_season;channel
-(Staffel 1, Folge 56);\(Staffel (\d+),Folge (\d+)\);topic;true;ard
-Staffel 2, Folge 1;Staffel (\d+), Folge (\d+);title;true;hr
-Folge 1;Folge (\d+);topic;false;hr
-Folge 4/15;Folge (\d+)\/(\d+);title;false;hr
-Episode 1;Episode (\d+);title;false;all
-(5/6);\((\d+)\/(\d+)\);title;false;all
-(S01/E05);\(S(\d+)\/E(\d+)\);topic;true;ard
-Staffel 1, Folge 31-35;Staffel (\d+), Folge (\d+)-(\d+);topic;true;hr
+example;regex;series_identifier;with_season;channel;season_digit;episode_digit
+(Staffel 1, Folge 56);\(Staffel (\d+),Folge (\d+)\);topic;true;ard;1;2
+Staffel 2, Folge 1;Staffel (\d+), Folge (\d+);title;true;hr;1;2
+(S01/E05);\(S(\d+)\/E(\d+)\);topic;true;ard;1;2
+Folge 1;Folge (\d+);topic;false;hr;0;1
+Folge 4/15;Folge (\d+)\/(\d+);title;false;hr;0;1
+Staffel 1, Folge 31-35;Staffel (\d+), Folge (\d+)-(\d+);topic;true;hr;1;3
