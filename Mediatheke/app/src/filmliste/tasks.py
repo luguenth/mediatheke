@@ -9,10 +9,12 @@ from datetime import datetime
 import time
 import logging
 
+
 @app.task()
 def import_filmliste(full: bool = True):
   # get last import event
-  last_import_event = get_last_import_event()
+  db = get_new_db_session()
+  last_import_event = get_last_import_event(db)
   if last_import_event and (datetime.utcnow() - last_import_event.timestamp).total_seconds() < 14400:
     # Import diff Filmliste if an import has happened in the last 4 hours
     full = False
