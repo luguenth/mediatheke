@@ -41,11 +41,8 @@ for mediaitem in mediaitems:
         if series_pattern:
             regex = series_pattern[1]
             match = re.search(regex, mediaitem.title)
-            if match and mediaitem.topic == "Babylon Berlin":
-                print(f"Title: {mediaitem.title}")  # Debug: Print the title
-                print(f"Matching with {regex}")  # Debug: Print the regex that matched
-                print(f"Match groups: {match.groups()}")  # Debug: Print the match groups
-                
+            if match:
+              
                 with_season = series_pattern[3] == 'true'
                 
                 season_digit = int(series_pattern[5])
@@ -59,13 +56,9 @@ for mediaitem in mediaitems:
                     episode_number = match.group(episode_digit)
                 
                 # Debug: Print the season and episode numbers
-                print(f"Season Number: {season_number}, Episode Number: {episode_number}")
                 
                 series_identifier = series_pattern[2]
                 series_name = mediaitem.topic if series_identifier == 'topic' else re.sub(regex, '', mediaitem.title)
-                
-                if series_name is not None:
-                    print(f"Series name is {series_name}")
 
                 channel = series_pattern[4]
                 
