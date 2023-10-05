@@ -10,7 +10,7 @@ import { UserService } from './userService';
 })
 export class BackendService {
     // no trailing slash
-    private readonly baseUrl = 'https://mediatheke.local/api';
+    private readonly baseUrl = '/api';
 
     constructor(
         private http: HttpClient,
