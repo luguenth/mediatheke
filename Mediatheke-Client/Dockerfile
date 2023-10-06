@@ -2,7 +2,7 @@
 
 # Angular Development Dockerfile
 
-FROM node:14-slim
+FROM node:16.14
 
 # Create app directory
 WORKDIR /app
