@@ -1,5 +1,5 @@
 <div #wrapperElement *ngIf="video" class="video-container" (mouseenter)="showSlider = true"
-    (mouseleave)="showSlider = true">
+    (mouseleave)="showSlider = false">
     <div class="video-player">
         <video #videoElement id="videoElement" class="video-js vjs-default-skin" width="100%" height="auto" controls
             preload="auto" (timeupdate)="emitCurrentTime()"> <!-- Source will be added dynamically
@@ -16,11 +16,6 @@
                     <i-bs *ngIf="descriptiveAudioEnabled" name="ear-fill"></i-bs>
                     <i-bs *ngIf="!descriptiveAudioEnabled" name="ear"></i-bs>
                 </li>
-            </ul>
-        </div>
-        <div class="quality-slider audio" *ngIf="showSlider && hasDescriptiveAudio">
-            <ul class="list-group list-group-horizontal">
-
             </ul>
         </div>
     </div>
