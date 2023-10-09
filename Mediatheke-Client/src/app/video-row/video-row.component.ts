@@ -1,8 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IVideo, IVideoOptions } from '../interfaces';
+import { IVideo, IVideoLocalStorage, IVideoOptions } from '../interfaces';
 import { BackendService } from '../services/backend';
 import { options_type } from '../topics';
+import { StorageService } from '../services/storage.service';
 
 @Component({
   selector: 'app-video-row',
@@ -16,7 +17,10 @@ export class VideoRowComponent implements OnInit {
 
   videos: any[] = [];
 
-  constructor(private backendService: BackendService) { }
+  constructor(
+    private backendService: BackendService,
+    private storageService: StorageService
+  ) { }
 
   ngOnInit(): void {
 
@@ -54,6 +58,17 @@ export class VideoRowComponent implements OnInit {
           this.videos = data;
         });
         break;
+      case options_type.last_seen:
+        const lastWatched: IVideoLocalStorage[] = this.storageService.getLastWatchedVideos(10)
+        console.debug(lastWatched);
+        this.backendService.getVideosByIds(lastWatched.map(video => video.id)).subscribe(data => {
+          this.videos = data;
+        });
+        break;
+      default:
+        break;
+
     }
+
   }
 }

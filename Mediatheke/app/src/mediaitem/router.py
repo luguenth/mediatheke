@@ -118,6 +118,20 @@ def search_media_items(
     return return_items
 
 
+#${this.apiUrl.media}/ids?ids=123,456,789
+@router.get("/ids", response_model=list[schemas.MediaItem])
+def read_media_items_by_ids(
+        ids: str,
+        common_params: dict = Depends(common_parameters),
+        db: Session = Depends(get_db)
+        ):
+    """Returns a list of media items."""
+    media_items = mediaitem_crud.get_all_media_items_by_ids(db, str_ids=ids, **common_params)
+    if media_items is None:
+        raise HTTPException(status_code=404, detail="MediaItem not found")
+    return media_items
+
+
 @router.get("/topic/{topic}", response_model=list[schemas.MediaItem])
 @cache(expire=ttls["1_day"])
 def read_media_items_by_topic(

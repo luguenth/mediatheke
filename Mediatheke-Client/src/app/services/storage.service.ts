@@ -10,7 +10,7 @@ export class StorageService {
 
   private maxVideos = 100;
 
-  setVideoPosition(video: IVideo, position: number): void {
+  setVideo(video: IVideo, position: number): void {
     // Before adding a new video, check if we're at the limit.
     if (this.getStoredVideoCount() >= this.maxVideos) {
       this.removeOldestVideo();
@@ -23,6 +23,10 @@ export class StorageService {
     };
 
     localStorage.setItem(`video_${video?.id}`, JSON.stringify(videoLocalStorage));
+  }
+
+  private getVideoById(id: number): IVideoLocalStorage | null {
+    return localStorage.getItem(`video_${id}`) ? JSON.parse(localStorage.getItem(`video_${id}`) as string) : null;
   }
 
   private getStoredVideoCount(): number {
@@ -49,10 +53,9 @@ export class StorageService {
   }
 
   getVideoPosition(video: IVideo): number {
-    const videoLocalStorage = localStorage.getItem(`video_${video?.id}`);
+    const videoLocalStorage: IVideoLocalStorage | null = this.getVideoById(video?.id);
     if (videoLocalStorage) {
-      const videoLocalStorageObject: IVideoLocalStorage = JSON.parse(videoLocalStorage);
-      return videoLocalStorageObject.position;
+      return videoLocalStorage.position;
     }
     return 0;
   }
@@ -61,6 +64,26 @@ export class StorageService {
     const position = this.getVideoPosition(video);
     const duration = video?.duration || 0;
     return position / duration * 100;
+  }
+
+  getLastWatchedVideos(amount: number): IVideoLocalStorage[] {
+    const videos: IVideoLocalStorage[] = [];
+    for (const [key, value] of Object.entries(localStorage)) {
+      if (key.startsWith('video_')) {
+        videos.push(JSON.parse(value as string));
+      }
+    }
+
+    return videos.sort((a, b) => b.lastPlayedTimestamp - a.lastPlayedTimestamp).slice(0, amount);
+  }
+
+
+  clearStorage(): void {
+    localStorage.clear();
+  }
+
+  getStorageSize(): number {
+    return JSON.stringify(localStorage).length;
   }
 
 }

@@ -132,4 +132,8 @@ export class BackendService {
         const mediaItemId = urlItem.media_item_id;
         return this.getWithCredentials<IVideoThumbnailUrl>(`${this.apiUrl.thumbnail}/proxy/url?media_item_id=${mediaItemId}&url=${url}`);
     }
+
+    getVideosByIds(ids: number[]): Observable<IVideo[]> {
+        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/ids?ids=${ids.join(',')}`);
+    }
 }

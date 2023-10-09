@@ -327,3 +327,18 @@ def get_first_episodes_of_all_series(db: Session, skip: int = 0, limit: int = 10
     query = _filter_query_by_params(query, **kwargs)
     return query.offset(skip).limit(limit).all()
 
+#get_all_media_items_by_ids(db, ids=ids, **common_params)
+def get_all_media_items_by_ids(db: Session, str_ids: str, skip: int = 0, limit: int = 100, **kwargs) -> List[MediaItem]:
+    ids = [int(id) for id in str_ids.split(",")]
+    query = db.query(MediaItem).filter(MediaItem.id.in_(ids))
+    query = _filter_query_by_params(query, **kwargs)
+    fetched_items = query.offset(skip).limit(limit).all()
+
+    # Create a dictionary with the fetched items, where the key is the item's ID.
+    id_to_item = {item.id: item for item in fetched_items}
+
+    # Reorder the fetched items according to the original list of IDs.
+    # This ensures that the order of items in 'ordered_items' matches the order of IDs in 'ids'.
+    ordered_items = [id_to_item[id] for id in ids if id in id_to_item]
+
+    return ordered_items

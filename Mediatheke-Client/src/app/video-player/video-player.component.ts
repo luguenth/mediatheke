@@ -119,7 +119,7 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
     const currentTime = this.getCurrentVideoTime();
     // only do if currentTime is bigger than 5 seconds
     if (currentTime > 5) {
-      this.storageService.setVideoPosition(this.video as IVideo, currentTime);
+      this.storageService.setVideo(this.video as IVideo, currentTime);
       this.currentTime.emit(currentTime);
     }
   }

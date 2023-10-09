@@ -4,6 +4,7 @@ export enum options_type {
     recommended = 'recommended',
     topic = 'topic',
     series = 'series',
+    last_seen = 'last_seen',
 }
 
 export const home_topics: IVideoRow[] = [
@@ -60,6 +61,17 @@ export const home_topics: IVideoRow[] = [
             skip: 0,
             limit: 10,
             random_order: true,
+        }
+    },
+    {
+        title: 'Zuletzt gesehen',
+        description: 'Hier findest du die Videos, die du zuletzt gesehen hast.',
+        options: {
+            type: options_type.last_seen,
+            payload: undefined,
+            skip: 0,
+            limit: 10,
+            random_order: false,
         }
     }
 ];
