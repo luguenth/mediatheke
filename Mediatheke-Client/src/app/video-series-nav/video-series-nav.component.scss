@@ -1,0 +1,70 @@
+progress {
+    height: 20px;
+    border: none;
+    background-color: #fff;
+    overflow: hidden;
+    border: 3px solid #000;
+
+    &::-webkit-progress-bar {
+        background-color: #fff;
+    }
+
+    &::-webkit-progress-value {
+        background-color: #000
+    }
+
+    &::-moz-progress-bar {
+        background-color: #000;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    thead {
+        background-color: #000;
+        color: #fff;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    tr:hover {
+        background-color: #000;
+        color: #fff;
+        cursor: pointer;
+
+
+
+        progress {
+            background-color: #000;
+            border: 3px solid #fff;
+
+            &::-webkit-progress-value {
+                background-color: #fff;
+            }
+
+            &::-moz-progress-bar {
+                background-color: #fff;
+            }
+
+            &::-webkit-progress-bar {
+                background-color: #000;
+            }
+
+            &::-moz-progress-bar {
+                background-color: #fff;
+            }
+        }
+
+    }
+}
+
+.current {
+    background-color: var(--color-key-yellow);
+}

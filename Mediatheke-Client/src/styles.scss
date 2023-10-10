@@ -47,3 +47,5 @@ body[data-theme="dark"] {
 body[data-theme="light"] {
     background-color: var(--color-background-wrapper);
 }
+/* Importing Bootstrap SCSS file. */
+@import "./node_modules/bootstrap/scss/bootstrap";

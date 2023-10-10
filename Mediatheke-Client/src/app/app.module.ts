@@ -30,6 +30,8 @@ import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { VideoResultListComponent } from './video-result-list/video-result-list.component';
 import { SincePipe } from './shared/since.pipe';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { VideoSeriesNavComponent } from './video-series-nav/video-series-nav.component';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 
 @NgModule({
   declarations: [
@@ -52,6 +54,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     RecommendComponent,
     VideoResultListComponent,
     SincePipe,
+    VideoSeriesNavComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,7 +71,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    })
+    }),
+    TabsModule.forRoot(),
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

@@ -31,34 +31,9 @@
 
     <!-- Series Navigation -->
     <div class="series container" *ngIf="video?.series_name">
+      <app-video-series-nav *ngIf="video?.series_name" [video]="video"
+        [seriesVideos]="seriesVideos"></app-video-series-nav>
       <!-- series-nav.component.html -->
-
-      <div *ngIf="seriesVideos && seriesVideos.length > 0" class="series-nav">
-        <table>
-          <thead>
-            <tr>
-              <th>Season</th>
-              <th>Episode</th>
-              <th>Title</th>
-              <th>Watched</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let episode of seriesVideos" [ngClass]="{ 'current': video?.id === episode?.id }"
-              (click)="navigateToEpisode(episode)">
-              <td>{{episode?.season_number}}</td>
-              <td>{{episode?.episode_number}}</td>
-              <td>{{episode.title}}</td>
-              <td>
-                <ng-container *ngIf="storageService.getVideoProgress(episode) as progress">
-                  <progress *ngIf="progress > 0 && progress < 95" [value]="progress" max="100"></progress>
-                  <i-bs *ngIf="progress >= 95" name="check-circle-fill" width="24" height="24"></i-bs>
-                </ng-container>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </div>
 
 
