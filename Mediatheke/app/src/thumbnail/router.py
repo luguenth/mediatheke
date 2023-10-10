@@ -29,10 +29,10 @@ def get_thumbnail(
     tasks.persist_thumbnail.delay(media_item_id, thumbnail_url)
     return {"url": thumbnail_url, "media_item_id": media_item_id}
 
-@router.get("/typesense")
+""" @router.get("/typesense")
 def get_typesense_infos():
     return service.get_search_engine().get_debugging_info()
 
 @router.get("/typesense/index")
 def index_typesense():
-    return service.get_search_engine().index_media_items()
+    return service.get_search_engine().index_media_items() """
