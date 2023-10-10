@@ -54,8 +54,8 @@ def register(
         user: schema.UserCreate,
         db: Session = Depends(get_db)):
     """Register a new user."""
-    user = crud.get_user_by_email(db, user.email)
-    if user:
+    user_db = crud.get_user_by_email(db, user.email)
+    if user_db:
         raise HTTPException(
             status_code=400,
             detail="Email already registered")
