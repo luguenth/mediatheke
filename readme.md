@@ -4,7 +4,7 @@
 
 Mediatheke is an online viewer, still in its alpha phase, that taps into the "Filmliste" from [MediathekView Project](https://mediathekview.de/). The goal is simple: make it easier to search and stream movies and series from German public TV. If you're interested in the project and want to help, feel free to jump in. All contributions are appreciated.
 
-### Features ✔️
+### Features 📋
 
 - [x] **Search Functionality**: Quickly locate movies and series from German public TV.
   
@@ -22,7 +22,7 @@ Mediatheke is an online viewer, still in its alpha phase, that taps into the "Fi
   
 - [ ] **Registration**: Also in the works—registration coming soon. Currently, it's by invitation only.
 
-### Known Issues
+### Known Issues 🐛
 
 - [ ] Search bar acts up if you leave the start page.
   
@@ -30,17 +30,23 @@ Mediatheke is an online viewer, still in its alpha phase, that taps into the "Fi
   
 - [ ] Some content isn't imported yet, still figuring out why.
 
+- [ ] Videos which are not in landscape format are not displayed correctly.
+
+#### Development Issues
+
+- [ ] Server cant find Database Container on first start, restart fixes it.
+
 Remember, this project is in its alpha stage, so expect some quirks. Contributions to fix these are more than welcome.
 
 ## How to Get Started 🛠️
 
-### What You'll Need
+### What You'll Need 📦
 
 - Docker
 - Docker Compose
 - mkcert
 
-### Setup Steps
+### Setup Steps 📝
 
 1. Set Up Your Environment
 ```

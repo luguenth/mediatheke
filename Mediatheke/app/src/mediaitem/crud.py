@@ -1,6 +1,6 @@
 from typing import Union, List, TypeVar
 from sqlalchemy.orm import Session, Query
-from sqlalchemy import func, or_, text, tuple_, and_, asc
+from sqlalchemy import func, or_, text, tuple_, and_, asc, desc
 from sqlalchemy.exc import IntegrityError
 from collections import defaultdict
 from unidecode import unidecode
@@ -56,6 +56,8 @@ def _filter_query_by_params(query, **kwargs) -> 'Query':
     """
     Helper function to filter the query based on provided kwargs.
     """
+    #always oder by date and time
+    query = query.order_by(MediaItem.date.desc(), MediaItem.time.desc())
     if kwargs.get('random_order'):
         query = query.order_by(func.random())
     if kwargs.get('with_thumbnail'):
@@ -204,7 +206,7 @@ def search_media_items(db: Session, search_query: str, skip: int = 0, limit: int
     return query.offset(skip).limit(limit).all()
 
 def get_all_media_items_by_topic(db: Session, topic: str, skip: int = 0, limit: int = 100, **kwargs) -> List[MediaItem] or None:
-    topic = db.query(Topic).filter(Topic.name.ilike(f"%{topic}%")).first()
+    topic = db.query(Topic).filter(Topic.name == topic).first()
     if not topic:
         return None
     topic_id = topic.id
@@ -320,10 +322,10 @@ def get_first_episodes_of_all_series(db: Session, skip: int = 0, limit: int = 10
                 MediaItem.episode_number == subquery.c.min_episode_number
             )
         )
-        .order_by(asc(MediaItem.series_name))  # Sorting by series_name for readability
+        # sort randomly if requested
+        .order_by(func.random() if kwargs.get('random_order') else MediaItem.date.desc(), MediaItem.time.desc())
     )
 
-    # Filter the query based on provided kwargs
     query = _filter_query_by_params(query, **kwargs)
     return query.offset(skip).limit(limit).all()
 
