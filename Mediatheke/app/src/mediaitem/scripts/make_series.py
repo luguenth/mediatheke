@@ -42,7 +42,6 @@ for mediaitem in mediaitems:
             regex = series_pattern[1]
             match = re.search(regex, mediaitem.title)
             if match:
-              
                 with_season = series_pattern[3] == 'true'
                 
                 season_digit = int(series_pattern[5])
