@@ -35,7 +35,7 @@ export const home_topics: IVideoRow[] = [
         description: 'In Babylon Berlin wird die Geschichte des Kriminalkommissars Gereon Rath erzählt, der im Berlin der 1920er Jahre ermittelt.',
         options: {
             type: options_type.topic,
-            payload: 'babylon berlin',
+            payload: 'Babylon Berlin',
             skip: 0,
             limit: 10,
             random_order: true,
