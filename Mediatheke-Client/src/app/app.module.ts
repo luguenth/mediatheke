@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +29,7 @@ import { RecommendComponent } from './buttons/recommend/recommend.component';
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { VideoResultListComponent } from './video-result-list/video-result-list.component';
 import { SincePipe } from './shared/since.pipe';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,13 @@ import { SincePipe } from './shared/since.pipe';
     TypeaheadModule.forRoot(),
     PopoverModule.forRoot(),
     NgxBootstrapIconsModule.pick(allIcons),
-    ProgressbarModule.forRoot()
+    ProgressbarModule.forRoot(),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,
