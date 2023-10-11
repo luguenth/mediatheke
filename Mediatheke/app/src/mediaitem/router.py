@@ -57,6 +57,7 @@ def read_media_items(
     return media_items
 
 @router.get("/serie", response_model=list[schemas.MediaItem])
+@cache(expire=ttls["1_hour"])
 def read_all_media_items_series(
         media_item_id: int,
         db: Session = Depends(get_db)
