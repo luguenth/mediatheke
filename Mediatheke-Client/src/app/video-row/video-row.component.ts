@@ -23,24 +23,6 @@ export class VideoRowComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    /* if (this.topic) {
-      if (this.topic === "serien") {
-        this.backendService.getAllSeries().subscribe(data => {
-          this.videos = data;
-        }
-        );
-      } else {
-        this.backendService.getVideosByTopic(this.topic).subscribe(data => {
-          this.videos = data;
-        });
-      }
-    } else {
-      this.backendService.getAllRecommendations().subscribe(data => {
-        this.videos = data;
-      });
-    } */
-
     switch (this.options.type) {
       case options_type.recommended:
         this.backendService.getAllRecommendations().subscribe(data => {
@@ -48,8 +30,7 @@ export class VideoRowComponent implements OnInit {
         });
         break;
       case options_type.topic:
-        this.backendService.getVideosByTopic(this.options.payload ?? ""
-        ).subscribe(data => {
+        this.backendService.getVideosByTopic(this.options.payload ?? "", this.options.limit ?? 10).subscribe(data => {
           this.videos = data;
         });
         break;
@@ -60,10 +41,12 @@ export class VideoRowComponent implements OnInit {
         break;
       case options_type.last_seen:
         const lastWatched: IVideoLocalStorage[] = this.storageService.getLastWatchedVideos(10)
-        console.debug(lastWatched);
-        this.backendService.getVideosByIds(lastWatched.map(video => video.id)).subscribe(data => {
-          this.videos = data;
-        });
+        const ids = lastWatched.map(video => video.id);
+        if (ids.length > 0) {
+          this.backendService.getVideosByIds(ids).subscribe(data => {
+            this.videos = data;
+          });
+        }
         break;
       default:
         break;

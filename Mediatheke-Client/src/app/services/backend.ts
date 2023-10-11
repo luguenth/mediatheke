@@ -66,8 +66,8 @@ export class BackendService {
         return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/${id}/recommended`);
     }
 
-    getVideosByTopic(topic: string): Observable<IVideo[]> {
-        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/topic/${topic}?skip=0&limit=100&random_order=true&with_thumbnail=false`);
+    getVideosByTopic(topic: string, limit: number = 10): Observable<IVideo[]> {
+        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/topic/${topic}?skip=0&limit=${limit}`);
     }
 
     searchVideos(query: string): Observable<IMediaItemSearchResponse> {

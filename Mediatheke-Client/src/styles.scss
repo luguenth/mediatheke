@@ -13,15 +13,16 @@
     --color-key-yellow-transparent: #ffe10080;
     --color-key-cyan: #00ffe8;
     --color-key-magenta: #ffb6eb;
+    --color-key-black: #000000;
 
     --color-background-wrapper: #ffb6ec2a;
     --color-background: #ffffff;
-    --color-text: #000000;
-    --color-contrast-background: #000000;
+    --color-text: var(--color-key-black);
+    --color-contrast-background: var(--color-key-black);
     --color-contrast-text: #ffffff;
 
     --color-highlight: var(--color-key-yellow);
-    --color-highlight-text: #000000;
+    --color-highlight-text: var(--color-key-black);
 
     --color-always-white: #ffffff;
 
