@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { IVideo } from '../interfaces';
 import { Router } from '@angular/router';
 import { StorageService } from '../services/storage.service';
+import { MediaService } from '../services/media.service';
 
 export interface ISeasonTab {
   season: ISeason;
@@ -9,7 +10,7 @@ export interface ISeasonTab {
 }
 
 export interface ISeason {
-  seasonNumber: number;
+  season_number: number;
   episodes: IVideo[];
 }
 
@@ -25,76 +26,38 @@ export interface ISeries {
 })
 
 export class VideoSeriesNavComponent implements OnInit {
-  @Input() seriesVideos!: any[];
   @Input() video: any;
-  series: ISeries = {
+  activeSeason: ISeasonTab = {
+    season: {
+      season_number: 0,
+      episodes: []
+    },
+    active: true
+  };
+
+  $series: ISeries = {
     seasons: [],
     name: ''
   };
-  activeSeason: number | undefined;
-
-  // Initialize the tabs with existing seasons from seriesVideos
-  ngOnInit() {
-    this.series.seasons = this.getSeasons();
-    if (this.series.seasons.length > 0) {
-      this.series.seasons[0].active = true; // Default first tab as active
-    }
-  }
 
   constructor(
+    private mediaService: MediaService,
     private router: Router,
     public storageService: StorageService
   ) { }
 
-  getSeasons(): ISeasonTab[] {
-    const seasons: ISeasonTab[] = [];
-    this.seriesVideos.forEach((video: IVideo) => {
-      // Check if season already exists
-      console.log(seasons);
-      const seasonIndex = seasons.findIndex(s => s.season.seasonNumber === video.season_number);
-      if (seasonIndex === -1) {
-        // Season does not exist, create new season
-        const season: ISeason = {
-          seasonNumber: video.season_number,
-          episodes: [video]
-        };
-        seasons.push({ season, active: false });
-      } else {
-        // Season already exists, add episode to existing season
-        seasons[seasonIndex].season.episodes.push(video);
-      }
-
-      // Set series name
-      this.series.name = video.series_name;
-
-      // Sort episodes by episode number
-      seasons.forEach(s => s.season.episodes.sort((a, b) => a.episode_number - b.episode_number));
-
-      // Sort seasons by season number
-      seasons.sort((a, b) => a.season.seasonNumber - b.season.seasonNumber);
-
-      // Set active tab if video is found
-      if (video.id === this.video.id && !this.activeSeason && seasons[seasonIndex]) {
-        seasons[seasonIndex].active = true;
-        this.activeSeason = seasons[seasonIndex].season.seasonNumber;
-      }
-
-    }
-    );
-    return seasons;
-
+  ngOnInit(): void {
+    this.mediaService.getSeriesFromEpisode(this.video).subscribe(series => {
+      this.$series = series;
+    });
   }
 
-  navigateToEpisode(episode: IVideo) {
-    this.router.navigate(['/video-detail', episode.id]);
+  navigateToEpisode(episode: IVideo): void {
+    this.router.navigate(['/video-detail', episode.id], { queryParams: { time: this.storageService.getVideoPosition(episode) } });
   }
 
-  // Sets the active tab when clicked
-  selectTab(tab: ISeasonTab) {
-    if (this.activeSeason) {
-      this.series.seasons.forEach(s => s.active = false);
-      tab.active = true;
-      this.activeSeason = tab.season.seasonNumber;
-    }
+  selectTab(season: ISeasonTab): void {
+    this.$series.seasons.forEach(s => s.active = false);
+    season.active = true;
   }
 }

@@ -16,23 +16,25 @@
     <div *ngIf="video" class="commands container">
       <ng-container *ngIf="userService.role$ | async as role">
         <app-recommend [video]="video" *ngIf="role === 'admin'"></app-recommend>
-        <button class="command-button" (click)="mightBeASeries()">
+        <!--<button class="command-button" (click)="mightBeASeries()">
           <i-bs name="list" width="24" height="24" *ngIf="!isSeriesLoading"></i-bs>
           <div class="spinner-grow" role="status" *ngIf="isSeriesLoading" style="width: 20px; height: 20px;">
             <span class="sr-only">Loading...</span>
           </div>
           <span *ngIf="isSeries"> Nicht mehr als Serie markieren</span>
           <span *ngIf="!isSeries"> Als Serie markieren</span>
-          <!-- add spinner as long as isSeriesLoading-->
-        </button>
+           add spinner as long as isSeriesLoading
+        </button>-->
       </ng-container>
       <app-share [currentTime]="currentTime"> </app-share>
     </div>
-
+    <details class="container">
+      <summary>Debug</summary>
+      <pre>{{video | json}}</pre>
+    </details>
     <!-- Series Navigation -->
-    <div class="series container" *ngIf="video?.series_name">
-      <app-video-series-nav *ngIf="video?.series_name" [video]="video"
-        [seriesVideos]="seriesVideos"></app-video-series-nav>
+    <div class="series" *ngIf="video?.series_name">
+      <app-video-series-nav *ngIf="video?.series_name" [video]="video"></app-video-series-nav>
       <!-- series-nav.component.html -->
     </div>
 

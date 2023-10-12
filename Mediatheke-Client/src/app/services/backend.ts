@@ -118,7 +118,7 @@ export class BackendService {
         return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/${id}/mightbeaseries`);
     }
 
-    getSeriesFromEpisode(id: string): Observable<IVideo[]> {
+    getSeriesFromEpisode(id: number): Observable<IVideo[]> {
         return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/serie?media_item_id=${id}`);
     }
 

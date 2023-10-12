@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { UserService } from '../services/userService';
 import { StorageService } from '../services/storage.service';
+import { MediaService } from '../services/media.service';
 
 @Component({
   selector: 'app-video-detail',
@@ -29,7 +30,8 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     public userService: UserService,
     private router: Router,
-    public storageService: StorageService
+    public storageService: StorageService,
+    private mediaService: MediaService
   ) { }
 
   ngOnInit(): void {
@@ -44,7 +46,6 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
       this.video = video;
       this.cdr.detectChanges();
       this.getRecommendedVideos();
-      this.getSeriesVideos();
     });
 
     this.subscriptions.push(routeSub);
@@ -71,20 +72,6 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(recSub);
   }
-
-  getSeriesVideos() {
-    const seriesSub = this.backendService.getSeriesFromEpisode(this.videoId).subscribe(data => {
-      this.seriesVideos = data.sort((a, b) => {
-        if (a.season_number !== b.season_number) {
-          return a.season_number - b.season_number;
-        }
-        return a.episode_number - b.episode_number;
-      });
-    });
-
-    this.subscriptions.push(seriesSub);
-  }
-
 
   mightBeASeries() {
     this.isSeriesLoading = true;

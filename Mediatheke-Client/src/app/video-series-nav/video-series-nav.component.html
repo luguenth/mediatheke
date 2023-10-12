@@ -1,55 +1,27 @@
-<div *ngIf="seriesVideos && seriesVideos.length > 1" class="series-nav">
-    <!-- <table>
-        <thead>
-            <tr>
-                <th>Season</th>
-                <th>Episode</th>
-                <th>Title</th>
-                <th>Watched</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let episode of seriesVideos" [ngClass]="{ 'current': video?.id === episode?.id }"
-                (click)="navigateToEpisode(episode)">
-                <td>{{episode?.season_number}}</td>
-                <td>{{episode?.episode_number}}</td>
-                <td>{{episode.title}}</td>
-                <td>
-                    <ng-container *ngIf="storageService.getVideoProgress(episode) as progress">
-                        <progress *ngIf="progress > 0 && progress < 95" [value]="progress" max="100"></progress>
-                        <i-bs *ngIf="progress >= 95" name="check-circle-fill" width="24" height="24"></i-bs>
-                    </ng-container>
-                </td>
-            </tr>
-        </tbody>
-    </table> -->
+<div class="">
     <tabset>
-        <ng-container *ngFor="let seasonTab of getSeasons()">
-            <tab heading="Staffel {{seasonTab.season.seasonNumber}}" *ngIf="seasonTab.season.seasonNumber"
-                [active]="activeSeason === seasonTab.season.seasonNumber" (selectTab)="selectTab(seasonTab)">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Episode</th>
-                            <th>Title</th>
-                            <th>Watched</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let episode of seasonTab.season.episodes"
-                            [ngClass]="{ 'current': video?.id === episode?.id }" (click)="navigateToEpisode(episode)">
-                            <td>{{episode?.episode_number}}</td>
-                            <td>{{episode.title}}</td>
-                            <td>
-                                <ng-container *ngIf="storageService.getVideoProgress(episode) as progress">
-                                    <progress *ngIf="progress > 0 && progress < 95" [value]="progress"
-                                        max="100"></progress>
-                                    <i-bs *ngIf="progress >= 95" name="check-circle-fill" width="24" height="24"></i-bs>
-                                </ng-container>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <ng-container *ngFor="let seasonTab of $series.seasons; let i = index">
+            <tab heading="{{(seasonTab.season.season_number !== 999) ? 'Staffel ' + seasonTab.season.season_number : 'Unsortiert'}} {{ video.season_number === seasonTab.season.season_number ? '▶' : '' }}"
+                [active]="activeSeason === seasonTab" (selectTab)="selectTab(seasonTab)">
+                <div class="episodes">
+                    <ul class="episode-list">
+                        <li *ngFor="let episode of seasonTab.season.episodes; let i = index" class="episode-list__item">
+                            <a [routerLink]="['/video-detail', episode.id]" class="episode-list__link">
+                                <div class="thumbnail">
+                                    <!-- Replace with actual thumbnail source if you have one -->
+                                    <img [src]="episode.thumbnail" alt="Thumbnail">
+                                    <span class="duration">{{episode.duration |
+                                        duration}}</span>
+                                </div>
+                                <div class="episode-info">
+                                    <h5 class="title">{{episode.title}} <i-bs name="play" width="24" height="24"
+                                            *ngIf="episode.id === video.id"></i-bs></h5>
+                                    <p class="description">{{episode.description}}</p>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </tab>
         </ng-container>
     </tabset>
