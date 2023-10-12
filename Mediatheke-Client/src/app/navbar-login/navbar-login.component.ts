@@ -76,7 +76,6 @@ export class NavbarLoginComponent {
   onLogout() {
     this.backendService.logout().subscribe({
       next: _ => {
-        console.log('Logged out successfully');
         this.showLoginForm = false;
       },
       error: err => {

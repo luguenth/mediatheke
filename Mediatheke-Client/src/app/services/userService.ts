@@ -27,7 +27,6 @@ export class UserService {
     setToken(token: string) {
         localStorage.setItem('token', token);
         this.updateStateFromToken(token);
-        console.log('Token set:', token);
     }
 
     getToken(): string | null {
@@ -80,7 +79,6 @@ export class UserService {
     }
 
     logout() {
-        console.log('Logging out');
         localStorage.removeItem('token');
         this._isAuthenticated.next(false);
         this._username.next(null);
