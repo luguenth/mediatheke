@@ -28,10 +28,11 @@
       </ng-container>
       <app-share [currentTime]="currentTime"> </app-share>
     </div>
-    <details class="container">
+    <!-- <details class="container">
       <summary>Debug</summary>
       <pre>{{video | json}}</pre>
-    </details>
+    </details> -->
+
     <!-- Series Navigation -->
     <div class="series" *ngIf="video?.series_name">
       <app-video-series-nav *ngIf="video?.series_name" [video]="video"></app-video-series-nav>
