@@ -16,7 +16,7 @@ Mediatheke is an online viewer, still in its alpha phase, that taps into the "Fi
   
 - [x] **Recommendations**: Suggest and share favorites with others.
   
-- [x] **Similar Content**: Find more of what you enjoy based on your viewing history.
+- [x] **Similar Content**: Find similar Videos to what you're watching.
 
 - [ ] **User Preferences**: In the works—soon you'll be able to save your go-to movies and series to a personal watchlist.
   
