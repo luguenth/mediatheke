@@ -24,13 +24,7 @@ Mediatheke is an online viewer, still in its alpha phase, that taps into the "Fi
 
 ### Known Issues 🐛
 
-- [ ] Search bar acts up if you leave the start page.
-  
-- [ ] Some content can't be played due to unsupported formats.
-  
-- [ ] Some content isn't imported yet, still figuring out why.
-
-- [ ] Videos which are not in landscape format are not displayed correctly.
+Please look into the [Issues](https://github.com/luguenth/mediatheke/issues) section for a full list of known issues. And also feel free to add any issues you encounter.
 
 #### Development Issues
 
