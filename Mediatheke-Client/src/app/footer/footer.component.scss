@@ -1,25 +1,42 @@
-.footer {
-    margin-top: 100px;
-    bottom: 0;
-    width: 100%;
-    background-color: var(--color-contrast-background);
-    color: var(--color-highlight);
+.container-fluid {
+    background-color: #0f0f0f;
+    padding: 20px;
 
     a {
-        color: var(--color-primary);
+        color: grey;
+        font-size: 0.9rem;
+        
+        &:hover {
+            color: white;
+        }
+
+    }
+
+    height: 270px;
+}
+
+h1 {
+    color: white;
+    font-size: 2.5em;
+    position: relative;
+    left: 180px;
+    top: 100px;
+}
+
+.link-item {
+    text-decoration: none;
+    color: white;
+    &:hover {
+        text-decoration: underline;
     }
 }
 
-img {
-    /*invert the logo */
-    height: 50px;
+.img-fluid {
+    max-width: 100%;
+    margin-left: -20px;
+    margin-bottom: -20px;
 }
 
-.container {
-    max-width: 1600px;
-    margin: auto;
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 30px;
-    padding-bottom: 30px;
+.end {
+    align-self: end;
 }

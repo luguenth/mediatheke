@@ -32,6 +32,7 @@ import { SincePipe } from './shared/since.pipe';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { VideoSeriesNavComponent } from './video-series-nav/video-series-nav.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { HeroComponent } from './hero/hero.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
     VideoResultListComponent,
     SincePipe,
     VideoSeriesNavComponent,
+    HeroComponent,
   ],
   imports: [
     BrowserModule,

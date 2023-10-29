@@ -13,7 +13,7 @@
       <app-video-player [video]="video" (currentTime)="setCurrentTime($event)" [urlTime]="urlTime"></app-video-player>
     </div>
 
-    <div *ngIf="video" class="commands container">
+    <!-- <div *ngIf="video" class="commands container">
       <ng-container *ngIf="userService.role$ | async as role">
         <app-recommend [video]="video" *ngIf="role === 'admin'"></app-recommend>
         <!--<button class="command-button" (click)="mightBeASeries()">
@@ -24,43 +24,44 @@
           <span *ngIf="isSeries"> Nicht mehr als Serie markieren</span>
           <span *ngIf="!isSeries"> Als Serie markieren</span>
            add spinner as long as isSeriesLoading
-        </button>-->
+        </button>
       </ng-container>
       <app-share [currentTime]="currentTime"> </app-share>
-    </div>
+    </div> -->
     <!-- <details class="container">
       <summary>Debug</summary>
       <pre>{{video | json}}</pre>
     </details> -->
 
     <!-- Series Navigation -->
-    <div class="series" *ngIf="video?.series_name">
+    <!-- <div class="series" *ngIf="video?.series_name">
       <app-video-series-nav *ngIf="video?.series_name" [video]="video"></app-video-series-nav>
-      <!-- series-nav.component.html -->
-    </div>
+    </div> -->
 
 
     <!-- Video Details -->
-    <div class="details container" *ngIf="video">
+    <div class="details" *ngIf="video">
       <div class="video-header">
         <div class="topic">
           <a [routerLink]="['/topic', video.topic]"> {{ video.topic }}</a>
         </div>
         <h2>{{ video.title }}</h2>
       </div>
-      <div class="channel-name">Erschienen auf <a [href]="video.channel" target="_blank">{{ video.channel }}</a>
-        am {{ video.date | date }}</div>
       <p class="description">{{ video.description }}</p>
       <div class="row">
       </div>
+      <div class="channel-name">Erschienen auf <a [href]="video.channel" target="_blank">{{ video.channel }}</a>
+        <!-- german localization of date: 4. Oktober 2023. be sure to activate german locale-->
+        am {{ video.date | date:'longDate' }}</div>
       <div class="website-link"><a [href]="video.url_website" target="_blank">Hier geht's zur
           {{video.channel}}-Website</a>
       </div>
     </div>
   </div>
   <div class="right-column">
-    <div *ngIf="video" class="recommended container">
+    <div *ngIf="video" class="recommended ">
       <div class="video-list">
+        <span class="similar">Ähnlich: </span>
         <app-video-card *ngFor="let video of recommendedVideos" [video]="video"></app-video-card>
         <div *ngIf="recommendedVideos.length == 0" class="loading">
           <div class="spinner-border text-primary text-center loading-spinner" role="status">

@@ -9,6 +9,13 @@
 /* Importing Datepicker SCSS file. */
 @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
 
+@font-face {
+    font-family: 'Jost';
+    src: url('./assets/fonts/Jost-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-display: swap;
+}
+
 :root {
     /* define root colors */
 
@@ -33,6 +40,10 @@
     --color-always-white: #ffffff;
 
     --color-badge-background: #000000b7;
+}
+
+body {
+    font-family: 'Jost', sans-serif;
 }
 
 /* night mode */
