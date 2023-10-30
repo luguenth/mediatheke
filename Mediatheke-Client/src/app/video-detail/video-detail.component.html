@@ -52,9 +52,9 @@
       </div>
       <div class="channel-name">Erschienen auf <a [href]="video.channel" target="_blank">{{ video.channel }}</a>
         <!-- german localization of date: 4. Oktober 2023. be sure to activate german locale-->
-        am {{ video.date | date:'longDate' }}</div>
-      <div class="website-link"><a [href]="video.url_website" target="_blank">Hier geht's zur
-          {{video.channel}}-Website</a>
+        am {{ video.date | date}} um {{ video.date | date:'shortTime' }} Uhr
+        &nbsp; <a [href]="video.url_website" target="_blank">(Link zur
+          {{video.channel}}-Website)</a>
       </div>
     </div>
   </div>

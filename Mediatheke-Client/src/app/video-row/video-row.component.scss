@@ -1,3 +1,12 @@
+.video-row{
+    background-color: var(--color-key-yellow);
+        /* when under 1600px, make the scroll bar appear */
+        @media (max-width: 1600px) {
+            margin-left: -30px;
+            margin-right: -30px;
+        }
+}
+
 h5 {
     font-family: var(--font-family-head);
     margin-top: 2rem;
@@ -8,7 +17,7 @@ h5 {
     display: flex;
     align-items: center;
     gap: 10px;
-    text-transform: uppercase;
+    text-transform: lowercase;
     color: var(--color-text);
 }
 
@@ -45,11 +54,6 @@ h5 {
     padding-bottom: 12px;
     margin-bottom: 5rem;
 
-    /* when under 1600px, make the scroll bar appear */
-    @media (max-width: 1600px) {
-        margin-left: -30px;
-        margin-right: -30px;
-    }
 }
 
 .video-card-wrapper {
