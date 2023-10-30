@@ -91,6 +91,7 @@
 
 .details {
     padding: 40px;
+    width: 75%;
     .video-header {
         h2 {
             font-size: 2.3rem;
@@ -113,12 +114,18 @@
     .date,
     .topic,
     .duration {
-        font-size: 14px;
+        font-size: 1.3rem;
         color: #666;
     }
 
     .channel-name {
         margin-bottom: 20px;
+        color: #E07CBE;
+
+        a {
+            text-decoration: underline;
+            font-weight: 500;
+        }
     }
 
     .description {
@@ -183,7 +190,9 @@
 }
 
 app-video-card {
-    filter: grayscale(100%) opacity(0.7) contrast(1.2);
+    background: rgba(255, 67, 183, 0.534);
+    filter: opacity(.7) grayscale(100%) sepia(100%) hue-rotate(280deg) saturate(1.5) contrast(1.1);
+    /*filter: grayscale(100%) opacity(0.7) contrast(1.2) sepia(100%) hue-rotate(200deg);*/
     mix-blend-mode: multiply;
     transition: all 0.2s ease-in-out;
     scale: 0.95;

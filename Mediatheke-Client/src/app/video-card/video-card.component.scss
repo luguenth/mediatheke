@@ -5,7 +5,7 @@
     overflow: hidden;
     transition: transform 0.3s ease, z-index 0s 0.3s ease;
     cursor: pointer;
-    border: 3px solid var(--color-key-magenta);
+    border: 3px solid var(--color-key-black);
 }
 
 .videocard::before {
@@ -15,7 +15,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: linear-gradient(to bottom, transparent, #00ffea31);
+    /* background: linear-gradient(to bottom, transparent, #00ffea31); */
     z-index: 1;
     /* Ensure the gradient is below the title and duration */
 }
