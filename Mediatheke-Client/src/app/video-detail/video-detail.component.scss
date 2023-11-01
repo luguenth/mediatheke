@@ -191,15 +191,14 @@
 
 app-video-card {
     background: rgba(255, 67, 183, 0.534);
-    filter: opacity(.7) grayscale(100%) sepia(100%) hue-rotate(280deg) saturate(1.5) contrast(1.1);
-    /*filter: grayscale(100%) opacity(0.7) contrast(1.2) sepia(100%) hue-rotate(200deg);*/
+    filter: grayscale(100%) sepia(20%) brightness(110%) hue-rotate(272deg) contrast(100%) opacity(70%) saturate(500%);
     mix-blend-mode: multiply;
     transition: all 0.2s ease-in-out;
     scale: 0.95;
     transform-origin: center left;
 
     &:hover {
-        filter: grayscale(0%) opacity(1) contrast(1);
+        filter: grayscale(0%) sepia(0%) brightness(100%) hue-rotate(360deg) contrast(100%) opacity(100%);
         mix-blend-mode: normal;
         scale: 1;
         /* animate */ 
