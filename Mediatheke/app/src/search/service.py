@@ -4,6 +4,7 @@ from ..mediaitem.schemas import mediaitem_typesense_schema
 from ..mediaitem.crud import get_unlimited_media_items
 from ...core.db.database import SessionLocal
 from typing import List, Optional
+from datetime import datetime
 import typesense
 
 class SearchEngine:
@@ -36,8 +37,8 @@ class SearchEngine:
             'channel': media_item.channel,
             'topic': media_item.topic,
             'title': media_item.title,
-            'date': media_item.date.strftime("%Y-%m-%d") if media_item.date else "",
-            'time': media_item.time.strftime("%H:%M:%S") if media_item.time else "",
+            'date': media_item.date.strftime("%Y-%m-%d") if media_item.date else datetime(1970, 1, 1).strftime("%Y-%m-%d"),
+            'time': media_item.time.strftime("%H:%M:%S") if media_item.time else datetime(1970, 1, 1).strftime("%H:%M:%S"),
             'duration': media_item.duration,
             'size_MB': media_item.size_MB,
             'description': media_item.description or "",
