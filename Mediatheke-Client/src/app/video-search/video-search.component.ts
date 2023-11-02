@@ -35,4 +35,10 @@ export class VideoSearchComponent implements OnInit {
   focusInput(): void {
     this.searchInput.nativeElement.focus();
   }
+
+  handleInputBlur() {
+    // Delay setting inputFocused to false to allow time for click events on search results to be processed
+    // TODO: With Angular's HostListener, you can listen for clicks on the entire document and then decide whether to keep the results displayed or not.
+    setTimeout(() => this.inputFocused = false, 75); // delay in milliseconds
+  }
 }
