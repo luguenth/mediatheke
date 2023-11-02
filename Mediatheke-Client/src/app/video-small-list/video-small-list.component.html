@@ -1,0 +1,18 @@
+<div class="videos">
+    <ul class="video-list">
+        <li *ngFor="let video of videos; let i = index" class="video-list__item">
+            <a [routerLink]="['/video-detail', video.id]" class="video-list__link">
+                <div class="thumbnail">
+                    <!-- Replace with actual thumbnail source if you have one -->
+                    <img [src]="video.thumbnail" alt="Thumbnail">
+                    <span class="duration">{{video.duration |
+                        duration}}</span>
+                </div>
+                <div class="video-info">
+                    <h5 class="title">{{video.title}}</h5>
+                    <p class="description">{{video.description}}</p>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>
