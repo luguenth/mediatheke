@@ -1,42 +1,71 @@
 .container-fluid {
-    background-color: #0f0f0f;
+    /* Other styles remain unchanged */
+    background: url("/assets/footer/bg.svg") no-repeat bottom left;
+    background-color: black;
     padding: 20px;
+    position: relative;
+    bottom: 0;
+    display: flex;
+    justify-content: flex-start;  // Ensures content starts from the left
+    align-items: center;
+    height: 300px;
 
     a {
         color: grey;
         font-size: 0.9rem;
-        
+
         &:hover {
             color: white;
         }
-
     }
 
-    height: 270px;
+    /* unset url when smaller than 768px */
+    @media (max-width: 768px) {
+        background: unset;
+        background-color: black;
+    }
 }
 
 h1 {
     color: white;
     font-size: 2.5em;
-    position: relative;
-    left: 180px;
-    top: 100px;
+    margin-right: auto;  // Pushes the rest of the content to the right
+
+    @media (max-width: 768px) {
+        display: none;
+    }
 }
 
 .link-item {
     text-decoration: none;
     color: white;
+
     &:hover {
         text-decoration: underline;
     }
 }
 
-.img-fluid {
-    max-width: 100%;
-    margin-left: -20px;
-    margin-bottom: -20px;
+.logo {
+    height: 100px;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
 }
 
-.end {
+.links {
     align-self: end;
+    width: fit-content;
+    display: flex;
+
+    @media (max-width: 768px) {
+        align-self: start;
+    }
+}
+
+ul.list-unstyled.left {
+    margin-right: 30px;  // Space between the two lists
+}
+
+ul.list-unstyled.right {
+    margin-right: 333px;  // Adjust based on the logo's size and desired spacing
 }
