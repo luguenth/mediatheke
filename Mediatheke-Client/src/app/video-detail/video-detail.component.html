@@ -47,7 +47,7 @@
         </div>
         <h2>{{ video.title }}</h2>
       </div>
-      <p class="description">{{ video.description }}</p>
+      <p class="description">{{ video.description ? video.description : 'Keine Beschreibung vorhanden' }}</p>
       <div class="row">
       </div>
       <div class="channel-name">Erschienen auf <a [href]="video.channel" target="_blank">{{ video.channel }}</a>
