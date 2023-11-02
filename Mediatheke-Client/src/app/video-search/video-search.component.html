@@ -1,4 +1,4 @@
-<div class="search-bar" [ngClass]="{'focused': inputFocused}">
+<div class="search-bar remove-bottom-corners" [ngClass]="{'focused': inputFocused}">
   <input #searchInput [(ngModel)]="search" class="form-control" placeholder="stöbern"
   (keyup)="searchVideo(search)" (focus)="inputFocused = true" (blur)="inputFocused = false">
   
@@ -10,5 +10,5 @@
   </div>
 </div>
 <div class="results">
-  test
+  <app-video-search-results></app-video-search-results>
 </div>
