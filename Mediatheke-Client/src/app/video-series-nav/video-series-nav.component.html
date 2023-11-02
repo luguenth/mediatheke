@@ -3,25 +3,7 @@
         <ng-container *ngFor="let seasonTab of $series.seasons; let i = index">
             <tab heading="{{(seasonTab.season.season_number !== 999) ? 'Staffel ' + seasonTab.season.season_number : 'Unsortiert'}} {{ video.season_number === seasonTab.season.season_number ? '▶' : '' }}"
                 [active]="activeSeason === seasonTab" (selectTab)="selectTab(seasonTab)">
-                <div class="episodes">
-                    <ul class="episode-list">
-                        <li *ngFor="let episode of seasonTab.season.episodes; let i = index" class="episode-list__item">
-                            <a [routerLink]="['/video-detail', episode.id]" class="episode-list__link">
-                                <div class="thumbnail">
-                                    <!-- Replace with actual thumbnail source if you have one -->
-                                    <img [src]="episode.thumbnail" alt="Thumbnail">
-                                    <span class="duration">{{episode.duration |
-                                        duration}}</span>
-                                </div>
-                                <div class="episode-info">
-                                    <h5 class="title">{{episode.title}} <i-bs name="play" width="24" height="24"
-                                            *ngIf="episode.id === video.id"></i-bs></h5>
-                                    <p class="description">{{episode.description}}</p>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <app-video-small-list [videos]="seasonTab.season.episodes"></app-video-small-list>
             </tab>
         </ng-container>
     </tabset>

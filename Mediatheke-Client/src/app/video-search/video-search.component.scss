@@ -23,7 +23,7 @@
     font-size: 2rem;
     cursor: text;
 
-    border-radius: 50px;
+    border-radius: 34px;
     border: 3px solid black;
 
 }
@@ -85,3 +85,23 @@ img {
     top: 50%;
     transform: translateY(-50%);
 }
+
+.remove-bottom-corners{
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.results {
+    background-color: #000;
+    color: white;
+    margin-top: -10px;
+    width: 90%;
+    margin-left: auto;
+
+    max-height: 60vh;
+    overflow: scroll;
+
+    border-bottom-left-radius: 34px;
+    border-bottom-right-radius: 34px;
+}
+
