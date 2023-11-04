@@ -8,7 +8,6 @@ import { BackendService } from './backend';
   providedIn: 'root'
 })
 export class SearchService {
-  search?: string;
   suggestions$!: Observable<IVideo[]>;
   errorMessage?: string;
   inputFocused: boolean = false;
