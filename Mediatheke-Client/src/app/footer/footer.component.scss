@@ -30,6 +30,7 @@ h1 {
     color: white;
     font-size: 2.5em;
     margin-right: auto;  // Pushes the rest of the content to the right
+    margin-left: 180px;
 
     @media (max-width: 768px) {
         display: none;
