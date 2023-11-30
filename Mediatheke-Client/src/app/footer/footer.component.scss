@@ -1,25 +1,71 @@
-.footer {
-    margin-top: 100px;
+.container-fluid {
+    /* Other styles remain unchanged */
+    background: url("/assets/footer/bg.svg") no-repeat bottom left;
+    background-color: black;
+    padding: 20px;
+    position: relative;
     bottom: 0;
-    width: 100%;
-    background-color: var(--color-contrast-background);
-    color: var(--color-highlight);
+    display: flex;
+    justify-content: flex-start;  // Ensures content starts from the left
+    align-items: center;
+    height: 300px;
 
     a {
-        color: var(--color-primary);
+        color: grey;
+        font-size: 0.9rem;
+
+        &:hover {
+            color: white;
+        }
+    }
+
+    /* unset url when smaller than 768px */
+    @media (max-width: 768px) {
+        background: unset;
+        background-color: black;
     }
 }
 
-img {
-    /*invert the logo */
-    height: 50px;
+h1 {
+    color: white;
+    font-size: 2.5em;
+    margin-right: auto;  // Pushes the rest of the content to the right
+
+    @media (max-width: 768px) {
+        display: none;
+    }
 }
 
-.container {
-    max-width: 1600px;
-    margin: auto;
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 30px;
-    padding-bottom: 30px;
+.link-item {
+    text-decoration: none;
+    color: white;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.logo {
+    height: 100px;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+.links {
+    align-self: end;
+    width: fit-content;
+    display: flex;
+
+    @media (max-width: 768px) {
+        align-self: start;
+    }
+}
+
+ul.list-unstyled.left {
+    margin-right: 30px;  // Space between the two lists
+}
+
+ul.list-unstyled.right {
+    margin-right: 333px;  // Adjust based on the logo's size and desired spacing
 }
