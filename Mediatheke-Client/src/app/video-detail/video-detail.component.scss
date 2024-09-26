@@ -79,7 +79,7 @@
 
 }
 
-.similar{
+.similar {
     font-size: 2rem;
     color: var(--color-key-black);
 }
@@ -90,8 +90,8 @@
 }
 
 .details {
-    padding: 40px;
-    width: 75%;
+    background: unset;
+    border: unset;
 
     @media (max-width: 768px) {
         padding: 0px;
@@ -207,7 +207,7 @@ app-video-card {
         filter: grayscale(0%) sepia(0%) brightness(100%) hue-rotate(360deg) contrast(100%) opacity(100%);
         mix-blend-mode: normal;
         scale: 1;
-        /* animate */ 
+        /* animate */
         transition: all 0.2s ease-in-out;
     }
 }

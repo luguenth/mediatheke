@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackendService } from '../services/backend';
 import { IVideo } from '../interfaces';
 import { Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, catchError } from 'rxjs/operators';
 import { UserService } from '../services/userService';
 import { StorageService } from '../services/storage.service';
 import { MediaService } from '../services/media.service';
@@ -41,7 +41,14 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
     const routeSub = this.route.params.pipe(
       switchMap(params => {
         this.videoId = params['id'];
-        return this.backendService.getVideo(this.videoId);
+        return this.backendService.getVideo(this.videoId).pipe(
+          catchError(err => {
+            if (err.status === 404) {
+              this.router.navigate(['/']);
+            }
+            throw err;
+          })
+        );
       })
     ).subscribe(video => {
       this.resetComponentState();
