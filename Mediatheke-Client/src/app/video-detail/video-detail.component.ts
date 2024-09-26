@@ -7,6 +7,7 @@ import { switchMap } from 'rxjs/operators';
 import { UserService } from '../services/userService';
 import { StorageService } from '../services/storage.service';
 import { MediaService } from '../services/media.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-video-detail',
@@ -23,6 +24,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   urlTime: number = 0;
   isSeries: boolean = false;
   isSeriesLoading: boolean = false;
+  env = environment;
 
   constructor(
     private route: ActivatedRoute,

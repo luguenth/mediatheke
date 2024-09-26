@@ -50,7 +50,7 @@ cp .env.example .env
 
 3. Fire Up the Containers
 ```
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 4. Trust the Certificates
@@ -60,16 +60,21 @@ mkcert -cert-file Configuration/certs/mediatheke.local.pem -key-file Configurati
 ```
 5. Open `https://mediatheke.local` in your web browser.
 
+6. You'll have to wait a while before the data got parsed. You can inspect the progress by running `docker-compose logs -f server`. There will be an output like this:
+```
+[2024-09-26 08:21:52,951: INFO/ForkPoolWorker-8] Processed batch 227500 of 796547, Will be done in 00:36:15, Time spent: 00:14:29
+```
+
 ### Container Roles 🔍
 
-| Container  | What It Does             |
-|------------|--------------------------|
-| database   | Holds the data in Postgres|
-| redis      | Manages Celery tasks and caching|
-| server     | Handles the backend with FastAPI|
-| client     | Manages the frontend via Angular|
-| nginx      | Merges everything under one port with a reverse proxy|
-| typesense  | Takes care of search|
+| Container | What It Does                                          |
+| --------- | ----------------------------------------------------- |
+| database  | Holds the data in Postgres                            |
+| redis     | Manages Celery tasks and caching                      |
+| server    | Handles the backend with FastAPI                      |
+| client    | Manages the frontend via Angular                      |
+| nginx     | Merges everything under one port with a reverse proxy |
+| typesense | Takes care of search                                  |
 
 ## Want to Contribute? 🤝
 

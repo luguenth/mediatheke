@@ -19,7 +19,9 @@ services:
       - .env
 
   server:
-    image: 'mvw-server:0.6'
+    build:
+      context: Mediatheke
+      dockerfile: Dockerfile
     env_file:
       - .env
     depends_on:
@@ -31,7 +33,9 @@ services:
     restart: always
 
   client:
-    image: 'mvw-client:0.3'
+    build:
+      context: Mediatheke-Client
+      dockerfile: Dockerfile
     env_file:
       - .env
     volumes:

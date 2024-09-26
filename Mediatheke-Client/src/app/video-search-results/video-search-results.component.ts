@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { SearchService } from '../services/search.service';
+import { Observable } from 'rxjs';
+import { IVideo } from '../interfaces';
 
 @Component({
   selector: 'app-video-search-results',

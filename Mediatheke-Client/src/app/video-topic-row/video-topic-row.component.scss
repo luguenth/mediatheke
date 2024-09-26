@@ -1,0 +1,80 @@
+/* community-recommendation.component.scss */
+.recommendation-container {
+    background-color: var(--color-key-yellow);
+    display: flex;
+    align-items: center;
+    padding: 40px 70px;
+    box-sizing: border-box;
+    position: relative;
+
+    .background {
+
+        .heading {
+            font-weight: bold;
+            margin-right: 10px;
+            width: 300px;
+            text-transform: lowercase;
+            font-size: 2rem;
+            font-weight: 400;
+            overflow: hidden;
+        }
+
+        .boxes {
+            display: flex;
+            flex-grow: 1; // Boxes container will grow as much as possible
+        }
+
+        .box {
+            flex: 1; // Boxes will grow equally to fill the space
+            margin-right: 10px; // Spacing between boxes
+
+            &:last-child {
+                // Styling for the last box with the arrow
+                position: relative; // for absolute positioning of the arrow
+
+                app-video-card {
+                    mix-blend-mode: multiply;
+                    opacity: .5;
+                    filter: grayscale(100%) sepia(20%) brightness(110%) hue-rotate(272deg) contrast(100%) opacity(70%) saturate(500%);
+                }
+
+                .arrow {
+                    // The arrow button styling
+                    position: absolute;
+                    top: 50%;
+                    right: 0;
+                    transform: translateY(-50%) translateX(-50%); // To center the arrow button vertically and horizontally
+                    // make border round black, backround white
+                    background-color: #fff;
+                    border: 3px solid #000;
+                    border-radius: 50%;
+                    padding: 0.5em;
+                    cursor: pointer; // to indicate it's clickable
+                    z-index: 100;
+
+                    i-bs {
+                        // Assuming i-bs is an icon, we set the icon size
+                        height: 24px;
+                        width: 24px;
+                    }
+                }
+            }
+        }
+
+        .next-button {
+            background-color: #ffcc00; // Adjust the color as needed
+            border: none;
+            border-radius: 50%;
+            width: 40px; // Adjust size as needed
+            height: 40px; // Adjust size as needed
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            span {
+                font-size: 24px; // Adjust the size of the arrow icon as needed
+            }
+        }
+    }
+
+}

@@ -1,6 +1,6 @@
 <app-header></app-header>
-<!-- <app-hero></app-hero> -->
-<div class="wrapper">
+<app-hero *ngIf="router.url === '/'"></app-hero>
+<div [class.unset-padding]="router.url === '/'" class="wrapper">
     <router-outlet></router-outlet>
 </div>
 <app-footer></app-footer>

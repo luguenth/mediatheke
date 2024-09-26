@@ -12,7 +12,7 @@ from ..mediaitem import crud as mediaitem_crud
 from ..mediaitem import schemas
 from ..user.model import User, Recommendation
 from ..services.recommendations import get_recommendation_engine, RecommendationEngine
-from ..services.openai import run_conversation
+#from ..services.openai import run_conversation
 
 class CommonQueryParams(BaseModel):
     skip: int = 0

@@ -1,12 +1,16 @@
 .wrapper {
     padding: 30px;
     padding-top: 150px;
-    max-width: 1600px;
     margin: auto;
 
     @media screen and (max-width: 768px) {
         padding-top: 55px;
     }
+}
+
+.unset-padding {
+    padding: unset;
+    padding-top: 30px;
 }
 
 /* make input big poppy flat and rounded corners */

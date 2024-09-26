@@ -34,6 +34,7 @@ import { VideoSeriesNavComponent } from './video-series-nav/video-series-nav.com
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { HeroComponent } from './hero/hero.component';
 import { VideoSmallListComponent } from './video-small-list/video-small-list.component';
+import { VideoTopicRowComponent } from './video-topic-row/video-topic-row.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { VideoSmallListComponent } from './video-small-list/video-small-list.com
     VideoSeriesNavComponent,
     HeroComponent,
     VideoSmallListComponent,
+    VideoTopicRowComponent,
   ],
   imports: [
     BrowserModule,

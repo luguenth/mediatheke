@@ -6,6 +6,8 @@ from ..mediaitem.schemas import MediaItemSeries
 from ...core.config import settings
 import openai
 
+client = openai.OpenAI(api_key=api_key)
+
 logging.basicConfig(level=logging.INFO)
 
 SCHEMA = {
@@ -69,12 +71,10 @@ def send_to_gpt(prompt: str, functions: list):
     messages = [{"role": "user", "content": prompt}]
     try:
         logging.info("Sending to GPT")
-        return openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-16k",
-            messages=messages,
-            functions=functions,
-            function_call={"name": "parse_items"}
-        )
+        return client.chat.completions.create(model="gpt-3.5-turbo-16k",
+        messages=messages,
+        functions=functions,
+        function_call={"name": "parse_items"})
     except Exception as e:
         logging.error(f"Exception: {repr(e)}")
         return None

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BackendService } from './services/backend';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,10 @@ import { BackendService } from './services/backend';
 })
 export class AppComponent {
 
-  constructor(private backendService: BackendService) { }
+  constructor(
+    private backendService: BackendService,
+    public router: Router
+  ) { }
 
   ngOnInit() { }
 }

@@ -1,11 +1,7 @@
-<div class="search-bar remove-bottom-corners" [ngClass]="{'focused': inputFocused}">
-  <input #searchInput [(ngModel)]="search" class="form-control" placeholder="stöbern"
-  (keyup)="searchVideo(search)" (focus)="inputFocused = true" (blur)="handleInputBlur()">
-  
-  
-  <!-- set class focused if inputFocused-->
+<div class="search-bar" [ngClass]="{'focused': inputFocused, 'remove-bottom-corners': (search?.length! > 1 && inputFocused)}">
+  <input #searchInput [(ngModel)]="search" class="form-control" placeholder="stöbern" (keyup)="searchVideo(search)"
+    (focus)="inputFocused = true" (blur)="handleInputBlur()">
   <img src="/assets/ui/search01.svg" width="32" height="32" (click)="focusInput()" [ngClass]="{'invert': inputFocused}">
-  <!-- Add this spinner conditionally -->
   <div *ngIf="searchService.isSearching" class="spinner-border" role="status">
     <span class="sr-only">Searching...</span>
   </div>

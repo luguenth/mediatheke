@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SearchService } from '../services/search.service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -16,7 +16,10 @@ export class VideoSearchComponent implements OnInit {
 
   private searchSubject: Subject<string> = new Subject();
 
-  constructor(public searchService: SearchService) {
+  constructor(
+    public searchService: SearchService,
+    private cdRef: ChangeDetectorRef  // Inject ChangeDetectorRef
+    ) {
     // Initialize debouncing
     this.searchSubject.pipe(
       debounceTime(300)  // Set the debounce time (in milliseconds)
@@ -30,6 +33,7 @@ export class VideoSearchComponent implements OnInit {
 
   searchVideo(query: string = ""): void {
     this.searchSubject.next(query);  // Use next() to trigger the Subject
+    this.cdRef.detectChanges();  // Trigger change detection
   }
 
   focusInput(): void {
@@ -39,6 +43,6 @@ export class VideoSearchComponent implements OnInit {
   handleInputBlur() {
     // Delay setting inputFocused to false to allow time for click events on search results to be processed
     // TODO: With Angular's HostListener, you can listen for clicks on the entire document and then decide whether to keep the results displayed or not.
-    setTimeout(() => this.inputFocused = false, 75); // delay in milliseconds
+    setTimeout(() => this.inputFocused = false, 100); // delay in milliseconds
   }
 }
