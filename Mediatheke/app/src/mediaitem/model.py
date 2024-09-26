@@ -1,5 +1,5 @@
 """Media Item model."""
-from sqlalchemy import Column, Integer, String, Date, Time, Float, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Date, Time, Float, UniqueConstraint, Boolean
 
 from ...core.db.database import Base
 
@@ -39,6 +39,9 @@ class MediaItem(Base):
     channel = Column(String)
     topic = Column(String)
 
+    # we add "ignore" because we want tot old data, but exclude on results
+    ignore = Column(Boolean)
+
     # make website and the timestamp unique
     __table_args__ = (UniqueConstraint('url_website', 'timestamp', name='website_timestamp_unique'),)
 
@@ -75,5 +78,6 @@ class MediaItem(Base):
             'is_new': self.is_new,
             'channel': self.channel,
             'topic': self.topic,
-            'thumbnail': self.thumbnail
+            'thumbnail': self.thumbnail,
+            'ignore': self.ignore
         }

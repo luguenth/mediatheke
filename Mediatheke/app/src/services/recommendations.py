@@ -11,7 +11,6 @@ from nltk.corpus import stopwords
 nltk.download('stopwords')
 german_stop_words = stopwords.words('german')
 
-
 # Global variable to hold the singleton instance
 _rec_engine_instance = None
 

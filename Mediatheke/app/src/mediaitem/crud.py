@@ -52,12 +52,17 @@ def get_or_create_media_item(db: Session, media_item: dict) -> MediaItem:
         'time': media_item['time']
     }, **media_item_data_to_insert)
 
-def _filter_query_by_params(query, **kwargs) -> 'Query':
+def _filter_query_by_params(query: Query, **kwargs) -> Query:
     """
     Helper function to filter the query based on provided kwargs.
     """
-    #always oder by date and time
+    # Always filter out  mediaitems which have ignore = true, but keep all with ignore=null
+    query = query.filter(MediaItem.ignore == None)
+    
+    # Always order by date and time
     query = query.order_by(MediaItem.date.desc(), MediaItem.time.desc())
+    
+    # Apply additional filters based on kwargs
     if kwargs.get('random_order'):
         query = query.order_by(func.random())
     if kwargs.get('with_thumbnail'):
@@ -66,6 +71,7 @@ def _filter_query_by_params(query, **kwargs) -> 'Query':
         query = query.filter(MediaItem.duration > kwargs['longer_than'])
     if kwargs.get('newer_than'):
         query = query.filter(MediaItem.date > kwargs['newer_than'])
+    
     return query
 
 def _handle_existing_item_check(db: Session, item: dict) -> Union[None, MediaItem]:

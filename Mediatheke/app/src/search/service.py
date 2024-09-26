@@ -76,8 +76,10 @@ class SearchEngine:
 
   def index_media_items(self):
     # Get all media items from the database
+    print("Getting media items for search engine")
     db = SessionLocal()
     media_items = get_unlimited_media_items(db)
+    print("Found %s media items" % len(media_items))
     db.close()
 
     # Index the media items

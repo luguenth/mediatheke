@@ -1,136 +1,90 @@
-"""
-we have a csv like this. this csv defines patterns how we can filter items in our db and find series elements
-
-example, regex, series_identifier, with_season, channel
-(Staffel 1, Folge 56), \(Staffel (\d+), Folge (\d+)\), topic, true, ard
-(S01/E05), \(S(\d+)\/E(\d+)\), topic,true, ard
-Staffel 2, F
-Folge 1, Folge (\d+), title, false, hr
-Episode 1, Episode (\d+), title, false, all
-"""
-
-from typing import List, Tuple, Optional
+from typing import List
 import re
 import csv
-import json
-from datetime import datetime
-from time import time
 from ....core.db.database import get_new_db_session
 from ...mediaitem.model import MediaItem
 
-db = get_new_db_session()
-series_file = open('series-formats.csv', 'r')
-series_reader = csv.reader(series_file, delimiter=';')
-series = []
-# Skip header
-next(series_reader)
-for row in series_reader:
-    series.append(row)
-series_file.close()
+# Function to load series patterns from CSV
+def load_series_patterns(file_path: str) -> List[List[str]]:
+    with open(file_path, 'r') as file:
+        reader = csv.reader(file, delimiter=';')
+        next(reader)  # Skip header
+        return [row for row in reader]
 
-# Fetch all media items
-mediaitems = db.query(MediaItem).all()
-
-update_data = []
-update_titles = []
-items_to_remove = []
-dry_run = False
-# Iterate through each media item to update its data
-for mediaitem in mediaitems:
-    for series_pattern in series:
-        if series_pattern:
-            regex = series_pattern[1]
+# Function to find series data using patterns
+def find_series_data(mediaitem, patterns):
+    for pattern in patterns:
+        if pattern:
+            regex, series_identifier, with_season, channel = pattern[1], pattern[2], pattern[3] == 'true', pattern[4]
             match = re.search(regex, mediaitem.title)
             if match:
-                with_season = series_pattern[3] == 'true'
-                
-                season_digit = int(series_pattern[5])
-                episode_digit = int(series_pattern[6])
-                
-                if season_digit == 0:
-                    season_number = None
-                    episode_number = match.group(episode_digit)
-                else:
-                    season_number = match.group(season_digit)
-                    episode_number = match.group(episode_digit)
-                
-                # Debug: Print the season and episode numbers
-                
-                series_identifier = series_pattern[2]
+                season_number = match.group(1) if with_season else None
+                episode_number = match.group(2) if with_season else match.group(1)
                 series_name = mediaitem.topic if series_identifier == 'topic' else re.sub(regex, '', mediaitem.title)
-
-                channel = series_pattern[4]
-                
-                # Store the data to be updated
-                update_data.append({
+                return {
                     'id': mediaitem.id,
                     'season_number': season_number,
                     'episode_number': episode_number,
                     'series_name': series_name,
-                })
-                
-                break
-    if "audiodes" in mediaitem.title.lower():
-        # this has nothing to do with series, but we want to remove this mediaitem but add its urls to another mediaitem with the same title (but without "(Audiodes(c/k)ription) or " - Audiodes(c/k)ription" in the title)
-        # remove the Audiodes(c/k)ription from the title could be written with c or k
-        title = re.sub(r'(Audiodes(c|k)ription)|(\s-\sAudiodes(c|k)ription)', '', mediaitem.title)
-        # add the title to the list of titles to update
-        if title == None:
-            print(f'Error: title is None for mediaitem {mediaitem.title}')
-        
-        update_title = {
-            'title': title,
-            'urls_to_update': {
-                'url_video_descriptive_audio': mediaitem.url_video,
-                'url_video_hd_descriptive_audio': mediaitem.url_video_hd,
-                'url_video_low_descriptive_audio': mediaitem.url_video_low,
-            }
+                }
+    return None
+
+# Function to update media item URLs for audiodescription
+def update_audiodescription(mediaitem, title_to_urls_map):
+    title = re.sub(r'(Audiodes(c|k)ription)|(\s-\sAudiodes(c|k)ription)', '', mediaitem.title)
+    if title:
+        title_to_urls_map[title] = {
+            'url_video_descriptive_audio': mediaitem.url_video,
+            'url_video_hd_descriptive_audio': mediaitem.url_video_hd,
+            'url_video_low_descriptive_audio': mediaitem.url_video_low,
+            'ignore': True  # Set flag to ignore
         }
-        update_titles.append(update_title)
-        items_to_remove.append(mediaitem.id)
+
+def main(dry_run=False):
+    db = get_new_db_session()
+    series_patterns = load_series_patterns('series-formats.csv')
+
+    mediaitems = db.query(MediaItem).all()
+
+    update_data = []
+    title_to_urls_map = {}
+    
+    for mediaitem in mediaitems:
+        # Check for series pattern matches and prepare update data
+        series_data = find_series_data(mediaitem, series_patterns)
+        if series_data:
+            update_data.append(series_data)
         
-# Create a mapping of titles to URLs to update
-title_to_urls_map = {item['title']: item['urls_to_update'] for item in update_data if 'urls_to_update' in item}
+        # Handle audiodescription media items
+        if "audiodes" in mediaitem.title.lower():
+            update_audiodescription(mediaitem, title_to_urls_map)
+    
+    # Prepare URL update data
+    url_update_data = [
+        {'id': mediaitem.id, **urls_to_update}
+        for mediaitem in mediaitems
+        if (urls_to_update := title_to_urls_map.get(mediaitem.title))
+    ]
 
-# Initialize empty list for URL update data
-url_update_data = []
+    # Perform bulk updates if not a dry run
+    if not dry_run:
+        if url_update_data:
+            print(f'Updating {len(url_update_data)} URLs')
+            db.bulk_update_mappings(MediaItem, url_update_data)
+        
+        if update_data:
+            print(f'Updating {len(update_data)} series attributes')
+            db.bulk_update_mappings(MediaItem, update_data)
+        
+        print('Committing changes')
+        db.commit()
+    
+    # Handle the dry-run scenario
+    else:
+        for data in update_data:
+            print(f"Would update {data}")
+        for data in url_update_data:
+            print(f"Would update {data}")
 
-# Create a mapping of cleaned titles to URLs to update
-title_to_urls_map = {item['title']: item['urls_to_update'] for item in update_titles}
-
-# Initialize empty list for URL update data
-url_update_data = []
-
-# Iterate over media items to collect the URL update data
-for mediaitem in mediaitems:
-    urls_to_update = title_to_urls_map.get(mediaitem.title)
-    if urls_to_update:
-        url_update_data.append({
-            'id': mediaitem.id,
-            **urls_to_update
-        })
-
-# Do the bulk update for URLs if there is any data to update and if it's not a dry run.
-if url_update_data and not dry_run:
-    print(f'Updating {len(url_update_data)} URLs')
-    db.bulk_update_mappings(MediaItem, url_update_data)
-
-# If you have data for series and other attributes, do that bulk update as well.
-if update_data and not dry_run:
-    print(f'Updating {len(update_data)} series attributes')
-    db.bulk_update_mappings(MediaItem, update_data)
-
-if items_to_remove and not dry_run:
-    print(f'Removing {len(items_to_remove)} mediaitems')
-    db.query(MediaItem).filter(MediaItem.id.in_(items_to_remove)).delete(synchronize_session=False)
-
-# Commit all changes.
-if not dry_run:
-    print('Committing changes')
-    db.commit()
-
-# Handle the dry-run scenario
-elif dry_run:
-    for data in update_titles:
-        print(f"would update {data}")
-        #print(f"would update {data['id']} with season {data['season_number']} and episode {data['episode_number']} and series name {data['series_name']} and channel {data['channel']}")
+if __name__ == "__main__":
+    main(dry_run=False)
