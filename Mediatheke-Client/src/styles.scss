@@ -9,6 +9,9 @@
 /* Importing Datepicker SCSS file. */
 @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
 
+/* Importing video.js SCSS file. */
+@import "node_modules/video.js/dist/video-js.css";
+
 :root {
     /* define root colors */
 

@@ -32,29 +32,31 @@ import { SincePipe } from './shared/since.pipe';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { VideoSeriesNavComponent } from './video-series-nav/video-series-nav.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { VideoVjsPlayerComponent } from './video-vjs-player/video-vjs-player.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    VideoRowComponent,
-    VideoCardComponent,
     DurationPipe,
-    VideoSearchComponent,
-    VideoDetailComponent,
-    TopicDetailComponent,
     HomeComponent,
-    VideoResultGridComponent,
     HeaderComponent,
     FooterComponent,
     NavbarLoginComponent,
-    VideoPlayerComponent,
     RegisterComponent,
-    VideoSearchResultsComponent,
     ShareComponent,
+    TopicDetailComponent,
     RecommendComponent,
-    VideoResultListComponent,
     SincePipe,
+    VideoResultGridComponent,
+    VideoDetailComponent,
+    VideoSearchComponent,
+    VideoPlayerComponent,
+    VideoRowComponent,
+    VideoCardComponent,
+    VideoSearchResultsComponent,
+    VideoResultListComponent,
     VideoSeriesNavComponent,
+    VideoVjsPlayerComponent,
   ],
   imports: [
     BrowserModule,

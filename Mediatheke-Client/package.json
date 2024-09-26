@@ -27,6 +27,7 @@
     "ngx-bootstrap-icons": "^1.9.2",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
+    "video.js": "^8.6.1",
     "zone.js": "~0.13.3"
   },
   "devDependencies": {

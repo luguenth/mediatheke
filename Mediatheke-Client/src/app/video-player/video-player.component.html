@@ -1,22 +1,7 @@
 <div #wrapperElement *ngIf="video" class="video-container" (mouseenter)="showSlider = true"
     (mouseleave)="showSlider = false">
     <div class="video-player">
-        <video #videoElement id="videoElement" class="video-js vjs-default-skin" width="100%" height="auto" controls
-            preload="auto" (timeupdate)="emitCurrentTime()"> <!-- Source will be added dynamically
-            -->
-        </video>
-        <div class="quality-slider" *ngIf="showSlider">
-            <ul class="list-group list-group-horizontal">
-                <li class="list-group-item" *ngFor="let quality of availableQualities"
-                    [ngClass]="{ 'active': quality === curr_quality }" (click)="changeQuality(quality, $event)">
-                    {{ quality }}
-                </li>
-                <li class="list-group-item audio-item" [ngClass]="{ 'active': descriptiveAudioEnabled }"
-                    *ngIf="hasDescriptiveAudio" (click)="changeAudioTrack($event)">
-                    <i-bs *ngIf="descriptiveAudioEnabled" name="ear-fill"></i-bs>
-                    <i-bs *ngIf="!descriptiveAudioEnabled" name="ear"></i-bs>
-                </li>
-            </ul>
-        </div>
+        <!-- api: <app-vjs-player [options]="{autoplay: true, controls: true, sources: [{ src: '/path/to/video.mp4', type: 'video/mp4' }]}"></app-vjs-player>-->
+        <app-video-vjs-player [options]="{autoplay: true, controls: true, fluid: true, aspectRatio: '16:9', sources: [{ src: video.url_video, type: 'video/mp4' }]}"></app-video-vjs-player>
     </div>
 </div>
