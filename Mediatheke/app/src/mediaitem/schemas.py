@@ -17,6 +17,15 @@ class MediaItemBase(BaseModel):
     url_video_descriptive_audio: Optional[str]
     url_video_hd_descriptive_audio: Optional[str]
     url_video_low_descriptive_audio: Optional[str]
+    url_video_ut: Optional[str]
+    url_video_hd_ut: Optional[str]
+    url_video_low_ut: Optional[str]
+    url_video_ov: Optional[str]
+    url_video_hd_ov: Optional[str]
+    url_video_low_ov: Optional[str]
+    url_video_ov_ut: Optional[str]
+    url_video_hd_ov_ut: Optional[str]
+    url_video_low_ov_ut: Optional[str]
     url_website: Optional[str]
     thumbnail: Optional[str]
     url_subtitle: Optional[str]
@@ -73,6 +82,15 @@ mediaitem_typesense_schema = {
         {'name': 'url_video_descriptive_audio', 'type': 'string'},
         {'name': 'url_video_low_descriptive_audio', 'type': 'string'},
         {'name': 'url_video_hd_descriptive_audio', 'type': 'string'},
+        {'name': 'url_video_ut', 'type': 'string'},
+        {'name': 'url_video_low_ut', 'type': 'string'},
+        {'name': 'url_video_hd_ut', 'type': 'string'},
+        {'name': 'url_video_ov', 'type': 'string'},
+        {'name': 'url_video_low_ov', 'type': 'string'},
+        {'name': 'url_video_hd_ov', 'type': 'string'},
+        {'name': 'url_video_ov_ut', 'type': 'string'},
+        {'name': 'url_video_low_ov_ut', 'type': 'string'},
+        {'name': 'url_video_hd_ov_ut', 'type': 'string'},
         {'name': 'thumbnail', 'type': 'string'},
         {'name': 'episode_number', 'type': 'int32'},
         {'name': 'season_number', 'type': 'int32'},

@@ -2,8 +2,7 @@
     (mouseleave)="showSlider = false">
     <div class="video-player">
         <video #videoElement id="videoElement" class="video-js vjs-default-skin" width="100%" height="auto" controls
-            preload="auto" (timeupdate)="emitCurrentTime()"> <!-- Source will be added dynamically
-            -->
+            preload="auto" (timeupdate)="emitCurrentTime()">
         </video>
         <div class="quality-slider" *ngIf="showSlider">
             <ul class="list-group list-group-horizontal">
@@ -11,10 +10,12 @@
                     [ngClass]="{ 'active': quality === curr_quality }" (click)="changeQuality(quality, $event)">
                     {{ quality }}
                 </li>
-                <li class="list-group-item audio-item" [ngClass]="{ 'active': descriptiveAudioEnabled }"
-                    *ngIf="hasDescriptiveAudio" (click)="changeAudioTrack($event)">
-                    <i-bs *ngIf="descriptiveAudioEnabled" name="ear-fill"></i-bs>
-                    <i-bs *ngIf="!descriptiveAudioEnabled" name="ear"></i-bs>
+                <li class="list-group-item audio-item"
+                    *ngFor="let track of availableTracks"
+                    [ngClass]="{ 'active': track === curr_track }"
+                    (click)="changeTrack(track, $event)">
+                    <i-bs *ngIf="getTrackInfo(track)?.icon" [name]="$any(getTrackInfo(track)!.icon)"></i-bs>
+                    {{ getTrackInfo(track)?.label }}
                 </li>
             </ul>
         </div>

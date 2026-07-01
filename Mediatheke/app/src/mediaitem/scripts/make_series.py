@@ -29,16 +29,36 @@ def find_series_data(mediaitem, patterns):
                 }
     return None
 
-# Function to update media item URLs for audiodescription
-def update_audiodescription(mediaitem, title_to_urls_map):
-    title = re.sub(r'(Audiodes(c|k)ription)|(\s-\sAudiodes(c|k)ription)', '', mediaitem.title)
-    if title:
-        title_to_urls_map[title] = {
-            'url_video_descriptive_audio': mediaitem.url_video,
-            'url_video_hd_descriptive_audio': mediaitem.url_video_hd,
-            'url_video_low_descriptive_audio': mediaitem.url_video_low,
-            'ignore': True  # Set flag to ignore
-        }
+def strip_variant(title, regex):
+    """Strip a variant suffix from a title. Returns stripped title or '' if no match."""
+    stripped = re.sub(regex, '', title)
+    return stripped if stripped != title else ''
+
+# (regex, field_prefix): ordered by priority, most specific first
+VARIANT_DEFS = [
+    (r'\s*\(\s*(?:englisch\w*\s+)?Original(?:version|fassung)?\s+mit\s+(?:deutschen\s+)?Untertiteln?\s*\)|\s*\(\s*Om[du]?U\s*\)', 'ov_ut'),
+    (r'\s*\(\s*Originalversion\s*\)|\s*\(\s*Originalton\s*\)|\s*\(\s*OV\s*\)|\s+-\s+Originalversion|\s+-\s+Originalton', 'ov'),
+    (r'\s*\(\s*mit\s+(?:englischen\s+)?Untertiteln?\s*\)|\s*\(\s*UT\s*\)|\s*\(\s*englische\s+Untertitel\s*\)', 'ut'),
+    (r'\s*\(\s*Audiodes(c|k)ription\s*\)|\s+-\s+Audiodes(c|k)ription|Audiodes(c|k)ription', 'audiodescription'),
+]
+
+VARIANT_KEYS = ['originalversion', 'omu', 'originalton', '(ov)', 'untertitel', '(ut)', 'audiodes']
+
+def build_urls(mediaitem):
+    return {
+        'url_video': mediaitem.url_video,
+        'url_video_hd': mediaitem.url_video_hd,
+        'url_video_low': mediaitem.url_video_low,
+    }
+
+def field_name(prefix, quality):
+    if prefix == 'audiodescription':
+        suffix = 'descriptive_audio'
+    else:
+        suffix = prefix
+    if quality == 'base':
+        return f'url_video_{suffix}'
+    return f'url_video_{quality}_{suffix}'
 
 def main(dry_run=False):
     db = get_new_db_session()
@@ -47,39 +67,56 @@ def main(dry_run=False):
     mediaitems = db.query(MediaItem).all()
 
     update_data = []
-    title_to_urls_map = {}
-    
+    title_maps = {variant: {} for _, variant in VARIANT_DEFS}
+    variant_ids = {variant: [] for _, variant in VARIANT_DEFS}
+
     for mediaitem in mediaitems:
-        # Check for series pattern matches and prepare update data
         series_data = find_series_data(mediaitem, series_patterns)
         if series_data:
             update_data.append(series_data)
-        
-        # Handle audiodescription media items
-        if "audiodes" in mediaitem.title.lower():
-            update_audiodescription(mediaitem, title_to_urls_map)
-    
-    # Prepare URL update data
-    url_update_data = [
-        {'id': mediaitem.id, **urls_to_update}
-        for mediaitem in mediaitems
-        if (urls_to_update := title_to_urls_map.get(mediaitem.title))
-    ]
 
-    # Perform bulk updates if not a dry run
+        title_lower = mediaitem.title.lower()
+        if not any(kw in title_lower for kw in VARIANT_KEYS):
+            continue
+
+        urls = build_urls(mediaitem)
+        for regex, variant in VARIANT_DEFS:
+            stripped = strip_variant(mediaitem.title, regex)
+            if stripped:
+                title_maps[variant][stripped] = urls
+                variant_ids[variant].append(mediaitem.id)
+                break
+
+    # Build URL update data from all variant maps
+    url_update_data = []
+    for variant, title_map in title_maps.items():
+        for mediaitem in mediaitems:
+            urls = title_map.get(mediaitem.title)
+            if urls:
+                update = {'id': mediaitem.id}
+                for quality in ['base', 'low', 'hd']:
+                    url_key = 'url_video' if quality == 'base' else f'url_video_{quality}'
+                    update[field_name(variant, quality)] = urls[url_key]
+                url_update_data.append(update)
+
+    total_removed = sum(len(ids) for ids in variant_ids.values())
+
     if not dry_run:
         if url_update_data:
             print(f'Updating {len(url_update_data)} URLs')
             db.bulk_update_mappings(MediaItem, url_update_data)
-        
+
         if update_data:
             print(f'Updating {len(update_data)} series attributes')
             db.bulk_update_mappings(MediaItem, update_data)
-        
+
+        if total_removed:
+            all_ids = [id for ids in variant_ids.values() for id in ids]
+            print(f'Removing {len(all_ids)} variant items')
+            db.query(MediaItem).filter(MediaItem.id.in_(all_ids)).delete(synchronize_session=False)
+
         print('Committing changes')
         db.commit()
-    
-    # Handle the dry-run scenario
     else:
         for data in update_data:
             print(f"Would update {data}")

@@ -23,6 +23,15 @@ export interface IVideo {
     url_video_descriptive_audio: string;
     url_video_hd_descriptive_audio: string;
     url_video_low_descriptive_audio: string;
+    url_video_ut: string;
+    url_video_hd_ut: string;
+    url_video_low_ut: string;
+    url_video_ov: string;
+    url_video_hd_ov: string;
+    url_video_low_ov: string;
+    url_video_ov_ut: string;
+    url_video_hd_ov_ut: string;
+    url_video_low_ov_ut: string;
     id: number;
     url_website: string;
     thumbnail: string;
