@@ -72,6 +72,17 @@ export interface IVideoOptions {
     random_order: boolean;
 }
 
+export interface ISeriesDetectionJob {
+    id: number;
+    source_video_id: number;
+    target_video_id: number;
+    state: string;
+    result_json: string | null;
+    error: string | null;
+    created_at: string;
+    completed_at: string | null;
+}
+
 export interface IVideoRow {
     title: string;
     description: string;

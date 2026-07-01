@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IMediaItemSearchResponse, ITokenResponse, IVideo, IVideoThumbnailUrl } from '../interfaces';
+import { IMediaItemSearchResponse, ITokenResponse, IVideo, IVideoThumbnailUrl, ISeriesDetectionJob } from '../interfaces';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { UserService } from './userService';
@@ -116,6 +116,14 @@ export class BackendService {
 
     mightBeASeries(id: string): Observable<IVideo[]> {
         return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/${id}/mightbeaseries`);
+    }
+
+    triggerSeriesDetection(id: string, method: string = 'regex'): Observable<ISeriesDetectionJob[]> {
+        return this.postWithCredentials<ISeriesDetectionJob[]>(`${this.baseUrl}/series-detection/trigger/${id}?method=${method}`, {});
+    }
+
+    getSeriesDetectionJobs(sourceVideoId: string): Observable<ISeriesDetectionJob[]> {
+        return this.getWithCredentials<ISeriesDetectionJob[]>(`${this.baseUrl}/series-detection/jobs?source_video_id=${sourceVideoId}`);
     }
 
     getSeriesFromEpisode(id: number): Observable<IVideo[]> {

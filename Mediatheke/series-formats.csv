@@ -2,8 +2,9 @@ example;regex;series_identifier;with_season;channel;season_digit;episode_digit;i
 (Staffel 1,Folge 56);\(Staffel (\d+),Folge (\d+)\);topic;true;ard;1;2
 (Staffel 1, Folge 56);\(Staffel (\d+), Folge (\d+)\);topic;true;srf;1;2
 Staffel 2 (4/4);Staffel (\d+) \((\d+)\/(\d+)\);title;true;all;1;2
+Season 2 (6/9);Season (\d+) \((\d+)\/(\d+)\);title;true;all;1;2
 Saison 1 (5/6) * Untertitel);Saison (\d+) \((\d+)\/(\d+)\).*Untertitel\);title;true;all;1;2
-* (5/6) * Untertitel);\((\d+)\/(\d+)\).*Untertitel\);title;true;all;1;2
+* (5/6) * Untertitel);\((\d+)\/(\d+)\).*Untertitel\);title;false;all;0;1
 Saison 2 (3/8);Saison (\d+) \((\d+)\/(\d+)\);title;true;all;1;2
 saison 1(13/22);saison (\d+)\((\d+)\/(\d+)\);title;true;all;1;2
 (528);\((\d+)\);topic;false;ard;0;1

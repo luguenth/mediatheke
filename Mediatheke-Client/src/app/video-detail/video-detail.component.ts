@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackendService } from '../services/backend';
-import { IVideo } from '../interfaces';
+import { IVideo, ISeriesDetectionJob } from '../interfaces';
 import { Subscription } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 import { UserService } from '../services/userService';
@@ -24,6 +24,8 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   urlTime: number = 0;
   isSeries: boolean = false;
   isSeriesLoading: boolean = false;
+  seriesDetectionJobs: ISeriesDetectionJob[] = [];
+  detectionMethod: string = 'regex';
   env = environment;
 
   constructor(
@@ -55,6 +57,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
       this.video = video;
       this.cdr.detectChanges();
       this.getRecommendedVideos();
+      this.triggerSeriesDetectionForAll();
     });
 
     this.subscriptions.push(routeSub);
@@ -68,6 +71,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
     this.video = undefined;
     this.recommendedVideos = [];
     this.seriesVideos = [];
+    this.seriesDetectionJobs = [];
   }
 
   ngOnDestroy(): void {
@@ -82,6 +86,32 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
     this.subscriptions.push(recSub);
   }
 
+  triggerSeriesDetectionForAll() {
+    // Fire-and-forget: trigger detection for the main video and all its
+    // recommended videos, then poll for job status for the debug view.
+    this.backendService.triggerSeriesDetection(this.videoId, this.detectionMethod).subscribe({
+      next: (jobs) => {
+        this.seriesDetectionJobs = jobs;
+        this.loadSeriesDetectionJobs();
+      },
+      error: (err) => console.error('Failed to trigger series detection:', err),
+    });
+  }
+
+  loadSeriesDetectionJobs() {
+    this.backendService.getSeriesDetectionJobs(this.videoId).subscribe({
+      next: (jobs) => {
+        this.seriesDetectionJobs = jobs;
+        // Poll while any job is still pending/running
+        const hasActive = jobs.some(j => j.state === 'pending' || j.state === 'running');
+        if (hasActive) {
+          setTimeout(() => this.loadSeriesDetectionJobs(), 3000);
+        }
+      },
+      error: (err) => console.error('Failed to load series detection jobs:', err),
+    });
+  }
+
   mightBeASeries() {
     this.isSeriesLoading = true;
     this.backendService.mightBeASeries(this.videoId).subscribe(data => {
@@ -93,6 +123,17 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
         return a.episode_number - b.episode_number;
       });
     });
+  }
+
+  formatJobResult(resultJson: string | null): string {
+    if (!resultJson) return '—';
+    try {
+      const items = JSON.parse(resultJson);
+      if (items.length === 0) return 'Keine Serie';
+      return items.map((i: any) => `${i.series_name || '?'} S${i.season_number}E${i.episode_number}`).join(', ');
+    } catch {
+      return resultJson;
+    }
   }
 
   navigateToEpisode(episode: IVideo) {

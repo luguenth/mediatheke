@@ -31,6 +31,50 @@
       <details class="container" *ngIf="env.production === false">
         <summary>Debug</summary>
         <pre>{{video | json}}</pre>
+
+        <div style="margin-top: 8px; font-size: 0.8rem;">
+          Detection method:
+          <button (click)="detectionMethod='regex'; $event.stopPropagation()"
+                  [style.font-weight]="detectionMethod === 'regex' ? 'bold' : 'normal'">regex</button>
+          |
+          <button (click)="detectionMethod='llm'; $event.stopPropagation()"
+                  [style.font-weight]="detectionMethod === 'llm' ? 'bold' : 'normal'">llm</button>
+          <button (click)="triggerSeriesDetectionForAll(); $event.stopPropagation()"
+                  style="margin-left: 8px; font-size: 0.7rem;">re-run</button>
+        </div>
+
+        <details style="margin-top: 8px;" *ngIf="seriesDetectionJobs.length > 0">
+          <summary>Series Detection Jobs ({{seriesDetectionJobs.length}})</summary>
+          <table style="font-size: 0.75rem; width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding:2px 4px; border-bottom:1px solid #ccc;">Target ID</th>
+                <th style="text-align:left; padding:2px 4px; border-bottom:1px solid #ccc;">State</th>
+                <th style="text-align:left; padding:2px 4px; border-bottom:1px solid #ccc;">Result</th>
+                <th style="text-align:left; padding:2px 4px; border-bottom:1px solid #ccc;">Completed</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let job of seriesDetectionJobs">
+                <td style="padding:2px 4px;">{{job.target_video_id}}</td>
+                <td style="padding:2px 4px;">
+                  <span *ngIf="job.state === 'completed'" style="color:green;">&#10003;</span>
+                  <span *ngIf="job.state === 'failed'" style="color:red;">&#10007;</span>
+                  <span *ngIf="job.state === 'running'" style="color:orange;">&#9679;</span>
+                  <span *ngIf="job.state === 'pending'" style="color:#999;">&#9679;</span>
+                  {{job.state}}
+                </td>
+                <td style="padding:2px 4px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" [title]="job.result_json || ''">
+                  {{formatJobResult(job.result_json)}}
+                </td>
+                <td style="padding:2px 4px;">{{job.completed_at ? (job.completed_at | date:'HH:mm:ss') : '—'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+        <div *ngIf="seriesDetectionJobs.length === 0" style="margin-top: 8px; font-size: 0.8rem; color: #888;">
+          No series detection jobs yet.
+        </div>
       </details>
 
       <!-- Series Navigation -->

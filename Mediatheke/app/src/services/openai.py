@@ -92,7 +92,12 @@ def _classify_by_regex(item: MediaItem) -> MediaItemSeries | None:
         if pat.series_identifier == "topic":
             series_name = item.topic or ""
         else:
-            series_name = pat.regex.sub("", item.title).strip(" -–:")
+            # Use the part of the title BEFORE the match as the series name.
+            # This gives a consistent name across episodes (e.g. "Happiness")
+            # instead of the old approach which kept the varying subtitle.
+            series_name = item.title[:match.start()].strip(" -–:")
+            if not series_name:
+                series_name = item.topic or ""
 
         return MediaItemSeries(
             media_item_id=item.id,
@@ -123,6 +128,38 @@ def _provider_routing() -> dict:
     if not name:
         return {}
     return {"provider": {"order": [name]}}
+
+
+def _build_llm_prompt(items: list[MediaItem]) -> str:
+    """Enhanced prompt with full context (title, description, topic) for LLM mode."""
+    lines = [
+        "You are given a list of TV show entries. For each entry, extract:",
+        "- series_name: the series/show name",
+        "- season_number: the season number (0 if unknown)",
+        "- episode_number: the episode number (0 if unknown)",
+        "- is_original_version: true if this is the original language version",
+        "- language: the language of this entry (e.g. 'German', 'English', 'French')",
+        "- has_subtitles: true if subtitles are available (e.g. 'mit Untertitel' in title)",
+        "",
+        "Use the title, description, and topic together to determine the series.",
+        "The description often reveals whether this is the original or a dubbed version.",
+        "If an entry is not part of a series, omit it from the output.",
+        "",
+        "Entries (id: title | topic | channel | description):",
+    ]
+    for item in items:
+        desc = (item.description or "")[:200]
+        lines.append(
+            f"{item.id}: {item.title} | {item.topic} | {item.channel} | {desc}"
+        )
+    lines.append("")
+    lines.append(
+        'Return a JSON object of the form {"items": [...]}, where each item has '
+        '"media_item_id" (int), "title" (str), "season_number" (int or 0 if unknown), '
+        '"episode_number" (int or 0 if unknown), "series_name" (str), '
+        '"is_original_version" (bool), "language" (str), "has_subtitles" (bool).'
+    )
+    return "\n".join(lines)
 
 
 def _build_prompt(items: list[MediaItem]) -> str:
@@ -192,9 +229,68 @@ def _parse_response(content: str) -> list[MediaItemSeries]:
     return results
 
 
-def run_conversation(items: list[MediaItem]) -> list[MediaItemSeries]:
-    """Detect series membership. Regex pre-pass handles obvious patterns
-    (e.g. "(2/4)", "Staffel 1, Folge 5"); the LLM handles the rest."""
+def _call_llm(items: list[MediaItem], prompt_builder) -> list[MediaItemSeries]:
+    """Shared helper: send items to the LLM, parse and return the response."""
+    if not items:
+        return []
+
+    client = _get_client()
+    prompt = prompt_builder(items)
+    messages = [
+        {
+            "role": "system",
+            "content": "You return only valid JSON. No prose, no markdown fences.",
+        },
+        {"role": "user", "content": prompt},
+    ]
+
+    extra_body = _provider_routing()
+    extra_body["reasoning"] = {"effort": "low"}
+
+    logging.info(f"Sending {len(items)} items to {settings.openai_model}")
+
+    try:
+        response = client.chat.completions.create(
+            model=settings.openai_model,
+            messages=messages,
+            response_format={"type": "json_object"},
+            temperature=0,
+            max_tokens=4096,
+            extra_body=extra_body,
+        )
+    except Exception as e:
+        logging.warning(f"response_format rejected, retrying without: {e}")
+        try:
+            response = client.chat.completions.create(
+                model=settings.openai_model,
+                messages=messages,
+                temperature=0,
+                max_tokens=4096,
+                extra_body=extra_body,
+            )
+        except Exception as e2:
+            logging.error(f"LLM request failed: {repr(e2)}")
+            return []
+
+    content = response.choices[0].message.content
+    return _parse_response(content)
+
+
+def _run_llm_all(items: list[MediaItem]) -> list[MediaItemSeries]:
+    """LLM-only path: skip regex, classify everything with full context."""
+    return _call_llm(items, _build_llm_prompt)
+
+
+def run_conversation(items: list[MediaItem], method: str = "regex") -> list[MediaItemSeries]:
+    """Detect series membership.
+
+    method='regex' (default): regex pre-pass for obvious patterns, LLM for the rest.
+    method='llm':        skip regex, send everything to the LLM with full context.
+    """
+    if method == "llm":
+        return _run_llm_all(items)
+
+    # Original regex + LLM fallback path
     regex_results: list[MediaItemSeries] = []
     unresolved: list[MediaItem] = []
     for item in items:
