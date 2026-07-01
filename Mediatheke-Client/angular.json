@@ -75,7 +75,7 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "proxyConfig": "src/proxy.conf.json",
-            "host": "mediatheke.local"
+            "host": "mediatheke.develop"
           },
           "configurations": {
             "production": {

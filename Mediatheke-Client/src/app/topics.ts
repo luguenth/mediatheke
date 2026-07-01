@@ -20,11 +20,11 @@ export const home_topics: IVideoRow[] = [
         }
     },
     {
-        title: 'Auf der Couch',
-        description: 'Zwei Menschen mit unterschiedlichen Meinungen wagen "Auf der Couch" eine Annäherung mithilfe des Psychologen Leon Windscheid Kommen sie sich näher?',
+        title: 'Sportschau FIFA WM 2026',
+        description: 'Alle Highlights, Analysen und Hintergründe zur Fußball-Weltmeisterschaft 2026.',
         options: {
             type: options_type.topic,
-            payload: 'Auf der Couch',
+            payload: 'Sportschau FIFA WM 2026',
             skip: 0,
             limit: 10,
             random_order: true,
@@ -53,11 +53,11 @@ export const home_topics: IVideoRow[] = [
         }
     },
     {
-        title: 'Mit offenen Karten',
-        description: 'In der Sendung Mit offenen Karten werden geopolitische Themen aufgegriffen und erklärt.',
+        title: 'Sportschau Olympia 2026',
+        description: 'Berichte, Interviews und Analysen rund um die Olympischen Winterspiele 2026.',
         options: {
             type: options_type.topic,
-            payload: 'Mit offenen Karten - Geopolitisches Magazin',
+            payload: 'Sportschau Olympia 2026',
             skip: 0,
             limit: 10,
             random_order: true,

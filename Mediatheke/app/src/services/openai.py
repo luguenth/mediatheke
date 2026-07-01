@@ -1,113 +1,254 @@
-import json5
+import csv
+import json
 import logging
-from typing import List
+import os
+import re
+from dataclasses import dataclass
+from openai import OpenAI
+
+from ...core.config import settings
 from ..mediaitem.model import MediaItem
 from ..mediaitem.schemas import MediaItemSeries
-from ...core.config import settings
-import openai
 
-client = openai.OpenAI(api_key=api_key)
-
-logging.basicConfig(level=logging.INFO)
-
-SCHEMA = {
-        "type": "object",
-        "properties": {
-            "items": {
-                "type": "array",
-                "description": "List of mediaitems",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "media_item_id": {
-                            "type": "integer",
-                            "description": "ID of the mediaitem"
-                        },
-                        "title": {
-                            "type": "string",
-                            "description": "Title of the mediaitem"
-                        },
-                        "episode_number": {
-                            "type": "integer",
-                            "description": "Episode number of the mediaitem"
-                        },
-                        "season_number": {
-                            "type": "integer",
-                            "description": "Season number of the mediaitem"
-                        },
-                        "series_name": {
-                            "type": "string",
-                            "description": "Name of the series of the mediaitem"
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-def setup_openai(api_key: str):
-    openai.api_key = api_key
+_CSV_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
+    "series-formats.csv",
+)
 
 
-def parse_items(items: list[dict]) -> list[MediaItemSeries]:
-    """Refine the results from the GPT-3 response."""
-    media_items_series = []
-    for item in items:
-        logging.info(item)
-        try:
-            media_items_series.append(MediaItemSeries(
-                media_item_id=item["media_item_id"],
-                title=item["title"],
-                episode_number=item.get("episode_number", 0),
-                season_number=item.get("season_number", 0),
-                series_name=item.get("series_name", "")
-            ))
-        except Exception as e:
-            logging.error(f"Couldn't parse or validate the data: {e}")
-    return media_items_series
+@dataclass(frozen=True)
+class _FormatPattern:
+    regex: re.Pattern
+    series_identifier: str  # "topic" or "title"
+    with_season: bool
+    channel: str  # "all", "ard", "srf", "hr", "zdf", ...
 
 
-def send_to_gpt(prompt: str, functions: list):
-    messages = [{"role": "user", "content": prompt}]
+def _load_patterns() -> list[_FormatPattern]:
+    patterns: list[_FormatPattern] = []
     try:
-        logging.info("Sending to GPT")
-        return client.chat.completions.create(model="gpt-3.5-turbo-16k",
-        messages=messages,
-        functions=functions,
-        function_call={"name": "parse_items"})
-    except Exception as e:
-        logging.error(f"Exception: {repr(e)}")
-        return None
+        with open(_CSV_PATH, newline="", encoding="utf-8") as f:
+            reader = csv.reader(f, delimiter=";")
+            next(reader)  # skip header
+            for row in reader:
+                if len(row) < 5 or not row[1].strip():
+                    continue
+                try:
+                    patterns.append(
+                        _FormatPattern(
+                            regex=re.compile(row[1]),
+                            series_identifier=row[2].strip(),
+                            with_season=row[3].strip().lower() == "true",
+                            channel=row[4].strip().lower(),
+                        )
+                    )
+                except re.error as e:
+                    logging.warning(f"Skipping invalid series regex {row[1]!r}: {e}")
+    except FileNotFoundError:
+        logging.warning(f"series-formats.csv not found at {_CSV_PATH}; regex pre-pass disabled")
+    return patterns
 
 
-def handle_gpt_response(response):
-    if not response:
+# Load at import time so it's cached for the process lifetime.
+_EPISODE_PATTERNS: list[_FormatPattern] = _load_patterns()
+
+
+def _channel_matches(pattern_channel: str, item_channel: str) -> bool:
+    if pattern_channel == "all":
+        return True
+    return (item_channel or "").strip().lower() == pattern_channel
+
+
+def _extract_numbers(match: re.Match, with_season: bool) -> tuple[int, int]:
+    """Return (season_number, episode_number) from a regex match.
+
+    The CSV's season_digit and episode_digit columns tell us which capture
+    groups hold the season and episode numbers, but they're 1-based and
+    1-indexed past the implicit "0" placeholder for absent seasons. We
+    sniff the first two groups when with_season is set, else only one.
+    """
+    groups = [g for g in match.groups() if g is not None]
+    if with_season and len(groups) >= 2:
+        return int(groups[0]), int(groups[1])
+    return 0, int(groups[0])
+
+
+def _classify_by_regex(item: MediaItem) -> MediaItemSeries | None:
+    """If the title matches a curated pattern from series-formats.csv, tag it.
+
+    Series name comes from the topic (Filmliste taxonomy) for "topic"
+    patterns, and from the title minus the matched substring for "title"
+    patterns. If we can't derive a sensible name we leave it empty and
+    let the LLM fill it in.
+    """
+    for pat in _EPISODE_PATTERNS:
+        if not _channel_matches(pat.channel, item.channel):
+            continue
+        match = pat.regex.search(item.title)
+        if not match:
+            continue
+        season_number, episode_number = _extract_numbers(match, pat.with_season)
+
+        if pat.series_identifier == "topic":
+            series_name = item.topic or ""
+        else:
+            series_name = pat.regex.sub("", item.title).strip(" -–:")
+
+        return MediaItemSeries(
+            media_item_id=item.id,
+            title=item.title,
+            season_number=season_number,
+            episode_number=episode_number,
+            series_name=series_name,
+        )
+    return None
+
+
+def _get_client() -> OpenAI:
+    """Build an OpenAI-compatible client. base_url lets us hit OpenRouter."""
+    kwargs = {"api_key": settings.openai_key}
+    if settings.openai_base_url:
+        kwargs["base_url"] = settings.openai_base_url
+    return OpenAI(**kwargs)
+
+
+def _provider_routing() -> dict:
+    """Pin to a specific provider when requested via the OPENAI_PROVIDER env var.
+
+    Cerebras on gpt-oss-120b gives ~2000 tok/s with ~1s first-token latency,
+    which is dramatically faster than the default router. Trade-off is
+    ~10x the cost of :floor routing.
+    """
+    name = (settings.openai_provider or "").strip().lower()
+    if not name:
+        return {}
+    return {"provider": {"order": [name]}}
+
+
+def _build_prompt(items: list[MediaItem]) -> str:
+    """Build the prompt asking the LLM to identify series episodes."""
+    lines = [
+        "You are given a list of TV show entries. Identify which entries belong to the same series.",
+        "For each series you find, return the series name, season number, and episode number.",
+        "If an entry is not part of a series, omit it from the output.",
+        "",
+        "Entries (id: title | topic | channel | date | duration):",
+    ]
+    for item in items:
+        lines.append(
+            f"{item.id}: {item.title} | {item.topic} | {item.channel} | {item.date} | {item.duration}"
+        )
+    lines.append("")
+    lines.append(
+        'Return a JSON object of the form {"items": [...]}, where each item has '
+        '"media_item_id" (int), "title" (str), "season_number" (int or 0 if unknown), '
+        '"episode_number" (int or 0 if unknown), "series_name" (str).'
+    )
+    return "\n".join(lines)
+
+
+def _parse_response(content: str) -> list[MediaItemSeries]:
+    """Parse and validate the LLM's JSON response.
+
+    Tolerant of markdown fences, leading prose, and trailing commentary.
+    """
+    if not content:
         return []
 
-    response_message = response["choices"][0]["message"]
-    finish_reason = response["choices"][0]["finish_reason"]
+    text = content.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[-1] if "\n" in text else text[3:]
+        if text.endswith("```"):
+            text = text[:-3]
+        text = text.strip()
 
-    if finish_reason == "length":
-        logging.warning("GPT-3 returned an incomplete response. Aborting.")
+    if not text.startswith("{"):
+        start = text.find("{")
+        end = text.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            text = text[start : end + 1]
+
+    try:
+        payload = json.loads(text)
+        items = payload.get("items", [])
+    except (json.JSONDecodeError, AttributeError, TypeError) as e:
+        logging.error(f"Couldn't parse LLM response as JSON: {e}\nContent: {content[:500]}")
         return []
 
-    function_call_data = response_message.get("function_call")
-    if not function_call_data:
-        return []
-
-    function_name = function_call_data["name"]
-    function_args = json5.loads(function_call_data["arguments"])
-
-    return parse_items(items=function_args.get("items"))
+    results = []
+    for item in items:
+        try:
+            results.append(
+                MediaItemSeries(
+                    media_item_id=item["media_item_id"],
+                    title=item["title"],
+                    episode_number=item.get("episode_number") or 0,
+                    season_number=item.get("season_number") or 0,
+                    series_name=item.get("series_name") or "",
+                )
+            )
+        except Exception as e:
+            logging.error(f"Couldn't validate series entry: {e}")
+    return results
 
 
 def run_conversation(items: list[MediaItem]) -> list[MediaItemSeries]:
-    setup_openai(api_key=settings.openai_key)
-    prompt = "Here is a List of Mediaitems, try to spot the episodes of a Series... \n"
-    prompt += "\n".join(
-        [f"{item.id}: {item.title} | {item.topic} | {item.channel} | {item.description} | {item.date} | {item.duration}"
-         for item in items]
-    )
+    """Detect series membership. Regex pre-pass handles obvious patterns
+    (e.g. "(2/4)", "Staffel 1, Folge 5"); the LLM handles the rest."""
+    regex_results: list[MediaItemSeries] = []
+    unresolved: list[MediaItem] = []
+    for item in items:
+        tagged = _classify_by_regex(item)
+        if tagged:
+            regex_results.append(tagged)
+        else:
+            unresolved.append(item)
 
-    response = send_to_gpt(prompt, functions=[{"name": "parse_items", "parameters": SCHEMA}])
-    return handle_gpt_response(response)
+    if not unresolved:
+        return regex_results
+
+    client = _get_client()
+    prompt = _build_prompt(unresolved)
+    messages = [
+        {
+            "role": "system",
+            "content": "You return only valid JSON. No prose, no markdown fences.",
+        },
+        {"role": "user", "content": prompt},
+    ]
+
+    # Reasoning models (e.g. gpt-oss) spend output budget on chain-of-thought
+    # before the actual answer. Cap the reasoning effort so we don't run out
+    # of tokens before the JSON response.
+    extra_body = _provider_routing()
+    extra_body["reasoning"] = {"effort": "low"}
+
+    try:
+        logging.info(
+            f"Sending {len(unresolved)} items to {settings.openai_model} "
+            f"(regex tagged {len(regex_results)} upfront)"
+        )
+        response = client.chat.completions.create(
+            model=settings.openai_model,
+            messages=messages,
+            response_format={"type": "json_object"},
+            temperature=0,
+            max_tokens=4096,
+            extra_body=extra_body,
+        )
+    except Exception as e:
+        logging.warning(f"response_format rejected, retrying without: {e}")
+        try:
+            response = client.chat.completions.create(
+                model=settings.openai_model,
+                messages=messages,
+                temperature=0,
+                max_tokens=4096,
+                extra_body=extra_body,
+            )
+        except Exception as e2:
+            logging.error(f"LLM request failed: {repr(e2)}")
+            return regex_results
+
+    content = response.choices[0].message.content
+    return regex_results + _parse_response(content)

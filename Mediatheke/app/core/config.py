@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     url_schema: str
     host_url: str
     openai_key: str
+    openai_base_url: str = ""
+    openai_model: str = "gpt-3.5-turbo-16k"
+    openai_provider: str = ""
     filmliste_mirrors: str
 
     class Config:

@@ -12,7 +12,7 @@ from ..mediaitem import crud as mediaitem_crud
 from ..mediaitem import schemas
 from ..user.model import User, Recommendation
 from ..services.recommendations import get_recommendation_engine, RecommendationEngine
-#from ..services.openai import run_conversation
+from ..services.openai import run_conversation
 
 class CommonQueryParams(BaseModel):
     skip: int = 0
@@ -216,12 +216,18 @@ def might_be_a_series(
         db: Session = Depends(get_db),
         rec_engine: RecommendationEngine = Depends(get_recommendation_engine)
         ):
-    """Gets 30 recommended media items, and asks ChatGPT to look which ones might be a series. It gives back a json with the possible series."""
-    rec_items = rec_engine.get_recommendations(media_item_id, limit=30)
-    if len(rec_items) == 0:
+    """Detect series metadata for the target item and its 30 most similar items.
+
+    The target item itself is included in the candidate list so it gets
+    classified too, not just its neighbours.
+    """
+    target = mediaitem_crud.get_media_item(db, media_item_id=media_item_id)
+    if not target:
         raise HTTPException(status_code=404, detail="MediaItem not found")
+    rec_items = rec_engine.get_recommendations(media_item_id, limit=30)
+    candidates = [target] + rec_items
     print("Getting possible series for", media_item_id, flush=True)
-    media_items: list[schemas.MediaItemSeries] = run_conversation(rec_items)
+    media_items: list[schemas.MediaItemSeries] = run_conversation(candidates)
     print("Got possible series for", media_item_id, flush=True)
     for media_item in media_items:
         print("Adding series metadata for", media_item.media_item_id, flush=True)

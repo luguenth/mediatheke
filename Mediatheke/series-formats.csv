@@ -16,3 +16,5 @@ Folge 1;Folge (\d+);topic;false;hr;0;1
 Episode 1;Episode (\d+);topic;false;all;0;1
 Folge 4/15;Folge (\d+)\/(\d+);title;false;hr;0;1
 (1/3);\((\d+)\/(\d+)\);topic;false;hr;0;1
+(2/4);\((\d+)\/(\d+)\);topic;false;all;0;1
+Folge 123;Folge (\d+);topic;false;all;0;1
