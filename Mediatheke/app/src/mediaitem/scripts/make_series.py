@@ -1,38 +1,8 @@
-from typing import List
 import re
-import csv
+
 from ....core.db.database import get_new_db_session
 from ...mediaitem.model import MediaItem
-
-# Function to load series patterns from CSV
-def load_series_patterns(file_path: str) -> List[List[str]]:
-    with open(file_path, 'r') as file:
-        reader = csv.reader(file, delimiter=';')
-        next(reader)  # Skip header
-        return [row for row in reader]
-
-# Function to find series data using patterns
-def find_series_data(mediaitem, patterns):
-    for pattern in patterns:
-        if pattern:
-            regex, series_identifier, with_season, channel = pattern[1], pattern[2], pattern[3] == 'true', pattern[4]
-            match = re.search(regex, mediaitem.title)
-            if match:
-                season_number = match.group(1) if with_season else None
-                episode_number = match.group(2) if with_season else match.group(1)
-                series_name = mediaitem.topic if series_identifier == 'topic' else re.sub(regex, '', mediaitem.title)
-                return {
-                    'id': mediaitem.id,
-                    'season_number': season_number,
-                    'episode_number': episode_number,
-                    'series_name': series_name,
-                }
-    return None
-
-def strip_variant(title, regex):
-    """Strip a variant suffix from a title. Returns stripped title or '' if no match."""
-    stripped = re.sub(regex, '', title)
-    return stripped if stripped != title else ''
+from ...services.series_engine import classify
 
 # (regex, field_prefix): ordered by priority, most specific first
 VARIANT_DEFS = [
@@ -44,12 +14,20 @@ VARIANT_DEFS = [
 
 VARIANT_KEYS = ['originalversion', 'omu', 'originalton', '(ov)', 'untertitel', '(ut)', 'audiodes']
 
+
+def strip_variant(title, regex):
+    """Strip a variant suffix from a title. Returns stripped title or '' if no match."""
+    stripped = re.sub(regex, '', title)
+    return stripped if stripped != title else ''
+
+
 def build_urls(mediaitem):
     return {
         'url_video': mediaitem.url_video,
         'url_video_hd': mediaitem.url_video_hd,
         'url_video_low': mediaitem.url_video_low,
     }
+
 
 def field_name(prefix, quality):
     if prefix == 'audiodescription':
@@ -60,21 +38,29 @@ def field_name(prefix, quality):
         return f'url_video_{suffix}'
     return f'url_video_{quality}_{suffix}'
 
+
 def main(dry_run=False):
     db = get_new_db_session()
-    series_patterns = load_series_patterns('series-formats.csv')
-
     mediaitems = db.query(MediaItem).all()
 
-    update_data = []
+    # ── Series detection via the unified engine (rules + similarity) ──
+    classifications = classify(mediaitems)
+    update_data = [
+        {
+            'id': c.media_item_id,
+            'season_number': c.season_number,
+            'episode_number': c.episode_number,
+            'series_name': c.series_name,
+        }
+        for c in classifications
+    ]
+    print(f'Classified {len(update_data)} items as series')
+
+    # ── Variant URL handling (OV / UT / audiodescription) ──
     title_maps = {variant: {} for _, variant in VARIANT_DEFS}
     variant_ids = {variant: [] for _, variant in VARIANT_DEFS}
 
     for mediaitem in mediaitems:
-        series_data = find_series_data(mediaitem, series_patterns)
-        if series_data:
-            update_data.append(series_data)
-
         title_lower = mediaitem.title.lower()
         if not any(kw in title_lower for kw in VARIANT_KEYS):
             continue
@@ -122,6 +108,7 @@ def main(dry_run=False):
             print(f"Would update {data}")
         for data in url_update_data:
             print(f"Would update {data}")
+
 
 if __name__ == "__main__":
     main(dry_run=False)

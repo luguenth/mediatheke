@@ -27,6 +27,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   seriesDetectionJobs: ISeriesDetectionJob[] = [];
   detectionMethod: string = 'regex';
   env = environment;
+  flaggedItems: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -61,6 +62,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(routeSub);
+    this.loadFlaggedItems();
   }
 
   setCurrentTime(time: number) {
@@ -138,6 +140,56 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
 
   navigateToEpisode(episode: IVideo) {
     this.router.navigate(['/video-detail', episode.id]);
+  }
+
+  loadFlaggedItems() {
+    try {
+      const stored = localStorage.getItem('series-feedback');
+      this.flaggedItems = stored ? JSON.parse(stored) : [];
+    } catch {
+      this.flaggedItems = [];
+    }
+  }
+
+  flagForReview(reason: string) {
+    if (!this.video) return;
+    const entry = {
+      id: this.video.id,
+      title: this.video.title,
+      topic: this.video.topic,
+      channel: this.video.channel,
+      series_name: this.video.series_name,
+      episode_number: this.video.episode_number,
+      season_number: this.video.season_number,
+      url: this.video.url_website,
+      reason: reason,
+      timestamp: new Date().toISOString(),
+    };
+    // Avoid duplicates
+    this.flaggedItems = this.flaggedItems.filter((f: any) => f.id !== entry.id);
+    this.flaggedItems.push(entry);
+    localStorage.setItem('series-feedback', JSON.stringify(this.flaggedItems));
+  }
+
+  removeFlaggedItem(id: number) {
+    this.flaggedItems = this.flaggedItems.filter((f: any) => f.id !== id);
+    localStorage.setItem('series-feedback', JSON.stringify(this.flaggedItems));
+  }
+
+  clearFlaggedItems() {
+    this.flaggedItems = [];
+    localStorage.removeItem('series-feedback');
+  }
+
+  exportFlaggedItems() {
+    const json = JSON.stringify(this.flaggedItems, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `series-feedback-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
 }

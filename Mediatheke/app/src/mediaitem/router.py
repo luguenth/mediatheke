@@ -224,6 +224,13 @@ def might_be_a_series(
     target = mediaitem_crud.get_media_item(db, media_item_id=media_item_id)
     if not target:
         raise HTTPException(status_code=404, detail="MediaItem not found")
+
+    # If the target already has series metadata (e.g. from make_series.py),
+    # don't re-classify — the LLM on a small batch would likely produce a
+    # worse result than the bulk similarity pass.
+    if target.series_name:
+        return mediaitem_crud.get_all_series_items(db, media_item_id)
+
     rec_items = rec_engine.get_recommendations(media_item_id, limit=30)
     candidates = [target] + rec_items
     print("Getting possible series for", media_item_id, flush=True)

@@ -75,6 +75,44 @@
         <div *ngIf="seriesDetectionJobs.length === 0" style="margin-top: 8px; font-size: 0.8rem; color: #888;">
           No series detection jobs yet.
         </div>
+
+        <div style="margin-top: 12px; border-top: 1px solid #ccc; padding-top: 8px;">
+          <strong>Series Feedback</strong>
+          <div style="margin-top: 4px; display: flex; gap: 4px; flex-wrap: wrap;">
+            <button (click)="flagForReview('not classified - should be series'); $event.stopPropagation()"
+                    style="font-size: 0.7rem; padding: 2px 6px;"
+                    [disabled]="!video">Sollte Serie sein</button>
+            <button (click)="flagForReview('wrong series name'); $event.stopPropagation()"
+                    style="font-size: 0.7rem; padding: 2px 6px;"
+                    [disabled]="!video">Falscher Serienname</button>
+            <button (click)="flagForReview('wrong episode/season'); $event.stopPropagation()"
+                    style="font-size: 0.7rem; padding: 2px 6px;"
+                    [disabled]="!video">Falsche Episodennummer</button>
+            <button (click)="flagForReview('other'); $event.stopPropagation()"
+                    style="font-size: 0.7rem; padding: 2px 6px;"
+                    [disabled]="!video">Sonstiges</button>
+          </div>
+
+          <div style="margin-top: 8px;" *ngIf="flaggedItems.length > 0">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.8rem; color: #e68a00;">{{flaggedItems.length}} flagged item(s)</span>
+              <div>
+                <button (click)="exportFlaggedItems(); $event.stopPropagation()"
+                        style="font-size: 0.7rem; padding: 1px 4px; margin-right: 4px;">Export JSON</button>
+                <button (click)="clearFlaggedItems(); $event.stopPropagation()"
+                        style="font-size: 0.7rem; padding: 1px 4px;">Clear all</button>
+              </div>
+            </div>
+            <ul style="font-size: 0.7rem; margin: 4px 0; padding-left: 16px; max-height: 200px; overflow-y: auto;">
+              <li *ngFor="let item of flaggedItems" style="margin-bottom: 2px;">
+                <span [title]="item.reason">{{item.title?.substring(0, 40)}}…</span>
+                <span style="color: #888;">({{item.reason}})</span>
+                <button (click)="removeFlaggedItem(item.id); $event.stopPropagation()"
+                        style="font-size: 0.6rem; padding: 0 3px; margin-left: 4px;">✕</button>
+              </li>
+            </ul>
+          </div>
+        </div>
       </details>
 
       <!-- Series Navigation -->

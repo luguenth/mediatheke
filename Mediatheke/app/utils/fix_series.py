@@ -9,7 +9,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from app.core.db.database import get_new_db_session
-from app.src.services.openai import _classify_by_regex
+from app.src.services.series_engine import classify_by_rules
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
 
     updated = 0
     for item in items:
-        result = _classify_by_regex(item)
+        result = classify_by_rules(item)
         if result is None:
             continue
 

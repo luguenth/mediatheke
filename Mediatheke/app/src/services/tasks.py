@@ -15,11 +15,8 @@ _RECOMMENDATIONS_URL = "http://127.0.0.1:8000/mediaitems/{video_id}/recommended?
 
 
 @app.task(bind=True, max_retries=2, default_retry_delay=30)
-def detect_series_for_video(self, source_video_id: int, target_video_id: int, method: str = "regex"):
+def detect_series_for_video(self, source_video_id: int, target_video_id: int):
     """Detect series metadata for a video and its 30 nearest neighbours.
-
-    method='regex' (default): regex pre-pass + LLM fallback.
-    method='llm':        skip regex, LLM with full context.
 
     Gets recommendations by calling the existing FastAPI endpoint internally
     (avoids loading the full RecommendationEngine into the Celery worker).
@@ -50,10 +47,10 @@ def detect_series_for_video(self, source_video_id: int, target_video_id: int, me
             candidates.insert(0, target)
 
         logging.info(
-            "Detecting series for video %s (source %s) method=%s with %d candidates",
-            target_video_id, source_video_id, method, len(candidates),
+            "Detecting series for video %s (source %s) with %d candidates",
+            target_video_id, source_video_id, len(candidates),
         )
-        results = run_conversation(candidates, method=method)
+        results = run_conversation(candidates)
 
         for item in results:
             mediaitem_crud.add_series_metadata(db, item)
