@@ -6,7 +6,7 @@ from ..mediaitem.model import MediaItem
 from ..mediaitem.crud import process_batch
 from ...core.db.database import get_new_db_session
 
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 import logging
 
@@ -25,7 +25,7 @@ def import_filmliste(full: bool = True):
     BATCH_SIZE = 10000
     db = get_new_db_session()
     len_items = len(items)
-    timestamp = datetime.fromtimestamp(timestamp)
+    timestamp = datetime.fromtimestamp(timestamp, tz=timezone.utc).replace(tzinfo=None)
     import_event: FilmlisteImportEvent  = create_import_event(db=db, timestamp=timestamp, full_import=full, media_item_count=len_items)
     if import_event is None:
       print("Import event already exists", flush=True)

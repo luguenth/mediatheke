@@ -53,6 +53,17 @@ h1 {
     bottom: 20px;
 }
 
+.last-sync {
+    position: absolute;
+    right: 20px;
+    bottom: 2px;
+    color: #555;
+    font-size: 0.75rem;
+    margin: 0;
+    opacity: 0.5;
+    text-transform: lowercase;
+}
+
 .links {
     align-self: end;
     width: fit-content;

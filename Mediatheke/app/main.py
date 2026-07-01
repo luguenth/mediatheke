@@ -15,6 +15,7 @@ from .src.authentication import router as auth_router
 from .src.mediaitem import router as mediaitem_router
 from .src.thumbnail import router as thumbnail_router
 from .src.services import router as services_router
+from .src.filmliste import router as filmliste_router
 
 from .src.thumbnail import tasks as thumbnail_tasks
 from .src.filmliste import tasks as filmliste_tasks
@@ -66,6 +67,7 @@ app.include_router(auth_router.router)
 app.include_router(mediaitem_router.router)
 app.include_router(thumbnail_router.router)
 app.include_router(services_router.router)
+app.include_router(filmliste_router.router)
 
 
 @app.on_event("startup")

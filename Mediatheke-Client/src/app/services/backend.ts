@@ -144,4 +144,8 @@ export class BackendService {
     getVideosByIds(ids: number[]): Observable<IVideo[]> {
         return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/ids?ids=${ids.join(',')}`);
     }
+
+    getLastFilmlisteImport(): Observable<{ timestamp: string | null; full_import: boolean | null; success: boolean | null }> {
+        return this.getWithCredentials<{ timestamp: string | null; full_import: boolean | null; success: boolean | null }>(`${this.baseUrl}/filmliste/last-import`);
+    }
 }

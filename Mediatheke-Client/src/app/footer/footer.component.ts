@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BackendService } from '../services/backend';
 
 @Component({
   selector: 'app-footer',
@@ -8,10 +9,22 @@ import { Component, OnInit } from '@angular/core';
 export class FooterComponent implements OnInit {
 
   public isLightTheme: boolean = true;
+  public lastSync: string | null = null;
 
-  constructor() { }
+  constructor(private backendService: BackendService) { }
 
   ngOnInit(): void {
+    this.backendService.getLastFilmlisteImport().subscribe(data => {
+      if (data?.timestamp) {
+        this.lastSync = new Date(data.timestamp).toLocaleString('de-DE', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    });
   }
 
   onThemeSwitchChange() {

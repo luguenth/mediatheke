@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { FooterComponent } from './footer.component';
+import { BackendService } from '../services/backend';
 
 describe('FooterComponent', () => {
   let component: FooterComponent;
@@ -8,7 +10,13 @@ describe('FooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FooterComponent]
+      declarations: [FooterComponent],
+      providers: [
+        {
+          provide: BackendService,
+          useValue: { getLastFilmlisteImport: () => of({ timestamp: null, full_import: null, success: null }) }
+        }
+      ]
     })
       .compileComponents();
   });

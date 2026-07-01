@@ -3,7 +3,7 @@
     background-color: var(--color-key-yellow);
     display: flex;
     align-items: center;
-    padding: 40px 70px;
+    padding: 40px 0 40px 70px;
     box-sizing: border-box;
     position: relative;
 
@@ -39,13 +39,21 @@
             }
 
             // fade content out into the right edge without page overflow
-            mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 60px), transparent 100%);
-            -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 60px), transparent 100%);
+            mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 120px), transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 120px), transparent 100%);
         }
 
         .box {
             flex: 0 0 auto;
             margin-right: 10px; // Spacing between boxes
+        }
+
+        // invisible spacer at the end of the row so the last real video
+        // sits clear of the right-side mask fade
+        .scroll-spacer {
+            flex: 0 0 auto;
+            width: 80px;
+            pointer-events: none;
         }
 
         .load-more {
