@@ -1,4 +1,4 @@
-<div class="">
+<div class="series-nav-wrapper">
     <tabset>
         <ng-container *ngFor="let seasonTab of $series.seasons; let i = index">
             <tab heading="{{(seasonTab.season.season_number !== 999) ? 'Staffel ' + seasonTab.season.season_number : 'Unsortiert'}} {{ video.season_number === seasonTab.season.season_number ? '▶' : '' }}"
