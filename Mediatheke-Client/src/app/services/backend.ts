@@ -66,8 +66,8 @@ export class BackendService {
         return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/${id}/recommended`);
     }
 
-    getVideosByTopic(topic: string, limit: number = 10): Observable<IVideo[]> {
-        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/topic/${topic}?skip=0&limit=${limit}`);
+    getVideosByTopic(topic: string, skip: number = 0, limit: number = 10): Observable<IVideo[]> {
+        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/topic/${topic}?skip=${skip}&limit=${limit}`);
     }
 
     searchVideos(query: string): Observable<IMediaItemSearchResponse> {
@@ -110,8 +110,8 @@ export class BackendService {
         return this.getWithCredentials<boolean>(`${this.apiUrl.media}/${id}/isrecommended`);
     }
 
-    getAllRecommendations(): Observable<IVideo[]> {
-        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/recommended?skip=0&limit=10&random_order=true`);
+    getAllRecommendations(skip: number = 0, limit: number = 10): Observable<IVideo[]> {
+        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/recommended?skip=${skip}&limit=${limit}&random_order=true`);
     }
 
     mightBeASeries(id: string): Observable<IVideo[]> {
@@ -130,8 +130,8 @@ export class BackendService {
         return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/serie?media_item_id=${id}`);
     }
 
-    getAllSeries(): Observable<IVideo[]> {
-        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/series?skip=0&limit=10&random_order=true`);
+    getAllSeries(skip: number = 0, limit: number = 10): Observable<IVideo[]> {
+        return this.getWithCredentials<IVideo[]>(`${this.apiUrl.media}/series?skip=${skip}&limit=${limit}&random_order=true`);
     }
 
     getThumbnail(urlItem: IVideoThumbnailUrl): Observable<IVideoThumbnailUrl> {

@@ -3,15 +3,21 @@
     <div class="background">
         <span class="heading"> {{ title }} </span>
         <div class="boxes">
-            <div class="box" *ngFor="let video of videos | slice:offset:offset+limit">
+            <div class="box" *ngFor="let video of videos">
                 <app-video-card [video]="video"></app-video-card>
             </div>
-            <!-- so the first cards are rendered normally, now we display a last card with a button arrow but also the video behind it just to show that there are more videos -->
-            <div class="box" *ngIf="videos.length > limit">
-                <app-video-card [video]="videos[offset+limit]"></app-video-card>
-                <div class="arrow" (click)="offset = offset + limit">
-                    <i-bs name="arrow-right" height="24px" width="24px"></i-bs>
-                </div>
+
+            <button type="button"
+                class="load-more"
+                *ngIf="hasMore && !loading"
+                (click)="loadMore()">
+                <span class="load-more-label">Mehr Videos laden</span>
+                <span class="load-more-hint">scrolle nach rechts</span>
+            </button>
+
+            <div class="loading" *ngIf="loading">
+                <span class="spinner" aria-hidden="true"></span>
+                <span class="loading-label">lade …</span>
             </div>
         </div>
     </div>

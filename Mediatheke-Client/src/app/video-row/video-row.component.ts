@@ -30,7 +30,7 @@ export class VideoRowComponent implements OnInit {
         });
         break;
       case options_type.topic:
-        this.backendService.getVideosByTopic(this.options.payload ?? "", this.options.limit ?? 10).subscribe(data => {
+        this.backendService.getVideosByTopic(this.options.payload ?? "", 0, this.options.limit ?? 10).subscribe(data => {
           this.videos = data;
         });
         break;

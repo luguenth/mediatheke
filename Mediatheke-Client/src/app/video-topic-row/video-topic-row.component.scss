@@ -8,6 +8,9 @@
     position: relative;
 
     .background {
+        // this is a flex item of .recommendation-container; allow it to shrink
+        // below its content size so the inner scroller clips instead of the page
+        min-width: 0;
 
         .heading {
             font-weight: bold;
@@ -22,59 +25,102 @@
         .boxes {
             display: flex;
             flex-grow: 1; // Boxes container will grow as much as possible
+            // allow shrinking so horizontal overflow scrolls inside, not the page
+            min-width: 0;
+            // horizontal scrolling, native scrollbar hidden
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            // fade content out into the right edge without page overflow
+            mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 60px), transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 60px), transparent 100%);
         }
 
         .box {
-            flex: 1; // Boxes will grow equally to fill the space
+            flex: 0 0 auto;
             margin-right: 10px; // Spacing between boxes
+        }
 
-            &:last-child {
-                // Styling for the last box with the arrow
-                position: relative; // for absolute positioning of the arrow
+        .load-more {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 220px;
+            min-height: 200px;
+            padding: 16px;
+            cursor: pointer;
+            font-family: inherit;
+            background-color: transparent;
+            border: 3px dashed var(--color-key-black);
+            color: var(--color-text);
+            transition: background-color 0.2s ease, transform 0.2s ease;
 
-                app-video-card {
-                    mix-blend-mode: multiply;
-                    opacity: .5;
-                    filter: grayscale(100%) sepia(20%) brightness(110%) hue-rotate(272deg) contrast(100%) opacity(70%) saturate(500%);
-                }
+            &:hover {
+                background-color: var(--color-key-magenta);
+                transform: translateY(-2px);
+            }
 
-                .arrow {
-                    // The arrow button styling
-                    position: absolute;
-                    top: 50%;
-                    right: 0;
-                    transform: translateY(-50%) translateX(-50%); // To center the arrow button vertically and horizontally
-                    // make border round black, backround white
-                    background-color: #fff;
-                    border: 3px solid #000;
-                    border-radius: 50%;
-                    padding: 0.5em;
-                    cursor: pointer; // to indicate it's clickable
-                    z-index: 100;
+            &:focus-visible {
+                outline: 3px solid var(--color-key-black);
+                outline-offset: 2px;
+            }
 
-                    i-bs {
-                        // Assuming i-bs is an icon, we set the icon size
-                        height: 24px;
-                        width: 24px;
-                    }
-                }
+            .load-more-label {
+                font-size: 1.05rem;
+                font-weight: 600;
+                text-align: center;
+                text-transform: lowercase;
+            }
+
+            .load-more-hint {
+                font-size: 0.8rem;
+                opacity: 0.7;
+                text-transform: lowercase;
             }
         }
 
-        .next-button {
-            background-color: #ffcc00; // Adjust the color as needed
-            border: none;
-            border-radius: 50%;
-            width: 40px; // Adjust size as needed
-            height: 40px; // Adjust size as needed
+        .loading {
+            flex: 0 0 auto;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 12px;
+            width: 220px;
+            min-height: 200px;
+            border: 3px dashed var(--color-key-black-transparent);
+            opacity: 0.7;
 
-            span {
-                font-size: 24px; // Adjust the size of the arrow icon as needed
+            .spinner {
+                width: 28px;
+                height: 28px;
+                border: 3px solid var(--color-key-black-transparent);
+                border-top-color: var(--color-key-black);
+                border-radius: 50%;
+                animation: topic-row-spin 0.8s linear infinite;
+            }
+
+            .loading-label {
+                font-size: 0.85rem;
+                text-transform: lowercase;
             }
         }
     }
 
+}
+
+@keyframes topic-row-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
