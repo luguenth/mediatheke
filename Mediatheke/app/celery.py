@@ -28,6 +28,10 @@ app.conf.beat_schedule = {
         'task': 'app.src.filmliste.tasks.check_for_updates',
         'schedule': crontab(minute=0),  # Run every hour
     },
+    'daily-full-import': {
+        'task': 'app.src.filmliste.tasks.daily_full_import',
+        'schedule': crontab(hour=3, minute=0),  # Run every day at 3am
+    },
 }
 
 

@@ -18,16 +18,21 @@ class RecommendationEngine:
     _instance = None  # Class variable to hold the singleton instance
 
     def __new__(cls):
-        # This ensures that only one instance of RecommendationEngine is created
         if cls._instance is None:
             cls._instance = super(RecommendationEngine, cls).__new__(cls)
-            # Initialize data once after the instance is created
-            cls._instance._load_data()
         return cls._instance
 
     def __init__(self):
-        # Since the __new__ method initializes the data, the __init__ method should avoid reinitializing.
         pass
+
+    def load(self):
+        """Load data in a background worker. Returns True on success."""
+        try:
+            self._load_data()
+            return True
+        except Exception as e:
+            print(f"Failed to load recommendation engine data: {e}")
+            return False
 
     def _load_data(self):
         db = get_new_db_session()
@@ -44,6 +49,8 @@ class RecommendationEngine:
         print("Finished loading data for recommendation engine")
 
     def get_recommendations(self, video_id, **common_params):
+        if not hasattr(self, 'X') or self.X is None:
+            return []
         try:
             idx = self.item_ids.index(video_id)
         except ValueError:
@@ -75,6 +82,8 @@ class RecommendationEngine:
         return crud.get_all_media_items_by_ids(db, ",".join(map(str, recommended_ids)), limit=common_params["limit"])
     
     def get_recommendations_for_text(self, query_text, **common_params):
+        if not hasattr(self, 'X') or self.X is None:
+            return []
         # Convert query text into a vector
         query_vector = self.vectorizer.transform([query_text])
 

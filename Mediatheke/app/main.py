@@ -74,11 +74,16 @@ async def startup_event():
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     # start the celery worker
     subprocess.Popen(["pipenv", "run", "celery", "-A", "app.celery", "worker", "--loglevel=info"])
-    
+        
     # we have to wait for the celery worker to start up
     print("Waiting for celery worker to start up...", flush=True)
-    print(filmliste_tasks.import_filmliste.delay())
+    print(filmliste_tasks.check_for_updates.delay())
     print(search_tasks.init_typesense.delay())
+    # Load recommendation engine synchronously in the web process
+    from .src.services.recommendations import get_recommendation_engine
+    engine = get_recommendation_engine()
+    engine.load()
+    print("Recommendation engine loaded", flush=True)
 
 @app.on_event("shutdown")
 async def shutdown_event():

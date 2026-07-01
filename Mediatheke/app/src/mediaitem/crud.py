@@ -20,10 +20,24 @@ from ..mediaitem import schemas
 
 T = TypeVar('T', Topic, Channel, MediaItem)
 
+def _load_lookup_caches(db: Session):
+    """Load all topics and channels into dict caches to avoid per-item DB queries."""
+    topics = {t.name: t for t in db.query(Topic).all()}
+    channels = {c.name: c for c in db.query(Channel).all()}
+    return topics, channels
+
+def _get_or_create_cached(db: Session, name: str, cache: dict, model: T) -> T:
+    """Look up from cache, create + flush only if new."""
+    if name in cache:
+        return cache[name]
+    instance = model(name=name)
+    db.add(instance)
+    db.flush()
+    cache[name] = instance
+    return instance
+
 def _get_or_create(db: Session, model: T, filter_by: dict, **kwargs) -> T:
-    """
-    Returns existing record or creates a new one if it does not exist.
-    """
+    """Returns existing record or creates a new one if it does not exist."""
     instance = db.query(model).filter_by(**filter_by).first()
     if not instance:
         instance = model(**kwargs)
@@ -31,26 +45,6 @@ def _get_or_create(db: Session, model: T, filter_by: dict, **kwargs) -> T:
         db.commit()
         db.refresh(instance)
     return instance
-
-def get_or_create_topic(db: Session, topic_name: str) -> Topic:
-    return _get_or_create(db, Topic, {'name': topic_name}, name=topic_name)
-
-def get_or_create_channel(db: Session, channel_name: int) -> Channel:
-    return _get_or_create(db, Channel, {'name': channel_name}, name=channel_name)
-
-def get_or_create_media_item(db: Session, media_item: dict) -> MediaItem:
-    topic = get_or_create_topic(db, media_item['topic'])
-    channel = get_or_create_channel(db, media_item['channel'])
-    media_item_data_to_insert = media_item.copy()
-    media_item_data_to_insert['topic_id'] = topic.id
-    media_item_data_to_insert['channel_id'] = channel.id
-    return _get_or_create(db, MediaItem, {
-        'title': media_item['title'],
-        'topic_id': topic.id,
-        'channel_id': channel.id,
-        'date': media_item['date'],
-        'time': media_item['time']
-    }, **media_item_data_to_insert)
 
 def _filter_query_by_params(query: Query, **kwargs) -> Query:
     """
@@ -74,21 +68,27 @@ def _filter_query_by_params(query: Query, **kwargs) -> Query:
     
     return query
 
-def _handle_existing_item_check(db: Session, item: dict) -> Union[None, MediaItem]:
-    """
-    Checks if an item exists and returns it. If not, returns None.
-    """
-    return db.query(MediaItem).filter_by(
-        title=item['title'],
-        topic_id=item['topic_id'],
-        channel_id=item['channel_id'],
-        date=item['date'],
-        time=item['time']
-    ).first()
 
-def process_batch(db: Session, batch: list[dict], import_event: FilmlisteImportEvent) -> int:
+
+def process_batch(db: Session, batch: list[dict], import_event: FilmlisteImportEvent, full_import: bool = False) -> int:
     try:
-        added = get_or_create_media_item_bulk(db, batch, import_event)
+        url_timestamp_pairs = [(item['url_website'], item['timestamp']) for item in batch]
+
+        if full_import:
+            # Chunk the update to avoid exceeding PostgreSQL stack depth
+            CHUNK = 2000
+            for j in range(0, len(url_timestamp_pairs), CHUNK):
+                chunk = url_timestamp_pairs[j:j + CHUNK]
+                db.query(MediaItem).filter(
+                    tuple_(MediaItem.url_website, MediaItem.timestamp).in_(chunk)
+                ).update({
+                    MediaItem.ignore: None,
+                    MediaItem.import_event_id: import_event.id
+                }, synchronize_session=False)
+                db.commit()
+
+        topic_cache, channel_cache = _load_lookup_caches(db)
+        added = get_or_create_media_item_bulk(db, batch, import_event, topic_cache, channel_cache, url_timestamp_pairs)
         db.commit()
         return added
     except Exception as e:
@@ -97,46 +97,47 @@ def process_batch(db: Session, batch: list[dict], import_event: FilmlisteImportE
         return 0
 
 def get_existing_media_items_by_urls_and_timestamps(db: Session, url_timestamp_pairs: list[tuple[str, str]]) -> dict:
-    query = db.query(MediaItem).filter(tuple_(MediaItem.url_website, MediaItem.timestamp).in_(url_timestamp_pairs))
-    return {(item.url_website, item.timestamp): item for item in query}
+    """Look up existing items, chunked to avoid PostgreSQL stack depth limit."""
+    result = {}
+    CHUNK = 2000
+    for j in range(0, len(url_timestamp_pairs), CHUNK):
+        chunk = url_timestamp_pairs[j:j + CHUNK]
+        query = db.query(MediaItem).filter(tuple_(MediaItem.url_website, MediaItem.timestamp).in_(chunk))
+        for item in query:
+            result[(item.url_website, item.timestamp)] = item
+    return result
 
 def get_media_item_by_channel_topic_title(db: Session, channel: str, topic: str, title: str) -> MediaItem:
     return db.query(MediaItem).filter(MediaItem.channel == channel, MediaItem.topic == topic, MediaItem.title == title).first()
 
-def get_or_create_media_item_bulk(db: Session, media_items: list[dict], import_event: FilmlisteImportEvent) -> int:
-    unique_url_timestamps = set()
-    url_timestamp_pairs = [(item['url_website'], item['timestamp']) for item in media_items]
+def get_or_create_media_item_bulk(db: Session, media_items: list[dict], import_event: FilmlisteImportEvent,
+                                   topic_cache: dict, channel_cache: dict,
+                                   url_timestamp_pairs: list[tuple]) -> int:
     existing_media_items = get_existing_media_items_by_urls_and_timestamps(db, url_timestamp_pairs)
-
+    unique_url_timestamps = set()
     new_media_items = []
+
     for item in media_items:
         url_website = item['url_website']
         timestamp = item['timestamp']
-        
+
         if (url_website, timestamp) in unique_url_timestamps:
             continue
-
         if (url_website, timestamp) in existing_media_items:
             continue
 
         try:
-            topic = get_or_create_topic(db, item['topic'])
-            channel = get_or_create_channel(db, item['channel'])
+            topic = _get_or_create_cached(db, item['topic'], topic_cache, Topic)
+            channel = _get_or_create_cached(db, item['channel'], channel_cache, Channel)
 
-            if topic and channel:
-                item.update({'topic_id': topic.id, 'channel_id': channel.id})
-                if not _handle_existing_item_check(db, item):
-                    item_data_to_insert = item.copy()
-                    item_data_to_insert.update({
-                        'topic_id': topic.id,
-                        'channel_id': channel.id,
-                        'import_event_id': import_event.id
-                    })
-                    new_media_items.append(MediaItem(**item_data_to_insert))
-                    unique_url_timestamps.add((url_website, timestamp))
-            else:
-                print(f"Error with topic or channel for item: {item}")
-
+            item_data_to_insert = item.copy()
+            item_data_to_insert.update({
+                'topic_id': topic.id,
+                'channel_id': channel.id,
+                'import_event_id': import_event.id
+            })
+            new_media_items.append(MediaItem(**item_data_to_insert))
+            unique_url_timestamps.add((url_website, timestamp))
         except Exception as e:
             print(f"Error with item: {item}")
             print(e)
@@ -155,6 +156,21 @@ def get_or_create_media_item_bulk(db: Session, media_items: list[dict], import_e
 
 def get_media_item(db: Session, media_item_id: int) -> MediaItem:
     return db.query(MediaItem).filter(MediaItem.id == media_item_id).first()
+
+def get_or_create_media_item(db: Session, media_item: dict) -> MediaItem:
+    topic_cache, channel_cache = _load_lookup_caches(db)
+    topic = _get_or_create_cached(db, media_item['topic'], topic_cache, Topic)
+    channel = _get_or_create_cached(db, media_item['channel'], channel_cache, Channel)
+    media_item_data_to_insert = media_item.copy()
+    media_item_data_to_insert['topic_id'] = topic.id
+    media_item_data_to_insert['channel_id'] = channel.id
+    return _get_or_create(db, MediaItem, {
+        'title': media_item['title'],
+        'topic_id': topic.id,
+        'channel_id': channel.id,
+        'date': media_item['date'],
+        'time': media_item['time']
+    }, **media_item_data_to_insert)
 
 def create_or_update_media_item(db: Session, media_item: dict) -> MediaItem:
     media_item = get_or_create_media_item(db, media_item)

@@ -35,7 +35,6 @@ class JobOut(BaseModel):
 @router.post("/trigger/{video_id}", response_model=list[JobOut])
 def trigger_series_detection(
     video_id: int,
-    method: str = "regex",
     db: Session = Depends(get_db),
     rec_engine: RecommendationEngine = Depends(get_recommendation_engine),
 ):
@@ -43,9 +42,6 @@ def trigger_series_detection(
     recommended neighbours.  Skips videos that already have series
     metadata.  Each Celery task fetches its own recommendations via
     the API, avoiding a second RecommendationEngine in the worker.
-
-    method='regex' (default): regex pre-pass + LLM fallback.
-    method='llm':        skip regex, LLM with full context.
     """
     target = mediaitem_crud.get_media_item(db, video_id)
     if not target:
@@ -56,12 +52,10 @@ def trigger_series_detection(
 
     jobs: list[SeriesDetectionJob] = []
     for vid in all_video_ids:
-        # Skip if this video already has series data — but only in regex mode.
-        # In llm mode, allow re-classification (the LLM may do better).
-        if method != "llm":
-            vid_obj = mediaitem_crud.get_media_item(db, vid)
-            if vid_obj and vid_obj.series_name:
-                continue
+        # Skip if this video already has series data.
+        vid_obj = mediaitem_crud.get_media_item(db, vid)
+        if vid_obj and vid_obj.series_name:
+            continue
 
         # Reuse existing pending/running job
         existing = (
@@ -87,7 +81,7 @@ def trigger_series_detection(
         db.refresh(job)
         jobs.append(job)
 
-        detect_series_for_video.delay(video_id, vid, method=method)
+        detect_series_for_video.delay(video_id, vid)
 
     return jobs
 

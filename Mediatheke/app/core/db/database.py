@@ -35,6 +35,8 @@ def get_engine() -> Engine:
         connect_args={"check_same_thread": False}
         if settings.environment == "test"
         else {},
+        pool_size=20,
+        max_overflow=20,
     )
 
     return engine

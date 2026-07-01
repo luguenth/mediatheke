@@ -71,5 +71,6 @@ def persist_thumbnail(media_item_id, thumbnail_url):
 @app.task()
 def init_recommendations():
     print("Initializing Recommendations")
-    recommendations.get_recommendation_engine()
+    engine = recommendations.get_recommendation_engine()
+    engine.load()
     print("Finished initializing Recommendations")
