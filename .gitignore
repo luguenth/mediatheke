@@ -2,3 +2,4 @@
 .vscode
 celery.log
 typesense-data
+__pycache__
