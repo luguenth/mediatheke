@@ -10,9 +10,11 @@ import {
   Output,
   EventEmitter,
   NgZone,
+  HostListener,
 } from '@angular/core';
 import { IVideo } from '../interfaces';
 import { StorageService } from '../services/storage.service';
+import { generateThumbnails } from './thumbnails';
 
 export enum VideoQuality {
   SMALL = 'SD',
@@ -125,6 +127,11 @@ const QUALITY_LABELS: Record<VideoQuality, string> = {
   [VideoQuality.HD]: 'Hoch (HD)',
 };
 
+interface ThumbEntry {
+  time: number;
+  dataUrl: string;
+}
+
 @Component({
   selector: 'app-video-player',
   templateUrl: './video-player.component.html',
@@ -149,6 +156,10 @@ export class VideoPlayerComponent
   showMenu = false;
   activeSubmenu: 'quality' | 'track' | null = null;
 
+  thumbnails: ThumbEntry[] = [];
+  thumbPreview: { src: string; time: number } | null = null;
+  thumbPreviewX = 0;
+
   constructor(
     private storageService: StorageService,
     private ngZone: NgZone,
@@ -163,6 +174,7 @@ export class VideoPlayerComponent
       this.video = changes.video.currentValue;
       this.updateAvailableOptions();
       this.loadSourceWithTime(this.getLastKnownTime());
+      this.startThumbGen();
     }
   }
 
@@ -171,10 +183,64 @@ export class VideoPlayerComponent
     const startTime =
       this.urlTime !== 0 ? this.urlTime : this.getLastKnownTime();
     this.loadSourceWithTime(startTime);
+    this.startThumbGen();
   }
 
   get videoElement(): HTMLVideoElement | null {
     return this.videoEl?.nativeElement ?? null;
+  }
+
+  private startThumbGen(): void {
+    this.thumbnails = [];
+    this.thumbPreview = null;
+    if (!this.video) return;
+    const duration = this.video.duration || 0;
+    if (duration < 10) return;
+    const url = this.getUrl();
+    if (!url) return;
+
+    generateThumbnails(url, duration).then((frames) => {
+      this.thumbnails = frames;
+    });
+  }
+
+  onTimelineHover(event: MouseEvent): void {
+    const wrapper = event.currentTarget as HTMLElement;
+    const slider = wrapper.querySelector('media-time-slider');
+    if (!slider) return;
+
+    const rect = slider.getBoundingClientRect();
+    const pct = Math.max(
+      0,
+      Math.min(1, (event.clientX - rect.left) / rect.width),
+    );
+    if (!this.video || !this.video.duration) return;
+
+    const time = pct * this.video.duration;
+    this.thumbPreviewX = event.clientX - wrapper.getBoundingClientRect().left;
+
+    const nearest = this.findNearestThumbnail(time);
+    this.thumbPreview = nearest
+      ? { src: nearest.dataUrl, time: nearest.time }
+      : { src: '', time };
+  }
+
+  onTimelineLeave(): void {
+    this.thumbPreview = null;
+  }
+
+  private findNearestThumbnail(time: number): ThumbEntry | null {
+    if (this.thumbnails.length === 0) return null;
+    let best = this.thumbnails[0];
+    let bestDiff = Math.abs(best.time - time);
+    for (const t of this.thumbnails) {
+      const diff = Math.abs(t.time - time);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        best = t;
+      }
+    }
+    return best;
   }
 
   updateAvailableOptions(): void {
@@ -248,9 +314,7 @@ export class VideoPlayerComponent
       videoEl.removeEventListener('loadeddata', handleLoaded);
       const playPromise = videoEl.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay blocked, user needs to interact
-        });
+        playPromise.catch(() => {});
       }
     };
 
@@ -286,14 +350,22 @@ export class VideoPlayerComponent
     }
   }
 
-  onMenuMouseLeave(event: MouseEvent): void {
-    // Only close if the mouse actually left the entire menu area
-    const target = event.relatedTarget as HTMLElement | null;
-    const current = event.currentTarget as HTMLElement;
-    if (target && current.contains(target)) {
-      return;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.showMenu) return;
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    // Close if click is outside the source menu wrapper
+    const wrap = this.wrapperElement?.nativeElement?.querySelector('.vjs-source-wrap');
+    if (wrap && !wrap.contains(target)) {
+      this.showMenu = false;
+      this.activeSubmenu = null;
     }
-    this.showMenu = false;
-    this.activeSubmenu = null;
+  }
+
+  formatTime(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 }

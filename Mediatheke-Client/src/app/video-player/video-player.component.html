@@ -1,8 +1,7 @@
 <!--
   Ejected Video.js v10 default video skin rendered in light DOM.
-  Uses v10's registered custom elements directly instead of <video-skin>.
-  The skin CSS is loaded globally via angular.json.
-  Custom source selector button integrated into the right button group.
+  Uses v10's registered custom elements.
+  Icons are the exact SVGs from @videojs/html's icon set (18×18, currentColor).
 -->
 <div #wrapperElement *ngIf="video" class="video-wrapper">
   <video-player>
@@ -19,9 +18,7 @@
 
       <media-buffering-indicator class="media-buffering-indicator">
         <div class="media-surface">
-          <svg class="media-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-          </svg>
+          <svg class="media-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" aria-hidden="true" viewBox="0 0 18 18"><path d="M9 1.5v3" class="media-spinner__segment" opacity=".5"/><path d="m14.5 3.5-2 2" class="media-spinner__segment" opacity=".45"/><path d="M16.5 9h-3" class="media-spinner__segment" opacity=".4"/><path d="m14.5 14.5-2-2" class="media-spinner__segment" opacity=".35"/><path d="M9 16.5v-3" class="media-spinner__segment" opacity=".3"/><path d="m3.5 14.5 2-2" class="media-spinner__segment" opacity=".25"/><path d="M1.5 9h3" class="media-spinner__segment" opacity=".15"/><path d="m3.5 3.5 2 2" class="media-spinner__segment" opacity=".1"/></svg>
         </div>
       </media-buffering-indicator>
 
@@ -39,50 +36,67 @@
 
       <media-controls class="media-surface media-controls">
         <div class="media-button-group">
+          <!-- Play/Restart -->
           <media-play-button class="media-button media-button--subtle media-button--icon media-button--play">
-            <svg class="media-icon media-icon--restart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-            <svg class="media-icon media-icon--play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            <svg class="media-icon media-icon--pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            <svg class="media-icon media-icon--restart" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M9 1a7.98 7.98 0 0 0-6.132 2.867l-1.441-1.44A.25.25 0 0 0 1 2.604V6.75c0 .138.112.25.25.25h4.146a.25.25 0 0 0 .177-.427L4.29 5.29A5.99 5.99 0 0 1 9 3a6 6 0 1 1-6 6H1a8 8 0 1 0 8-8"/><path d="m11.61 9.639-3.331 2.07a.826.826 0 0 1-1.15-.266.86.86 0 0 1-.129-.452V6.849C7 6.38 7.374 6 7.834 6c.158 0 .312.045.445.13l3.331 2.071a.858.858 0 0 1 0 1.438"/></svg>
+            <svg class="media-icon media-icon--play" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="m14.051 10.723-7.985 4.964a1.98 1.98 0 0 1-2.758-.638A2.06 2.06 0 0 1 3 13.964V4.036C3 2.91 3.895 2 5 2c.377 0 .747.109 1.066.313l7.985 4.964a2.057 2.057 0 0 1 .627 2.808c-.16.257-.373.475-.627.637"/></svg>
+            <svg class="media-icon media-icon--pause" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><rect width="5" height="14" x="2" y="2" rx="1.75"/><rect width="5" height="14" x="11" y="2" rx="1.75"/></svg>
           </media-play-button>
+
+          <!-- Seek backward -->
           <media-seek-button seconds="-10" class="media-button media-button--subtle media-button--icon media-button--seek">
             <span class="media-icon__container">
-              <svg class="media-icon media-icon--flipped" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+              <svg class="media-icon media-icon--flipped" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M9 1a7.98 7.98 0 0 1 6.132 2.867l1.441-1.44a.25.25 0 0 1 .427.177V6.75a.25.25 0 0 1-.25.25h-4.146a.25.25 0 0 1-.177-.427L13.71 5.29A5.99 5.99 0 0 0 9 3a6 6 0 0 0-4.242 10.242l-1.415 1.415A8 8 0 0 1 9 1"/></svg>
               <span class="media-icon__label">10</span>
             </span>
           </media-seek-button>
+
+          <!-- Seek forward -->
           <media-seek-button seconds="10" class="media-button media-button--subtle media-button--icon media-button--seek">
             <span class="media-icon__container">
-              <svg class="media-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+              <svg class="media-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M9 1a7.98 7.98 0 0 1 6.132 2.867l1.441-1.44a.25.25 0 0 1 .427.177V6.75a.25.25 0 0 1-.25.25h-4.146a.25.25 0 0 1-.177-.427L13.71 5.29A5.99 5.99 0 0 0 9 3a6 6 0 0 0-4.242 10.242l-1.415 1.415A8 8 0 0 1 9 1"/></svg>
               <span class="media-icon__label">10</span>
             </span>
           </media-seek-button>
         </div>
 
-        <div class="media-time-controls">
+        <div class="media-time-controls" (mousemove)="onTimelineHover($event)" (mouseleave)="onTimelineLeave()">
           <media-time type="current" class="media-time"></media-time>
           <media-time-slider class="media-slider">
             <media-slider-track class="media-slider__track">
               <media-slider-fill class="media-slider__fill"></media-slider-fill>
               <media-slider-buffer class="media-slider__buffer"></media-slider-buffer>
             </media-slider-track>
-            <media-slider-thumb class="media-slider__thumb"></media-slider-thumb>
+            <media-slider-thumb class="media-slider__thumb media-slider__thumb--persistent"></media-slider-thumb>
           </media-time-slider>
           <media-time type="duration" class="media-time"></media-time>
+          <div
+            class="thumb-preview"
+            *ngIf="thumbPreview"
+            [style.left.px]="thumbPreviewX"
+          >
+            <img
+              *ngIf="thumbPreview.src"
+              [src]="thumbPreview.src"
+              class="thumb-preview__img"
+            />
+            <span
+              class="thumb-preview__time"
+              [class.thumb-preview__time--alone]="!thumbPreview.src"
+            >{{ formatTime(thumbPreview.time) }}</span>
+          </div>
         </div>
 
         <div class="media-button-group">
-          <!-- Source selector button — integrated into the control bar -->
-          <div class="vjs-source-wrap" (mouseleave)="onMenuMouseLeave($event)">
+          <!-- Source selector -->
+          <div class="vjs-source-wrap" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()" (pointerup)="$event.stopPropagation()">
             <button
               class="media-button media-button--subtle media-button--icon vjs-source-button"
               (click)="toggleMenu($event)"
               [attr.aria-expanded]="showMenu"
               title="Qualität & Ton"
             >
-              <svg class="media-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-              </svg>
+              <svg class="media-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" viewBox="0 0 18 18"><circle cx="9" cy="9" r="2"/><path d="M9 1v2M9 15v2M3.5 3.5l1.4 1.4M13.1 13.1l1.4 1.4M1 9h2M15 9h2M3.5 14.5l1.4-1.4M13.1 4.9l1.4-1.4"/></svg>
             </button>
 
             <!-- Main menu -->
@@ -104,7 +118,7 @@
             <!-- Quality submenu -->
             <div class="vjs-menu" *ngIf="showMenu && activeSubmenu === 'quality'">
               <div class="vjs-menu-item vjs-menu-back" (click)="activeSubmenu = null; $event.stopPropagation()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="vjs-back-icon"><polyline points="15 18 9 12 15 6"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 18 18" class="vjs-back-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4 5 9l6 5"/></svg>
                 <span>Qualität</span>
               </div>
               <div class="vjs-menu-divider"></div>
@@ -113,7 +127,7 @@
                      [class.vjs-menu-item--active]="quality === curr_quality"
                      (click)="changeQuality(quality); activeSubmenu = null">
                   <span>{{ qualityLabel(quality) }}</span>
-                  <svg *ngIf="quality === curr_quality" class="vjs-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg *ngIf="quality === curr_quality" class="vjs-check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" aria-hidden="true" viewBox="0 0 18 18"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10.455 6.5 13 14 5"/></svg>
                 </div>
               </div>
             </div>
@@ -121,7 +135,7 @@
             <!-- Audio track submenu -->
             <div class="vjs-menu" *ngIf="showMenu && activeSubmenu === 'track'">
               <div class="vjs-menu-item vjs-menu-back" (click)="activeSubmenu = null; $event.stopPropagation()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="vjs-back-icon"><polyline points="15 18 9 12 15 6"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 18 18" class="vjs-back-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4 5 9l6 5"/></svg>
                 <span>Tonspur</span>
               </div>
               <div class="vjs-menu-divider"></div>
@@ -130,34 +144,96 @@
                      [class.vjs-menu-item--active]="track === curr_track"
                      (click)="changeTrack(track); activeSubmenu = null">
                   <span>{{ trackLabel(track) }}</span>
-                  <svg *ngIf="track === curr_track" class="vjs-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg *ngIf="track === curr_track" class="vjs-check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" aria-hidden="true" viewBox="0 0 18 18"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10.455 6.5 13 14 5"/></svg>
                 </div>
               </div>
             </div>
           </div>
 
-          <media-playback-rate-button class="media-button media-button--subtle media-button--icon media-button--playback-rate"></media-playback-rate-button>
-          <media-mute-button class="media-button media-button--subtle media-button--icon media-button--mute">
-            <svg class="media-icon media-icon--volume-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-            <svg class="media-icon media-icon--volume-low" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M16 9a4.5 4.5 0 0 1 0 6"/></svg>
-            <svg class="media-icon media-icon--volume-high" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <!-- Playback rate -->
+          <media-playback-rate-menu-trigger commandfor="playback-rate-menu" class="media-button media-button--subtle media-button--icon media-button--playback-rate"></media-playback-rate-menu-trigger>
+          <media-playback-rate-menu id="playback-rate-menu" side="top" align="center" class="media-surface media-popover media-menu media-menu--playback-rate" style="background-color:var(--color-key-yellow);color:var(--color-key-black);border:3px solid var(--color-key-magenta);">
+            <media-playback-rate-options class="media-menu__group">
+              <template>
+                <media-menu-radio-item class="media-menu__item">
+                  <span data-part="label"></span>
+                  <media-menu-item-indicator force-mount class="media-menu__indicator">
+                    <svg class="media-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" aria-hidden="true" viewBox="0 0 18 18"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10.455 6.5 13 14 5"/></svg>
+                  </media-menu-item-indicator>
+                </media-menu-radio-item>
+              </template>
+            </media-playback-rate-options>
+          </media-playback-rate-menu>
+
+          <!-- Volume with popover -->
+          <media-mute-button commandfor="volume-popover" class="media-button media-button--subtle media-button--icon media-button--mute">
+            <svg class="media-icon media-icon--volume-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M.714 6.008h3.072l4.071-3.857c.5-.376 1.143 0 1.143.601V15.28c0 .602-.643.903-1.143.602l-4.071-3.858H.714c-.428 0-.714-.3-.714-.752V6.76c0-.451.286-.752.714-.752M14.5 7.586l-1.768-1.768a1 1 0 1 0-1.414 1.414L13.085 9l-1.767 1.768a1 1 0 0 0 1.414 1.414l1.768-1.768 1.768 1.768a1 1 0 0 0 1.414-1.414L15.914 9l1.768-1.768a1 1 0 0 0-1.414-1.414z"/></svg>
+            <svg class="media-icon media-icon--volume-low" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M.714 6.008h3.072l4.071-3.857c.5-.376 1.143 0 1.143.601V15.28c0 .602-.643.903-1.143.602l-4.071-3.858H.714c-.428 0-.714-.3-.714-.752V6.76c0-.451.286-.752.714-.752m10.568.59a.91.91 0 0 1 0-1.316.91.91 0 0 1 1.316 0c1.203 1.203 1.47 2.216 1.522 3.208q.012.255.011.51c0 1.16-.358 2.733-1.533 3.803a.7.7 0 0 1-.298.156c-.382.106-.873-.011-1.018-.156a.91.91 0 0 1 0-1.316c.57-.57.995-1.551.995-2.487 0-.944-.26-1.667-.995-2.402"/></svg>
+            <svg class="media-icon media-icon--volume-high" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M15.6 3.3c-.4-.4-1-.4-1.4 0s-.4 1 0 1.4C15.4 5.9 16 7.4 16 9s-.6 3.1-1.8 4.3c-.4.4-.4 1 0 1.4.2.2.5.3.7.3.3 0 .5-.1.7-.3C17.1 13.2 18 11.2 18 9s-.9-4.2-2.4-5.7"/><path d="M.714 6.008h3.072l4.071-3.857c.5-.376 1.143 0 1.143.601V15.28c0 .602-.643.903-1.143.602l-4.071-3.858H.714c-.428 0-.714-.3-.714-.752V6.76c0-.451.286-.752.714-.752m10.568.59a.91.91 0 0 1 0-1.316.91.91 0 0 1 1.316 0c1.203 1.203 1.47 2.216 1.522 3.208q.012.255.011.51c0 1.16-.358 2.733-1.533 3.803a.7.7 0 0 1-.298.156c-.382.106-.873-.011-1.018-.156a.91.91 0 0 1 0-1.316c.57-.57.995-1.551.995-2.487 0-.944-.26-1.667-.995-2.402"/></svg>
           </media-mute-button>
+          <media-popover id="volume-popover" open-on-hover delay="200" close-delay="100" side="top" class="media-surface media-popover media-popover--volume" style="background-color:var(--color-key-yellow);border:3px solid var(--color-key-magenta);">
+            <media-volume-slider class="media-slider" orientation="vertical" thumb-alignment="edge">
+              <media-slider-track class="media-slider__track">
+                <media-slider-fill class="media-slider__fill"></media-slider-fill>
+              </media-slider-track>
+              <media-slider-thumb class="media-slider__thumb media-slider__thumb--persistent"></media-slider-thumb>
+            </media-volume-slider>
+          </media-popover>
+
+          <!-- Captions -->
           <media-captions-button class="media-button media-button--subtle media-button--icon media-button--captions">
-            <svg class="media-icon media-icon--captions-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v3"/><path d="M7 9.5h2M7 14.5h4"/><rect x="12" y="10" width="10" height="10" rx="1"/></svg>
-            <svg class="media-icon media-icon--captions-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v3"/><path d="M7 9.5h2M7 14.5h4"/><rect x="12" y="10" width="10" height="10" rx="1"/><path d="M14.5 13h3M14.5 16.5h3"/></svg>
+            <svg class="media-icon media-icon--captions-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" aria-hidden="true" viewBox="0 0 18 18"><rect width="16" height="12" x="1" y="3" stroke="currentColor" stroke-width="2" rx="3"/><rect width="3" height="2" x="3" y="8" fill="currentColor" rx="1"/><rect width="2" height="2" x="13" y="8" fill="currentColor" rx="1"/><rect width="4" height="2" x="11" y="11" fill="currentColor" rx="1"/><rect width="5" height="2" x="7" y="8" fill="currentColor" rx="1"/><rect width="7" height="2" x="3" y="11" fill="currentColor" rx="1"/></svg>
+            <svg class="media-icon media-icon--captions-on" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M15 2a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3zM4 11a1 1 0 1 0 0 2h5a1 1 0 1 0 0-2zm8 0a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2zM4 8a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2zm4 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2zm6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>
           </media-captions-button>
+
+          <!-- PiP -->
           <media-pip-button class="media-button media-button--subtle media-button--icon media-button--pip">
-            <svg class="media-icon media-icon--pip-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M14 11h6v5a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></svg>
-            <svg class="media-icon media-icon--pip-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M14 11h6v5a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></svg>
+            <svg class="media-icon media-icon--pip-enter" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M13 2a4 4 0 0 1 4 4v2.036A3.5 3.5 0 0 0 16.5 8H15V6.273C15 5.018 13.96 4 12.679 4H4.32C3.04 4 2 5.018 2 6.273v5.454C2 12.982 3.04 14 4.321 14H6v1.5q0 .255.036.5H4a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"/><rect width="10" height="7" x="8" y="10" rx="2"/><path d="M7.129 5.547a.6.6 0 0 0-.656.13L3.677 8.473A.6.6 0 0 0 4.102 9.5h2.796c.332 0 .602-.27.602-.602V6.103a.6.6 0 0 0-.371-.556"/></svg>
+            <svg class="media-icon media-icon--pip-exit" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M13 2a4 4 0 0 1 4 4v2.036A3.5 3.5 0 0 0 16.5 8H15V6.273C15 5.018 13.96 4 12.679 4H4.32C3.04 4 2 5.018 2 6.273v5.454C2 12.982 3.04 14 4.321 14H6v1.5q0 .255.036.5H4a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"/><rect width="10" height="7" x="8" y="10" rx="2"/><path d="M4.871 10.454a.6.6 0 0 0 .656-.131l2.796-2.796A.6.6 0 0 0 7.898 6.5H5.102a.603.603 0 0 0-.602.602v2.795a.6.6 0 0 0 .371.556"/></svg>
           </media-pip-button>
+
+          <!-- Fullscreen -->
           <media-fullscreen-button class="media-button media-button--subtle media-button--icon media-button--fullscreen">
-            <svg class="media-icon media-icon--fullscreen-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-            <svg class="media-icon media-icon--fullscreen-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 8 4 4 8 4"/><polyline points="20 16 20 20 16 20"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="20" y1="20" x2="15" y2="15"/></svg>
+            <svg class="media-icon media-icon--fullscreen-enter" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M9.57 3.617A1 1 0 0 0 8.646 3H4c-.552 0-1 .449-1 1v4.646a.996.996 0 0 0 1.001 1 1 1 0 0 0 .706-.293l4.647-4.647a1 1 0 0 0 .216-1.089m4.812 4.812a1 1 0 0 0-1.089.217l-4.647 4.647a.998.998 0 0 0 .708 1.706H14c.552 0 1-.449 1-1V9.353a1 1 0 0 0-.618-.924"/></svg>
+            <svg class="media-icon media-icon--fullscreen-exit" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 0 18 18"><path d="M7.883 1.93a.99.99 0 0 0-1.09.217L2.146 6.793A.998.998 0 0 0 2.853 8.5H7.5c.551 0 1-.449 1-1V2.854a1 1 0 0 0-.617-.924m7.263 7.57H10.5c-.551 0-1 .449-1 1v4.646a.996.996 0 0 0 1.001 1.001 1 1 0 0 0 .706-.293l4.646-4.646a.998.998 0 0 0-.707-1.707z"/></svg>
           </media-fullscreen-button>
         </div>
       </media-controls>
 
       <div class="media-overlay"></div>
-    </media-container>
-  </video-player>
+
+      <media-gesture type="tap" action="togglePaused" pointer="mouse" region="center"></media-gesture>
+      <media-gesture type="tap" action="toggleControls" pointer="touch"></media-gesture>
+      <media-gesture type="doubletap" action="seekStep" value="-10" region="left"></media-gesture>
+      <media-gesture type="doubletap" action="toggleFullscreen" region="center"></media-gesture>
+      <media-gesture type="doubletap" action="seekStep" value="10" region="right"></media-gesture>
+
+      <media-hotkey keys="Space" action="togglePaused"></media-hotkey>
+      <media-hotkey keys="k" action="togglePaused"></media-hotkey>
+      <media-hotkey keys="m" action="toggleMuted"></media-hotkey>
+      <media-hotkey keys="f" action="toggleFullscreen"></media-hotkey>
+      <media-hotkey keys="c" action="toggleSubtitles"></media-hotkey>
+      <media-hotkey keys="i" action="togglePictureInPicture"></media-hotkey>
+      <media-hotkey keys="ArrowRight" action="seekStep" value="5"></media-hotkey>
+      <media-hotkey keys="ArrowLeft" action="seekStep" value="-5"></media-hotkey>
+      <media-hotkey keys="l" action="seekStep" value="10"></media-hotkey>
+      <media-hotkey keys="j" action="seekStep" value="-10"></media-hotkey>
+      <media-hotkey keys="ArrowUp" action="volumeStep" value="0.05"></media-hotkey>
+      <media-hotkey keys="ArrowDown" action="volumeStep" value="-0.05"></media-hotkey>
+      <media-hotkey keys="0-9" action="seekToPercent"></media-hotkey>
+      <media-hotkey keys="Home" action="seekToPercent" value="0"></media-hotkey>
+      <media-hotkey keys="End" action="seekToPercent" value="100"></media-hotkey>
+      <media-hotkey keys=">" action="speedUp"></media-hotkey>
+      <media-hotkey keys="<" action="speedDown"></media-hotkey>
+    <div class="media-overlay"></div>
+
+    <!-- Absorbs clicks while source menu is open -->
+    <div
+      class="vjs-menu-overlay"
+      *ngIf="showMenu"
+      (click)="showMenu = false; activeSubmenu = null"
+    ></div>
+  </media-container>
+
+</video-player>
 </div>
