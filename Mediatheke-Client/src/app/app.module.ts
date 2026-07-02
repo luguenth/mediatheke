@@ -1,4 +1,4 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { NgModule, isDevMode, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -35,6 +35,8 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { HeroComponent } from './hero/hero.component';
 import { VideoSmallListComponent } from './video-small-list/video-small-list.component';
 import { VideoTopicRowComponent } from './video-topic-row/video-topic-row.component';
+import { SeriesCardComponent } from './series-card/series-card.component';
+import { ThumbPlaceholderComponent } from './thumb-placeholder/thumb-placeholder.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +63,8 @@ import { VideoTopicRowComponent } from './video-topic-row/video-topic-row.compon
     HeroComponent,
     VideoSmallListComponent,
     VideoTopicRowComponent,
+    SeriesCardComponent,
+    ThumbPlaceholderComponent,
   ],
   imports: [
     BrowserModule,
@@ -85,6 +89,7 @@ import { VideoTopicRowComponent } from './video-topic-row/video-topic-row.compon
     useClass: AuthInterceptor,
     multi: true
   },],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

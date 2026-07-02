@@ -1,23 +1,163 @@
-<div #wrapperElement *ngIf="video" class="video-container" (mouseenter)="showSlider = true"
-    (mouseleave)="showSlider = false">
-    <div class="video-player">
-        <video #videoElement id="videoElement" class="video-js vjs-default-skin" width="100%" height="auto" controls
-            preload="auto" (timeupdate)="emitCurrentTime()">
-        </video>
-        <div class="quality-slider" *ngIf="showSlider">
-            <ul class="list-group list-group-horizontal">
-                <li class="list-group-item" *ngFor="let quality of availableQualities"
-                    [ngClass]="{ 'active': quality === curr_quality }" (click)="changeQuality(quality, $event)">
-                    {{ quality }}
-                </li>
-                <li class="list-group-item audio-item"
-                    *ngFor="let track of availableTracks"
-                    [ngClass]="{ 'active': track === curr_track }"
-                    (click)="changeTrack(track, $event)">
-                    <i-bs *ngIf="getTrackInfo(track)?.icon" [name]="$any(getTrackInfo(track)!.icon)"></i-bs>
-                    {{ getTrackInfo(track)?.label }}
-                </li>
-            </ul>
+<!--
+  Ejected Video.js v10 default video skin rendered in light DOM.
+  Uses v10's registered custom elements directly instead of <video-skin>.
+  The skin CSS is loaded globally via angular.json.
+  Custom source selector button integrated into the right button group.
+-->
+<div #wrapperElement *ngIf="video" class="video-wrapper">
+  <video-player>
+    <media-container class="media-default-skin media-default-skin--video">
+      <video
+        #videoEl
+        slot="media"
+        playsinline
+        preload="auto"
+        (timeupdate)="emitCurrentTime()"
+      ></video>
+
+      <media-poster><slot name="poster"></slot></media-poster>
+
+      <media-buffering-indicator class="media-buffering-indicator">
+        <div class="media-surface">
+          <svg class="media-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          </svg>
         </div>
-    </div>
+      </media-buffering-indicator>
+
+      <media-error-dialog class="media-error">
+        <div class="media-error__dialog media-surface">
+          <div class="media-error__content">
+            <media-alert-dialog-title class="media-error__title">Something went wrong.</media-alert-dialog-title>
+            <media-alert-dialog-description class="media-error__description"></media-alert-dialog-description>
+          </div>
+          <div class="media-error__actions">
+            <media-alert-dialog-close class="media-button media-button--primary">OK</media-alert-dialog-close>
+          </div>
+        </div>
+      </media-error-dialog>
+
+      <media-controls class="media-surface media-controls">
+        <div class="media-button-group">
+          <media-play-button class="media-button media-button--subtle media-button--icon media-button--play">
+            <svg class="media-icon media-icon--restart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <svg class="media-icon media-icon--play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg class="media-icon media-icon--pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </media-play-button>
+          <media-seek-button seconds="-10" class="media-button media-button--subtle media-button--icon media-button--seek">
+            <span class="media-icon__container">
+              <svg class="media-icon media-icon--flipped" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+              <span class="media-icon__label">10</span>
+            </span>
+          </media-seek-button>
+          <media-seek-button seconds="10" class="media-button media-button--subtle media-button--icon media-button--seek">
+            <span class="media-icon__container">
+              <svg class="media-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+              <span class="media-icon__label">10</span>
+            </span>
+          </media-seek-button>
+        </div>
+
+        <div class="media-time-controls">
+          <media-time type="current" class="media-time"></media-time>
+          <media-time-slider class="media-slider">
+            <media-slider-track class="media-slider__track">
+              <media-slider-fill class="media-slider__fill"></media-slider-fill>
+              <media-slider-buffer class="media-slider__buffer"></media-slider-buffer>
+            </media-slider-track>
+            <media-slider-thumb class="media-slider__thumb"></media-slider-thumb>
+          </media-time-slider>
+          <media-time type="duration" class="media-time"></media-time>
+        </div>
+
+        <div class="media-button-group">
+          <!-- Source selector button — integrated into the control bar -->
+          <div class="vjs-source-wrap" (mouseleave)="onMenuMouseLeave($event)">
+            <button
+              class="media-button media-button--subtle media-button--icon vjs-source-button"
+              (click)="toggleMenu($event)"
+              [attr.aria-expanded]="showMenu"
+              title="Qualität & Ton"
+            >
+              <svg class="media-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+            </button>
+
+            <!-- Main menu -->
+            <div class="vjs-menu" *ngIf="showMenu && !activeSubmenu">
+              <div class="vjs-menu-group">
+                <div class="vjs-menu-item" *ngIf="availableQualities.length > 0"
+                     (click)="activeSubmenu = 'quality'; $event.stopPropagation()">
+                  <span>Qualität</span>
+                  <span class="vjs-menu-value">{{ curr_quality }}</span>
+                </div>
+                <div class="vjs-menu-item" *ngIf="availableTracks.length > 0"
+                     (click)="activeSubmenu = 'track'; $event.stopPropagation()">
+                  <span>Tonspur</span>
+                  <span class="vjs-menu-value">{{ getTrackLabel(curr_track) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quality submenu -->
+            <div class="vjs-menu" *ngIf="showMenu && activeSubmenu === 'quality'">
+              <div class="vjs-menu-item vjs-menu-back" (click)="activeSubmenu = null; $event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="vjs-back-icon"><polyline points="15 18 9 12 15 6"/></svg>
+                <span>Qualität</span>
+              </div>
+              <div class="vjs-menu-divider"></div>
+              <div class="vjs-menu-group">
+                <div class="vjs-menu-item" *ngFor="let quality of availableQualities"
+                     [class.vjs-menu-item--active]="quality === curr_quality"
+                     (click)="changeQuality(quality); activeSubmenu = null">
+                  <span>{{ qualityLabel(quality) }}</span>
+                  <svg *ngIf="quality === curr_quality" class="vjs-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Audio track submenu -->
+            <div class="vjs-menu" *ngIf="showMenu && activeSubmenu === 'track'">
+              <div class="vjs-menu-item vjs-menu-back" (click)="activeSubmenu = null; $event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="vjs-back-icon"><polyline points="15 18 9 12 15 6"/></svg>
+                <span>Tonspur</span>
+              </div>
+              <div class="vjs-menu-divider"></div>
+              <div class="vjs-menu-group">
+                <div class="vjs-menu-item" *ngFor="let track of availableTracks"
+                     [class.vjs-menu-item--active]="track === curr_track"
+                     (click)="changeTrack(track); activeSubmenu = null">
+                  <span>{{ trackLabel(track) }}</span>
+                  <svg *ngIf="track === curr_track" class="vjs-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <media-playback-rate-button class="media-button media-button--subtle media-button--icon media-button--playback-rate"></media-playback-rate-button>
+          <media-mute-button class="media-button media-button--subtle media-button--icon media-button--mute">
+            <svg class="media-icon media-icon--volume-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            <svg class="media-icon media-icon--volume-low" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M16 9a4.5 4.5 0 0 1 0 6"/></svg>
+            <svg class="media-icon media-icon--volume-high" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </media-mute-button>
+          <media-captions-button class="media-button media-button--subtle media-button--icon media-button--captions">
+            <svg class="media-icon media-icon--captions-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v3"/><path d="M7 9.5h2M7 14.5h4"/><rect x="12" y="10" width="10" height="10" rx="1"/></svg>
+            <svg class="media-icon media-icon--captions-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v3"/><path d="M7 9.5h2M7 14.5h4"/><rect x="12" y="10" width="10" height="10" rx="1"/><path d="M14.5 13h3M14.5 16.5h3"/></svg>
+          </media-captions-button>
+          <media-pip-button class="media-button media-button--subtle media-button--icon media-button--pip">
+            <svg class="media-icon media-icon--pip-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M14 11h6v5a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></svg>
+            <svg class="media-icon media-icon--pip-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M14 11h6v5a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></svg>
+          </media-pip-button>
+          <media-fullscreen-button class="media-button media-button--subtle media-button--icon media-button--fullscreen">
+            <svg class="media-icon media-icon--fullscreen-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <svg class="media-icon media-icon--fullscreen-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 8 4 4 8 4"/><polyline points="20 16 20 20 16 20"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="20" y1="20" x2="15" y2="15"/></svg>
+          </media-fullscreen-button>
+        </div>
+      </media-controls>
+
+      <div class="media-overlay"></div>
+    </media-container>
+  </video-player>
 </div>

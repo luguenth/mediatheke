@@ -1,0 +1,18 @@
+<div class="videocard" (click)="open()">
+    <app-thumb-placeholder
+        *ngIf="slides.length === 0 || failedCount >= slides.length"
+        [variant]="episodes[0]?.id || 0"></app-thumb-placeholder>
+    <div class="series-card__slides" *ngIf="slides.length > 0 && failedCount < slides.length">
+        <img class="series-card__slide"
+            *ngFor="let ep of slides; let i = index"
+            [src]="ep.thumbnail"
+            alt=""
+            [class.active]="i === activeIndex"
+            (error)="onSlideError(i)">
+    </div>
+
+    <div class="videocard-meta">
+        <a class="videocard-topic" (click)="goToTopic($event)">{{ topic }}</a>
+        <span class="videocard-title">{{ name }}</span>
+    </div>
+</div>

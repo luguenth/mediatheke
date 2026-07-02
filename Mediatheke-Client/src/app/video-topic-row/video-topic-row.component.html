@@ -3,9 +3,17 @@
     <div class="background">
         <span class="heading"> {{ title }} </span>
         <div class="boxes">
-            <div class="box" *ngFor="let video of videos">
-                <app-video-card [video]="video"></app-video-card>
-            </div>
+            <ng-container *ngIf="!isSeries">
+                <div class="box" *ngFor="let video of videos">
+                    <app-video-card [video]="video"></app-video-card>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="isSeries">
+                <div class="box" *ngFor="let group of seriesGroups">
+                    <app-series-card [episodes]="group.episodes"></app-series-card>
+                </div>
+            </ng-container>
 
             <button type="button"
                 class="load-more"

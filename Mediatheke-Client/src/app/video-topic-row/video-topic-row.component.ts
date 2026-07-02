@@ -1,9 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IVideoLocalStorage, IVideoOptions } from '../interfaces';
+import { IVideo, IVideoLocalStorage, IVideoOptions } from '../interfaces';
 import { BackendService } from '../services/backend';
 import { options_type } from '../topics';
 import { StorageService } from '../services/storage.service';
+
+export interface ISeriesGroup {
+  name: string;
+  episodes: IVideo[];
+}
 
 @Component({
   selector: 'app-video-topic-row',
@@ -17,6 +22,12 @@ export class VideoTopicRowComponent implements OnInit {
   @Input() options!: IVideoOptions;
 
   videos: any[] = [];
+  // for series rows: episodes grouped by series_name
+  seriesGroups: ISeriesGroup[] = [];
+
+  get isSeries(): boolean {
+    return this.options.type === options_type.series;
+  }
 
   /* how many videos to fetch per batch from the backend */
   limit = 10;
@@ -99,10 +110,31 @@ export class VideoTopicRowComponent implements OnInit {
       }
       // if we got fewer than the requested batch, we've reached the end
       this.hasMore = pagedEnd ? false : data.length >= this.limit;
+      if (this.isSeries) {
+        this.recomputeSeriesGroups();
+      }
       this.loading = false;
     }, () => {
       this.loading = false;
       this.hasMore = false;
     });
+  }
+
+  /** Group all fetched (deduped) series episodes by series_name. */
+  private recomputeSeriesGroups(): void {
+    const map = new Map<string, IVideo[]>();
+    for (const v of this.videos) {
+      const name = (v as IVideo).series_name;
+      if (!name) {
+        continue;
+      }
+      const list = map.get(name);
+      if (list) {
+        list.push(v as IVideo);
+      } else {
+        map.set(name, [v as IVideo]);
+      }
+    }
+    this.seriesGroups = Array.from(map.entries()).map(([name, episodes]) => ({ name, episodes }));
   }
 }

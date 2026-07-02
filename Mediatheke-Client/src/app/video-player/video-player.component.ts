@@ -1,25 +1,37 @@
-import { Component, Input, ElementRef, SimpleChanges, ViewChild, OnInit, OnChanges, AfterViewInit, HostListener, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  Input,
+  ElementRef,
+  SimpleChanges,
+  ViewChild,
+  OnInit,
+  OnChanges,
+  AfterViewInit,
+  Output,
+  EventEmitter,
+  NgZone,
+} from '@angular/core';
 import { IVideo } from '../interfaces';
 import { StorageService } from '../services/storage.service';
 
 export enum VideoQuality {
-  SMALL = "SD",
-  BASE = "MD",
-  HD = "HD"
+  SMALL = 'SD',
+  BASE = 'MD',
+  HD = 'HD',
 }
 
 export enum AudioTrack {
-  REGULAR = "DE",
-  AD = "AD",
-  UT = "UT",
-  OV = "OV",
-  OV_UT = "OV+UT"
+  REGULAR = 'DE',
+  AD = 'AD',
+  UT = 'UT',
+  OV = 'OV',
+  OV_UT = 'OV+UT',
 }
 
 interface TrackInfo {
   track: AudioTrack;
   label: string;
-  icon: string;
+  verbose: string;
   hasUrls: (v: IVideo) => boolean;
   getUrl: (v: IVideo, quality: VideoQuality) => string;
 }
@@ -28,80 +40,103 @@ const TRACKS: TrackInfo[] = [
   {
     track: AudioTrack.REGULAR,
     label: 'DE',
-    icon: '',
+    verbose: 'Deutsch',
     hasUrls: (v) => !!v.url_video,
     getUrl: (v, q) => {
       switch (q) {
-        case VideoQuality.SMALL: return v.url_video_low;
-        case VideoQuality.HD: return v.url_video_hd;
-        default: return v.url_video;
+        case VideoQuality.SMALL:
+          return v.url_video_low;
+        case VideoQuality.HD:
+          return v.url_video_hd;
+        default:
+          return v.url_video;
       }
-    }
+    },
   },
   {
     track: AudioTrack.AD,
     label: 'AD',
-    icon: 'ear-fill',
+    verbose: 'Deutsch (Audiodeskription)',
     hasUrls: (v) => !!v.url_video_descriptive_audio,
     getUrl: (v, q) => {
       switch (q) {
-        case VideoQuality.SMALL: return v.url_video_low_descriptive_audio;
-        case VideoQuality.HD: return v.url_video_hd_descriptive_audio;
-        default: return v.url_video_descriptive_audio;
+        case VideoQuality.SMALL:
+          return v.url_video_low_descriptive_audio;
+        case VideoQuality.HD:
+          return v.url_video_hd_descriptive_audio;
+        default:
+          return v.url_video_descriptive_audio;
       }
-    }
+    },
   },
   {
     track: AudioTrack.UT,
     label: 'UT',
-    icon: 'badge-cc-fill',
+    verbose: 'Deutsch (Untertitel)',
     hasUrls: (v) => !!v.url_video_ut,
     getUrl: (v, q) => {
       switch (q) {
-        case VideoQuality.SMALL: return v.url_video_low_ut;
-        case VideoQuality.HD: return v.url_video_hd_ut;
-        default: return v.url_video_ut;
+        case VideoQuality.SMALL:
+          return v.url_video_low_ut;
+        case VideoQuality.HD:
+          return v.url_video_hd_ut;
+        default:
+          return v.url_video_ut;
       }
-    }
+    },
   },
   {
     track: AudioTrack.OV,
     label: 'OV',
-    icon: 'globe2',
+    verbose: 'Originalton',
     hasUrls: (v) => !!v.url_video_ov,
     getUrl: (v, q) => {
       switch (q) {
-        case VideoQuality.SMALL: return v.url_video_low_ov;
-        case VideoQuality.HD: return v.url_video_hd_ov;
-        default: return v.url_video_ov;
+        case VideoQuality.SMALL:
+          return v.url_video_low_ov;
+        case VideoQuality.HD:
+          return v.url_video_hd_ov;
+        default:
+          return v.url_video_ov;
       }
-    }
+    },
   },
   {
     track: AudioTrack.OV_UT,
     label: 'OV+UT',
-    icon: 'globe2',
+    verbose: 'Originalton (mit Untertitel)',
     hasUrls: (v) => !!v.url_video_ov_ut,
     getUrl: (v, q) => {
       switch (q) {
-        case VideoQuality.SMALL: return v.url_video_low_ov_ut;
-        case VideoQuality.HD: return v.url_video_hd_ov_ut;
-        default: return v.url_video_ov_ut;
+        case VideoQuality.SMALL:
+          return v.url_video_low_ov_ut;
+        case VideoQuality.HD:
+          return v.url_video_hd_ov_ut;
+        default:
+          return v.url_video_ov_ut;
       }
-    }
+    },
   },
 ];
+
+const QUALITY_LABELS: Record<VideoQuality, string> = {
+  [VideoQuality.SMALL]: 'Niedrig (SD)',
+  [VideoQuality.BASE]: 'Mittel (MD)',
+  [VideoQuality.HD]: 'Hoch (HD)',
+};
 
 @Component({
   selector: 'app-video-player',
   templateUrl: './video-player.component.html',
-  styleUrls: ['./video-player.component.scss']
+  styleUrls: ['./video-player.component.scss'],
 })
-export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
+export class VideoPlayerComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @Input() video: IVideo | undefined;
   @Input() urlTime: number = 0;
   @Output() currentTime = new EventEmitter<number>();
-  @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('videoEl', { static: false }) videoEl!: ElementRef<HTMLVideoElement>;
   @ViewChild('wrapperElement') wrapperElement!: ElementRef;
 
   QualityEnum = VideoQuality;
@@ -111,14 +146,15 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
   curr_quality = VideoQuality.BASE;
   curr_track = AudioTrack.REGULAR;
   viewInitialized = false;
-  showSlider = false;
+  showMenu = false;
+  activeSubmenu: 'quality' | 'track' | null = null;
 
   constructor(
-    private storageService: StorageService
-  ) { }
+    private storageService: StorageService,
+    private ngZone: NgZone,
+  ) {}
 
   ngOnInit(): void {
-    this.setVideoSource(this.getLastKnownTime());
     this.updateAvailableOptions();
   }
 
@@ -126,103 +162,72 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.viewInitialized && changes.video && changes.video.currentValue) {
       this.video = changes.video.currentValue;
       this.updateAvailableOptions();
-      this.setVideoSource(this.getLastKnownTime());
+      this.loadSourceWithTime(this.getLastKnownTime());
     }
   }
 
   ngAfterViewInit(): void {
     this.viewInitialized = true;
-    this.setVideoSource(this.urlTime !== 0 ? this.urlTime : this.getLastKnownTime());
+    const startTime =
+      this.urlTime !== 0 ? this.urlTime : this.getLastKnownTime();
+    this.loadSourceWithTime(startTime);
+  }
+
+  get videoElement(): HTMLVideoElement | null {
+    return this.videoEl?.nativeElement ?? null;
   }
 
   updateAvailableOptions(): void {
     if (!this.video) return;
     this.availableQualities = [];
     if (this.video.url_video) this.availableQualities.push(VideoQuality.BASE);
-    if (this.video.url_video_low) this.availableQualities.push(VideoQuality.SMALL);
-    if (this.video.url_video_hd) this.availableQualities.push(VideoQuality.HD);
+    if (this.video.url_video_low)
+      this.availableQualities.push(VideoQuality.SMALL);
+    if (this.video.url_video_hd)
+      this.availableQualities.push(VideoQuality.HD);
 
-    this.availableTracks = TRACKS
-      .filter(t => t.hasUrls(this.video!))
-      .map(t => t.track);
+    this.availableTracks = TRACKS.filter((t) =>
+      t.hasUrls(this.video!),
+    ).map((t) => t.track);
 
-    // Reset track if current one is no longer available
     if (!this.availableTracks.includes(this.curr_track)) {
       this.curr_track = AudioTrack.REGULAR;
     }
   }
 
   getTrackInfo(track: AudioTrack): TrackInfo | undefined {
-    return TRACKS.find(t => t.track === track);
+    return TRACKS.find((t) => t.track === track);
   }
 
-  changeQuality(newQuality: VideoQuality, event: Event): void {
-    event.stopPropagation();
-    if (this.curr_quality !== newQuality) {
+  qualityLabel(quality: VideoQuality): string {
+    return QUALITY_LABELS[quality] ?? quality;
+  }
+
+  trackLabel(track: AudioTrack): string {
+    return this.getTrackInfo(track)?.verbose ?? track;
+  }
+
+  getTrackLabel(track: AudioTrack): string {
+    return this.getTrackInfo(track)?.label ?? track;
+  }
+
+  changeQuality(quality: VideoQuality): void {
+    if (this.curr_quality !== quality) {
       const currentTime = this.getCurrentVideoTime();
-      this.curr_quality = newQuality;
-      this.setVideoSource(currentTime);
+      this.curr_quality = quality;
+      this.loadSourceWithTime(currentTime);
+      this.showMenu = false;
+      this.activeSubmenu = null;
     }
   }
 
-  changeTrack(newTrack: AudioTrack, event: Event): void {
-    event.stopPropagation();
-    if (this.curr_track !== newTrack) {
-      this.curr_track = newTrack;
-      this.setVideoSource(this.getCurrentVideoTime());
+  changeTrack(track: AudioTrack): void {
+    if (this.curr_track !== track) {
+      this.curr_track = track;
+      this.loadSourceWithTime(this.getCurrentVideoTime());
+      this.showMenu = false;
+      this.activeSubmenu = null;
     }
-  }
-
-  setVideoSource(currentTime: number = 0): void {
-    if (this.viewInitialized) {
-      try {
-        const videoEl = this.videoElement.nativeElement;
-        const source = document.createElement('source');
-
-        source.type = 'video/mp4';
-        source.src = this.getUrl();
-
-        videoEl.innerHTML = '';
-        videoEl.appendChild(source);
-        videoEl.load();
-        videoEl.addEventListener('loadeddata', function () {
-          const playPromise = videoEl.play();
-          videoEl.currentTime = currentTime;
-          if (playPromise !== undefined) {
-            playPromise.then(_ => {
-              // Autoplay started!
-            }).catch(error => {
-              console.log("Couldn't autoplay. User needs to start manually.")
-            });
-          }
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }
-
-  emitCurrentTime() {
-    const currentTime = this.getCurrentVideoTime();
-    if (currentTime > 5) {
-      this.storageService.setVideo(this.video as IVideo, currentTime);
-      this.currentTime.emit(currentTime);
-    }
-  }
-
-  getLastKnownTime(): number {
-    const savedTime = this.storageService.getVideoPosition(this.video as IVideo);
-    if (savedTime !== null) {
-      return savedTime;
-    }
-    return 0;
-  }
-
-  getCurrentVideoTime(): number {
-    if (!this.videoElement) {
-      return 0;
-    }
-    return this.videoElement.nativeElement.currentTime;
   }
 
   getUrl(): string {
@@ -231,26 +236,64 @@ export class VideoPlayerComponent implements OnInit, OnChanges, AfterViewInit {
     return info ? info.getUrl(this.video, this.curr_quality) : '';
   }
 
-  toggleFullscreen(): void {
-    const elem = this.wrapperElement.nativeElement;
+  loadSourceWithTime(currentTime: number = 0): void {
+    const videoEl = this.videoElement;
+    if (!videoEl) return;
 
-    if (!document.fullscreenElement) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
+    const url = this.getUrl();
+    if (!url) return;
+
+    const handleLoaded = () => {
+      videoEl.currentTime = currentTime;
+      videoEl.removeEventListener('loadeddata', handleLoaded);
+      const playPromise = videoEl.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay blocked, user needs to interact
+        });
       }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+    };
+
+    videoEl.addEventListener('loadeddata', handleLoaded);
+    videoEl.src = url;
+    videoEl.load();
+  }
+
+  emitCurrentTime(): void {
+    const currentTime = this.getCurrentVideoTime();
+    if (currentTime > 5) {
+      this.storageService.setVideo(this.video as IVideo, currentTime);
+      this.ngZone.run(() => this.currentTime.emit(currentTime));
     }
   }
 
-  @HostListener('document:fullscreenchange', ['$event'])
-  handleFullscreen(event: Event): void {
-    if (document.fullscreenElement) {
-      this.showSlider = true;
-    } else {
-      this.showSlider = true;
+  getLastKnownTime(): number {
+    const savedTime = this.storageService.getVideoPosition(
+      this.video as IVideo,
+    );
+    return savedTime ?? 0;
+  }
+
+  getCurrentVideoTime(): number {
+    return this.videoElement?.currentTime ?? 0;
+  }
+
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+    if (!this.showMenu) {
+      this.activeSubmenu = null;
     }
+  }
+
+  onMenuMouseLeave(event: MouseEvent): void {
+    // Only close if the mouse actually left the entire menu area
+    const target = event.relatedTarget as HTMLElement | null;
+    const current = event.currentTarget as HTMLElement;
+    if (target && current.contains(target)) {
+      return;
+    }
+    this.showMenu = false;
+    this.activeSubmenu = null;
   }
 }
