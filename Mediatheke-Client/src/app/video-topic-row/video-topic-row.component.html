@@ -2,18 +2,13 @@
 <div class="recommendation-container">
     <div class="background">
         <span class="heading"> {{ title }} </span>
-        <div class="boxes">
-            <ng-container *ngIf="!isSeries">
-                <div class="box" *ngFor="let video of videos">
-                    <app-video-card [video]="video"></app-video-card>
-                </div>
-            </ng-container>
+        <div class="boxes"></div>
+            <!-- leading phantom spacer: scrolled out on init, fades into the left edge as the user scrolls right -->
+            <div class="scroll-spacer scroll-spacer--leading" aria-hidden="true"></div>
 
-            <ng-container *ngIf="isSeries">
-                <div class="box" *ngFor="let group of seriesGroups">
-                    <app-series-card [episodes]="group.episodes"></app-series-card>
-                </div>
-            </ng-container>
+            <div class="box" *ngFor="let video of videos">
+                <app-video-card [video]="video"></app-video-card>
+            </div>
 
             <button type="button"
                 class="load-more"
@@ -28,8 +23,8 @@
                 <span class="loading-label">lade …</span>
             </div>
 
-            <!-- invisible spacer so the last real card sits clear of the right-side mask fade -->
-            <div class="scroll-spacer" aria-hidden="true"></div>
+            <!-- trailing phantom spacer so the last real card sits clear of the right-side mask fade -->
+            <div class="scroll-spacer scroll-spacer--trailing" aria-hidden="true"></div>
         </div>
     </div>
 </div>

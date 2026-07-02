@@ -23,7 +23,6 @@ import { AuthInterceptor } from './interceptors/authInterceptor';
 import { VideoPlayerComponent } from './video-player/video-player.component';
 import { RegisterComponent } from './register/register.component';
 import { VideoSearchResultsComponent } from './video-search-results/video-search-results.component';
-import { ShareComponent } from './buttons/share/share.component';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { RecommendComponent } from './buttons/recommend/recommend.component';
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
@@ -55,7 +54,6 @@ import { ThumbPlaceholderComponent } from './thumb-placeholder/thumb-placeholder
     VideoPlayerComponent,
     RegisterComponent,
     VideoSearchResultsComponent,
-    ShareComponent,
     RecommendComponent,
     VideoResultListComponent,
     SincePipe,

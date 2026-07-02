@@ -176,11 +176,25 @@ RULES: list[SeriesRule] = [
         "topic",
     ),
 
-    # ── All channels: generic "(ep/total)" — topic-based, least specific ──
+    # ── All channels: generic "(ep/total)" — title-based ──
     _rule(
-        "all_parens_ep_total_topic",
-        r"\((?P<episode>\d+)/(?:\d+)\)",
-        "topic",
+        "all_parens_ep_total_title",
+        r"^(?P<series>.+?)\s*\((?P<episode>\d+)/(?:\d+)\)",
+        "series",
+    ),
+
+    # ── All channels: "Staffel N" (without episode number) ──
+    _rule(
+        "all_staffel_only",
+        r"(?P<series>.+?)\s*Staffel (?P<season>\d+)(?:\s|$)",
+        "series",
+    ),
+
+    # ── All channels: "Teil N" ──
+    _rule(
+        "all_teil_n",
+        r"^(?P<series>.+?),?\s*Teil (?P<episode>\d+)",
+        "series",
     ),
 
     # ── All channels: "Folge N" / "Episode N" (topic-based) ──

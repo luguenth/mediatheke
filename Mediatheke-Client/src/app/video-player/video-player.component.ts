@@ -12,9 +12,18 @@ import {
   NgZone,
   HostListener,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { IVideo } from '../interfaces';
 import { StorageService } from '../services/storage.service';
+import { MediaService } from '../services/media.service';
+import {
+  ISeries,
+  ISeasonTab,
+} from '../video-series-nav/video-series-nav.component';
 import { generateThumbnails } from './thumbnails';
+
+// Seconds before the end at which the "Up Next" autoplay overlay appears.
+const NEXT_UP_THRESHOLD = 15;
 
 export enum VideoQuality {
   SMALL = 'SD',
@@ -154,15 +163,35 @@ export class VideoPlayerComponent
   curr_track = AudioTrack.REGULAR;
   viewInitialized = false;
   showMenu = false;
-  activeSubmenu: 'quality' | 'track' | null = null;
+  activeSubmenu: 'quality' | 'track' | 'rate' | null = null;
+  availableRates: number[] = [0.5, 0.75, 1, 1.25, 1.5, 2];
+  curr_rate = 1;
+  currentPlaybackTime = 0;
+
+  // Share
+  showShareMenu = false;
+  shareLink = '';
+  includeTimestamp = true;
+  copied = false;
 
   thumbnails: ThumbEntry[] = [];
   thumbPreview: { src: string; time: number } | null = null;
   thumbPreviewX = 0;
 
+  // Series navigation & autoplay (Netflix-style)
+  showEpisodesMenu = false;
+  $series: ISeries = { seasons: [], name: '' };
+  activeEpisodesSeason: ISeasonTab | null = null;
+  nextEpisode: IVideo | null = null;
+  showUpNext = false;
+  upNextCountdown = 0;
+  upNextCancelled = false;
+
   constructor(
     private storageService: StorageService,
     private ngZone: NgZone,
+    private mediaService: MediaService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -175,6 +204,7 @@ export class VideoPlayerComponent
       this.updateAvailableOptions();
       this.loadSourceWithTime(this.getLastKnownTime());
       this.startThumbGen();
+      this.loadSeries();
     }
   }
 
@@ -184,6 +214,7 @@ export class VideoPlayerComponent
       this.urlTime !== 0 ? this.urlTime : this.getLastKnownTime();
     this.loadSourceWithTime(startTime);
     this.startThumbGen();
+    this.loadSeries();
   }
 
   get videoElement(): HTMLVideoElement | null {
@@ -296,6 +327,20 @@ export class VideoPlayerComponent
     }
   }
 
+  changeRate(rate: number): void {
+    if (this.curr_rate !== rate) {
+      this.curr_rate = rate;
+      const el = this.videoElement;
+      if (el) el.playbackRate = rate;
+    }
+    this.showMenu = false;
+    this.activeSubmenu = null;
+  }
+
+  rateLabel(rate: number): string {
+    return `${rate}×`;
+  }
+
   getUrl(): string {
     if (!this.video) return '';
     const info = this.getTrackInfo(this.curr_track);
@@ -335,7 +380,14 @@ export class VideoPlayerComponent
     const savedTime = this.storageService.getVideoPosition(
       this.video as IVideo,
     );
-    return savedTime ?? 0;
+    if (!savedTime) return 0;
+    // If the saved position is within the up-next threshold of the end,
+    // the video was (almost) fully watched — start over next time.
+    const duration = this.video?.duration || 0;
+    if (duration > 0 && duration - savedTime <= NEXT_UP_THRESHOLD) {
+      return 0;
+    }
+    return savedTime;
   }
 
   getCurrentVideoTime(): number {
@@ -348,18 +400,61 @@ export class VideoPlayerComponent
     if (!this.showMenu) {
       this.activeSubmenu = null;
     }
+    this.showEpisodesMenu = false;
+    this.showShareMenu = false;
+  }
+
+  toggleShareMenu(event: Event): void {
+    event.stopPropagation();
+    this.showShareMenu = !this.showShareMenu;
+    if (this.showShareMenu) this.generateShareLink();
+    this.showMenu = false;
+    this.activeSubmenu = null;
+    this.showEpisodesMenu = false;
+  }
+
+  generateShareLink(): void {
+    const url = window.location.href.split('?')[0];
+    this.shareLink = this.includeTimestamp
+      ? `${url}?time=${Math.floor(this.currentPlaybackTime)}`
+      : url;
+  }
+
+  toggleTimestamp(): void {
+    this.generateShareLink();
+  }
+
+  copyToClipboard(): void {
+    navigator.clipboard.writeText(this.shareLink).then(() => {
+      this.copied = true;
+      setTimeout(() => (this.copied = false), 1500);
+    });
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.showMenu) return;
+    if (!this.showMenu && !this.showEpisodesMenu && !this.showShareMenu) return;
     const target = event.target as HTMLElement | null;
     if (!target) return;
-    // Close if click is outside the source menu wrapper
-    const wrap = this.wrapperElement?.nativeElement?.querySelector('.vjs-source-wrap');
-    if (wrap && !wrap.contains(target)) {
+    const root = this.wrapperElement?.nativeElement;
+    const sourceWrap = root?.querySelector('.vjs-source-wrap');
+    if (this.showMenu && sourceWrap && !sourceWrap.contains(target)) {
       this.showMenu = false;
       this.activeSubmenu = null;
+    }
+    const shareWrap = root?.querySelector('.vjs-share-wrap');
+    if (this.showShareMenu && shareWrap && !shareWrap.contains(target)) {
+      this.showShareMenu = false;
+    }
+    const episodesWrap = root?.querySelector('.vjs-episodes-wrap');
+    const episodesPanel = root?.querySelector('.vjs-episodes-menu');
+    if (
+      this.showEpisodesMenu &&
+      episodesWrap &&
+      !episodesWrap.contains(target) &&
+      !(episodesPanel && episodesPanel.contains(target))
+    ) {
+      this.showEpisodesMenu = false;
     }
   }
 
@@ -367,5 +462,104 @@ export class VideoPlayerComponent
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
     return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  // ── Series navigation & autoplay (Netflix-style) ──
+
+  toggleEpisodesMenu(event: Event): void {
+    event.stopPropagation();
+    this.showEpisodesMenu = !this.showEpisodesMenu;
+    this.showMenu = false;
+    this.activeSubmenu = null;
+    this.showShareMenu = false;
+  }
+
+  selectEpisodesSeason(season: ISeasonTab): void {
+    this.activeEpisodesSeason = season;
+  }
+
+  isCurrentEpisode(episode: IVideo): boolean {
+    return !!this.video && episode.id === this.video.id;
+  }
+
+  navigateToEpisode(episode: IVideo): void {
+    this.showEpisodesMenu = false;
+    this.router.navigate(['/video-detail', episode.id]);
+  }
+
+  playNextNow(): void {
+    if (this.nextEpisode) {
+      this.navigateToEpisode(this.nextEpisode);
+    }
+  }
+
+  cancelUpNext(): void {
+    this.showUpNext = false;
+    this.upNextCancelled = true;
+  }
+
+  onVideoEnded(): void {
+    if (this.nextEpisode && !this.upNextCancelled) {
+      this.navigateToEpisode(this.nextEpisode);
+    }
+  }
+
+  onTimeUpdate(): void {
+    this.currentPlaybackTime = this.getCurrentVideoTime();
+    this.emitCurrentTime();
+    this.checkUpNext();
+  }
+
+  private checkUpNext(): void {
+    if (!this.nextEpisode || this.upNextCancelled) {
+      this.showUpNext = false;
+      return;
+    }
+    const el = this.videoElement;
+    if (!el || !el.duration || !isFinite(el.duration)) return;
+    const remaining = el.duration - el.currentTime;
+    if (remaining <= NEXT_UP_THRESHOLD && remaining > 0.2) {
+      this.showUpNext = true;
+      this.upNextCountdown = Math.ceil(remaining);
+    } else if (remaining > NEXT_UP_THRESHOLD) {
+      this.showUpNext = false;
+    }
+  }
+
+  private loadSeries(): void {
+    this.$series = { seasons: [], name: this.video?.series_name || '' };
+    this.activeEpisodesSeason = null;
+    this.nextEpisode = null;
+    this.showUpNext = false;
+    this.upNextCancelled = false;
+    if (!this.video?.series_name) return;
+    this.mediaService.getSeriesFromEpisode(this.video).subscribe((series) => {
+      this.$series = series;
+      this.activeEpisodesSeason =
+        this.findCurrentSeason() ?? series.seasons[0] ?? null;
+      this.nextEpisode = this.computeNextEpisode();
+    });
+  }
+
+  private findCurrentSeason(): ISeasonTab | null {
+    const sn = this.video?.season_number ? this.video.season_number : 999;
+    return this.$series.seasons.find(
+      (s) => s.season.season_number === sn,
+    ) ?? null;
+  }
+
+  private computeNextEpisode(): IVideo | null {
+    const flat: IVideo[] = [];
+    const sortedSeasons = [...this.$series.seasons].sort(
+      (a, b) => a.season.season_number - b.season.season_number,
+    );
+    for (const s of sortedSeasons) {
+      const eps = [...s.season.episodes].sort(
+        (a, b) => a.episode_number - b.episode_number,
+      );
+      flat.push(...eps);
+    }
+    const idx = flat.findIndex((v) => v.id === this.video?.id);
+    return idx >= 0 && idx + 1 < flat.length ? flat[idx + 1] : null;
   }
 }

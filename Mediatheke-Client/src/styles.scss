@@ -63,4 +63,5 @@ body[data-theme="dark"] {
 /* light mode */
 body[data-theme="light"] {
     background-color: var(--color-background-wrapper);
+    filter: saturate(0);
 }
