@@ -83,6 +83,7 @@ def read_media_items_series(
 
 #text seach with the recommendation engine
 @router.get("/search/recommended", response_model=list[schemas.MediaItem])
+@cache(expire=ttls["1_hour"])
 def recommendations_for_text(
     query: str,
     common_params: dict = Depends(common_parameters),

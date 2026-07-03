@@ -11,7 +11,7 @@ from ..mediaitem import crud as mediaitem_crud
 from .openai import run_conversation
 from .models import SeriesDetectionJob
 
-_RECOMMENDATIONS_URL = "http://127.0.0.1:8000/mediaitems/{video_id}/recommended?limit=30"
+_RECOMMENDATIONS_URL = "http://server:8000/mediaitems/{video_id}/recommended?limit=30"
 
 
 @app.task(bind=True, max_retries=2, default_retry_delay=30)

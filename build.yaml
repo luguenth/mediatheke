@@ -28,6 +28,34 @@ services:
       - ./Mediatheke:/Mediatheke
     restart: always
 
+  worker:
+    build:
+      context: ./Mediatheke
+      dockerfile: Dockerfile
+    command: ["pipenv", "run", "celery", "-A", "app.celery", "worker", "--loglevel=info"]
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - redis
+      - typesense
+    volumes:
+      - ./Mediatheke:/Mediatheke
+    restart: always
+
+  beat:
+    build:
+      context: ./Mediatheke
+      dockerfile: Dockerfile
+    command: ["pipenv", "run", "celery", "-A", "app.celery", "beat", "--schedule=/tmp/celerybeat-schedule", "--loglevel=info"]
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./Mediatheke:/Mediatheke
+    restart: always
+
   client:
     build:
       context: ./Mediatheke-Client
