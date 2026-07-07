@@ -9,6 +9,7 @@ from ...core.db.database import get_new_db_session
 from datetime import datetime, timezone
 import time
 import logging
+import requests
 
 
 @app.task()
@@ -44,6 +45,13 @@ def import_filmliste(full: bool = True):
 
     import_event.media_item_count = added_items
     db.commit()
+
+    # reload the server's recommendation engine with the fresh data
+    try:
+        requests.post("http://server:8000/series-detection/reload-recommendations", timeout=120)
+        logging.info("Triggered recommendation engine reload after import")
+    except Exception as e:
+        logging.warning(f"Failed to trigger recommendation engine reload: {e}")
 
 @app.task()
 def daily_full_import():

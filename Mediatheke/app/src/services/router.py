@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
+from fastapi_cache import FastAPICache
 
 from ...core.db.database import get_db
 from ..services.models import SeriesDetectionJob
@@ -106,3 +107,13 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@router.post("/reload-recommendations")
+def reload_recommendations(
+    rec_engine: RecommendationEngine = Depends(get_recommendation_engine),
+):
+    """Reload the recommendation engine from the database and clear the response cache."""
+    success = rec_engine.load()
+    FastAPICache.clear()
+    return {"status": "ok" if success else "failed", "message": "Recommendation engine reloaded"}
