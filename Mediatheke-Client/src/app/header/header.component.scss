@@ -1,19 +1,78 @@
 .nav-wrap {
-    background-color: var(--color-always-white);
-    border-bottom: 3px solid var(--color-contrast-background);
+    --nav-glass-blur: 16px;
+    --nav-glass-bg: hsl(0deg 0% 100% / 0.5);
+    --nav-glass-gradient-start: hsl(0deg 0% 100% / 0.95);
+
     position: fixed;
     width: 100%;
     z-index: 1000;
     top: 0;
     left: 0;
     right: 0;
+    overflow: hidden;
+
+    /* Solid fallback for browsers that don't support backdrop-filter */
+    background-color: var(--color-always-white);
 
     @media screen and (max-width: 768px) {
         position: relative;
     }
 }
 
+/* Frosted glass backdrop */
+@supports (backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px)) {
+    .nav-wrap {
+            background-color: var(--nav-glass-bg);
+            box-shadow: 0 1px 3px hsl(0deg 0% 0% / 0.12),
+                        0 1px 2px hsl(0deg 0% 0% / 0.06);
+            border-bottom: 1px solid hsl(0deg 0% 0% / 0.1);
+    }
+
+    .nav-backdrop {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        -webkit-backdrop-filter: blur(var(--nav-glass-blur));
+        backdrop-filter: blur(var(--nav-glass-blur));
+        background: linear-gradient(
+            to bottom,
+            var(--nav-glass-gradient-start),
+            transparent 50%
+        );
+        pointer-events: none;
+    }
+
+    /* Grain / noise overlay for realistic frosted glass */
+    .nav-noise {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+    }
+}
+
+/* Extend backdrop for nearby-element blur */
+@supports (mask-image: none) or (-webkit-mask-image: none) {
+    .nav-backdrop {
+        height: 200%;
+        -webkit-mask-image: linear-gradient(
+                    to bottom,
+                    black 0% 50.5%,
+                    transparent 50.5% 100%
+                );
+                mask-image: linear-gradient(
+                    to bottom,
+                    black 0% 50.5%,
+                    transparent 50.5% 100%
+        );
+    }
+}
+
 nav {
+    position: relative;
+    z-index: 1;
     max-width: 1600px;
     margin: auto;
     padding-left: 30px;
@@ -79,4 +138,3 @@ nav {
     display: flex;
     align-items: flex-end;
 }
-
