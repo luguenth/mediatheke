@@ -20,6 +20,7 @@ export class VideoTopicRowComponent implements OnInit {
   @Input() title!: string;
   @Input() description!: string;
   @Input() options!: IVideoOptions;
+  @Input() index: number = 0;
 
   videos: any[] = [];
   // for series rows: episodes grouped by series_name

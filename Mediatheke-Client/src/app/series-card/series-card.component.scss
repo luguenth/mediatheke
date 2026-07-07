@@ -4,17 +4,38 @@
     height: 200px;
     overflow: hidden;
     cursor: pointer;
-    border: var(--border-thick) var(--color-key-black);
-        transition: transform 0.3s ease;
-    }
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 var(--border-width-thick) var(--color-key-black);
+    transition: box-shadow 0.2s ease;
 
-.videocard:hover {
-    transform: scale(1.02);
+    &:hover {
+        box-shadow:
+            3px 3px 0 var(--color-key-black),
+            0 0 0 var(--border-width-thick) var(--color-key-black);
+    }
+}
+
+/* Gradient overlay for text readability */
+.videocard::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0.1) 50%,
+        transparent 70%
+    );
+    z-index: 1;
+    pointer-events: none;
 }
 
 .series-card__slides {
     position: absolute;
     inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
 }
 
 .series-card__slide {
@@ -25,7 +46,6 @@
     object-fit: cover;
     object-position: center;
     opacity: 0;
-    // the "very subtle" cross-fade
     transition: opacity 1.6s ease;
 
     &.active {
@@ -35,36 +55,34 @@
 
 .videocard-meta {
     position: absolute;
-    bottom: 8px;
-    left: 4px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 3;
+    padding: 10px;
+}
+
+.videocard-topic {
+    display: inline-block;
+    background: var(--color-key-yellow);
+    color: var(--color-key-black);
+    padding: 1px 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 4px;
+    text-decoration: none;
 }
 
 .videocard-title {
-    color: var(--color-always-black);
-    font-size: 1.2rem;
-    margin-left: 10px;
-    margin-bottom: 4px;
-    margin-right: 10px;
-    font-weight: bold;
-    line-height: 1.2;
     display: block;
-    background-color: white;
-    border: var(--border-thick) var(--color-key-yellow);
-        padding: 3px 6px;
-        text-transform: lowercase;
-    }
-
-    .videocard-topic {
-        color: var(--color-always-black);
-        background-color: var(--color-key-magenta);
-        padding: 4px 6px;
-        margin-left: 10px;
-        margin-bottom: -3px;
-        margin-right: 60px;
-        font-size: 0.8rem;
-        line-height: 1.1;
-        border: var(--border-thick) var(--color-key-yellow);
-    display: inline-block;
+    color: var(--color-always-white);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     text-transform: lowercase;
 }

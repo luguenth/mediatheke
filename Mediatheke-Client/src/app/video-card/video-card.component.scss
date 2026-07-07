@@ -3,30 +3,51 @@
     width: 300px;
     height: 200px;
     overflow: hidden;
-    transition: transform 0.3s ease, z-index 0s 0.3s ease;
     cursor: pointer;
-    border: var(--border-thick) var(--color-key-black);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 var(--border-width-thick) var(--color-key-black);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform;
+
+    &:hover {
+        transform: translateY(-4px);
+                box-shadow:
+                    5px 5px 0 var(--color-key-black),
+            0 0 0 var(--border-width-thick) var(--color-key-black);
+
+        &::before {
+            opacity: 1;
+        }
+    }
 }
 
+/* Brightness lift on hover */
 .videocard::before {
     content: '';
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    /* background: linear-gradient(to bottom, transparent, #00ffea31); */
-    z-index: 1;
-    /* Ensure the gradient is below the title and duration */
+    inset: 0;
+    background: rgba(255, 255, 255, 0.12);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
 }
 
-.videocard-link {
-    position: relative;
-    display: block;
-    height: 100%;
-    width: 100%;
-    text-decoration: none;
-    /* Removes the default underline for hyperlinks */
+/* Gradient overlay for text readability */
+.videocard::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0.1) 50%,
+        transparent 70%
+    );
+    z-index: 1;
+    pointer-events: none;
 }
 
 .videocard-img-top {
@@ -34,62 +55,55 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transition: transform 0.3s ease;
+    border-radius: inherit;
 }
 
 .videocard-meta {
     position: absolute;
-    bottom: 8px;
-    left: 4px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 3;
-    transition: opacity 0.3s ease;
-}
-
-.videocard-title {
-    /* Add some spacing between topic and title */
-    color: var(--color-always-black);
-    font-size: 1.2rem;
-    margin-left: 10px;
-    margin-bottom: 4px;
-    margin-right: 10px;
-
-    font-weight: bold;
-    line-height: 1.2;
-    display: block;
-    background-color: white;
-    border: var(--border-thick) var(--color-key-yellow);
-    padding: 3px 6px;
+    padding: 10px;
 }
 
 .videocard-topic {
-    color: var(--color-always-black);
-    background-color: var(--color-key-magenta);
-    padding: 4px 6px;
-    margin-left: 10px;
-    margin-bottom: -3px;
-    margin-right: 60px;
-    border-radius: var(--radius-none);
-    font-size: 0.8rem;
-    line-height: 1.1;
-    border: var(--border-thick) var(--color-key-yellow);
     display: inline-block;
+    background: var(--color-key-yellow);
+    color: var(--color-key-black);
+    padding: 1px 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 4px;
+    text-decoration: none;
+}
 
+.videocard-title {
+    display: block;
+    color: var(--color-always-white);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .videocard-duration {
     position: absolute;
-    color: var(--color-contrast-text);
-    border-radius: var(--radius-none);
-    top: 10px;
-    right: 10px;
-    padding: 4px 6px;
-    background: black;
-    font-size: 0.8rem;
-    font-weight: bold;
-    line-height: 1.2;
+    top: 8px;
+    right: 8px;
     z-index: 2;
-    /* Ensure the duration is above the gradient */
-
+    background: rgba(0, 0, 0, 0.75);
+    color: var(--color-always-white);
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+    line-height: 1.5;
+    letter-spacing: 0.3px;
 }
 
 .videocard__image-error {
@@ -102,21 +116,18 @@
     position: relative;
 }
 
-
-
-.videocard:hover .videocard-img-top {
-    transform: scale(1.1);
-}
-
 progress {
-    top: -16px;
-    position: relative;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
-    border-radius: var(--radius-none);
+    height: 3px;
     border: none;
+    border-radius: 0 0 inherit inherit;
+    overflow: hidden;
     z-index: 100;
     background-color: transparent;
-    height: 5px;
 
     &::-webkit-progress-bar {
         background-color: transparent;
@@ -127,10 +138,6 @@ progress {
     }
 
     &::-moz-progress-bar {
-        background-color: var(--color-key-magenta);
-    }
-
-    &::-ms-fill {
         background-color: var(--color-key-magenta);
     }
 }

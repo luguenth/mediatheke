@@ -1,6 +1,6 @@
 <!-- <app-video-row *ngFor="let video of videoRows" [title]="video.title" [description]="video.description"
   [options]="video.options"></app-video-row> -->
-<div class="video-row" *ngFor="let topic of videoRows">
+<div class="video-row" *ngFor="let topic of videoRows; let i = index">
 <app-video-topic-row  [title]="topic.title" [description]="topic.description"
-  [options]="topic.options"></app-video-topic-row>
+  [options]="topic.options" [index]="i"></app-video-topic-row>
 </div>

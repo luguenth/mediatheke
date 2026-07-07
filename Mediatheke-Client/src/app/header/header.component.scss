@@ -1,7 +1,7 @@
 .nav-wrap {
     --nav-glass-blur: 16px;
-    --nav-glass-bg: hsl(0deg 0% 100% / 0.5);
-    --nav-glass-gradient-start: hsl(0deg 0% 100% / 0.95);
+    --nav-glass-bg: rgba(255, 255, 255, 0.5);
+    --nav-glass-gradient-start: rgba(255, 255, 255, 0.95);
 
     position: fixed;
     width: 100%;
@@ -10,6 +10,10 @@
     left: 0;
     right: 0;
     overflow: hidden;
+
+    /* GPU layer promotion — prevents Chrome backdrop-filter flickering */
+    transform: translateZ(0);
+    will-change: transform;
 
     /* Solid fallback for browsers that don't support backdrop-filter */
     background-color: var(--color-always-white);
@@ -23,9 +27,9 @@
 @supports (backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px)) {
     .nav-wrap {
             background-color: var(--nav-glass-bg);
-            box-shadow: 0 1px 3px hsl(0deg 0% 0% / 0.12),
-                        0 1px 2px hsl(0deg 0% 0% / 0.06);
-            border-bottom: 1px solid hsl(0deg 0% 0% / 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+                                0 1px 2px rgba(0, 0, 0, 0.06);
+                        border-bottom: var(--border-thin) rgba(0, 0, 0, 0.1);
     }
 
     .nav-backdrop {
@@ -35,10 +39,10 @@
         -webkit-backdrop-filter: blur(var(--nav-glass-blur));
         backdrop-filter: blur(var(--nav-glass-blur));
         background: linear-gradient(
-            to bottom,
-            var(--nav-glass-gradient-start),
-            transparent 50%
-        );
+                    to bottom,
+                    var(--nav-glass-gradient-start),
+                    transparent 50%
+                );
         pointer-events: none;
     }
 

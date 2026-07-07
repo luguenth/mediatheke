@@ -1,7 +1,17 @@
 <!-- community-recommendation.component.html -->
 <div class="recommendation-container">
     <div class="background">
-        <span class="heading"> {{ title }} </span>
+        <span class="heading">
+            <svg class="heading__accent" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"
+                 [style.transform]="'rotate(' + ((index * 137) % 360) + 'deg)'">
+                <ng-container [ngSwitch]="index % 3">
+                    <circle *ngSwitchCase="0" cx="7" cy="7" r="5.5" fill="var(--color-key-cyan)" stroke="var(--color-key-black)" stroke-width="2"/>
+                    <rect *ngSwitchCase="1" x="1" y="1" width="12" height="12" rx="2" fill="var(--color-key-magenta)" stroke="var(--color-key-black)" stroke-width="2"/>
+                    <polygon *ngSwitchCase="2" points="7,1.5 12.5,11 1.5,11" fill="var(--color-key-yellow)" stroke="var(--color-key-black)" stroke-width="2" stroke-linejoin="round"/>
+                </ng-container>
+            </svg>
+            {{ title }}
+        </span>
         <div class="boxes">
             <!-- leading phantom spacer: scrolled out on init, fades into the left edge as the user scrolls right -->
             <div class="scroll-spacer scroll-spacer--leading" aria-hidden="true"></div>
