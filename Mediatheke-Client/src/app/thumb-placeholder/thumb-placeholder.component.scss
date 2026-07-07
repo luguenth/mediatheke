@@ -1,0 +1,55 @@
+.thumb-placeholder {
+    --ph-amplitude: 4px;
+    --ph-degree: 4deg;
+    --ph-bg: var(--color-key-magenta);
+    --ph-tile-rotation: 0deg;
+
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background-color: var(--ph-bg);
+    box-sizing: border-box;
+
+    // tiled hero background. The element is scaled up so that even after
+    // rotation by 45° the corners of the card stay covered.
+    &__tile {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200%;
+        height: 200%;
+        transform: translate(-50%, -50%) rotate(var(--ph-tile-rotation));
+        background-image: url('/assets/hero/tile.svg');
+        background-repeat: repeat;
+        background-size: 30px 30px;
+        opacity: 0.7;
+    }
+
+    // wobbly brand symbol, placed per-variant (not centered by default)
+    &__symbol {
+        position: absolute;
+        height: auto;
+        z-index: 2;
+        transform: translate(-50%, -50%);
+        filter: drop-shadow(0 2px 0 var(--color-key-black));
+        animation: ph-wobble 30s infinite ease-in-out;
+    }
+}
+
+@keyframes ph-wobble {
+    0% {
+        transform: translate(-50%, -50%) rotate(0);
+    }
+    25% {
+        transform: translate(calc(-50% - var(--ph-amplitude)), calc(-50% + var(--ph-amplitude))) rotate(var(--ph-degree));
+    }
+    50% {
+        transform: translate(calc(-50% + var(--ph-amplitude)), calc(-50% - var(--ph-amplitude))) rotate(calc(var(--ph-degree) * -1));
+    }
+    75% {
+        transform: translate(calc(-50% - var(--ph-amplitude) * 0.5), calc(-50% + var(--ph-amplitude) * 0.5)) rotate(0);
+    }
+    100% {
+        transform: translate(calc(-50% + var(--ph-amplitude) * 0.5), calc(-50% - var(--ph-amplitude) * 0.5)) rotate(0);
+    }
+}

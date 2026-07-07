@@ -15,22 +15,80 @@
 
 }
 
-
-input[type="checkbox"] {
-    margin-right: 8px;
+/* Popover container itself — themed to match the player menus */
+:host ::ng-deep popover-container {
+    background-color: var(--color-key-yellow) !important;
+    border: 3px solid var(--color-key-black) !important;
+    border-radius: 0.75rem !important;
+    padding: 0.75rem !important;
+    box-shadow: none !important;
 }
 
-input[type="text"] {
+body[data-theme="dark"] :host ::ng-deep popover-container {
+    background-color: var(--color-key-cyan) !important;
+}
+
+/* ── Share popover (styled to match the player menu) ── */
+
+.share-popover {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 18rem;
+    font-family: 'Jost', sans-serif;
+    color: var(--color-key-black);
+}
+
+.share-popover__ts {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.share-popover__ts input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-key-magenta);
+    cursor: pointer;
+}
+
+.share-popover__link {
     width: 100%;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-key-black);
+    background-color: var(--color-always-white);
+    border: 2px solid var(--color-key-black);
+    border-radius: 0.25rem;
+    outline: none;
 }
 
-button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+.share-popover__link:focus {
+    border-color: var(--color-key-magenta);
+}
+
+.share-popover__copy {
+    padding: 0.375rem 0.75rem;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-key-black);
+    background-color: var(--color-key-yellow);
+    border: 2px solid var(--color-key-black);
+    border-radius: calc(infinity * 1px);
+    cursor: pointer;
+    transition: background-color 100ms ease-out, color 100ms ease-out;
+}
+
+.share-popover__copy:hover {
+    background-color: var(--color-key-magenta);
+}
+
+.share-popover__copy--done {
+    background-color: var(--color-key-black);
+    color: var(--color-key-yellow);
 }

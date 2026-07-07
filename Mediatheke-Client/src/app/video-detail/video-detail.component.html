@@ -11,7 +11,7 @@
   <div class="grid-wrapper">
     <div class="left-column">
       <div *ngIf="video" class="video container">
-        <app-video-player [video]="video" (currentTime)="setCurrentTime($event)" [urlTime]="urlTime"></app-video-player>
+        <app-video-player [video]="video" [urlTime]="urlTime"></app-video-player>
       </div>
 
       <div *ngIf="video" class="commands container">
@@ -26,7 +26,6 @@
             <span *ngIf="!isSeries"> Als Serie markieren</span>
           </button>
         </ng-container>
-        <app-share [currentTime]="currentTime"> </app-share>
       </div>
       <details class="container" *ngIf="env.production === false">
         <summary>Debug</summary>
@@ -114,12 +113,6 @@
           </div>
         </div>
       </details>
-
-      <!-- Series Navigation -->
-      <div class="series container" *ngIf="video?.series_name">
-        <app-video-series-nav *ngIf="video?.series_name" [video]="video"></app-video-series-nav>
-      </div>
-
 
       <!-- Video Details -->
       <div class="details container" *ngIf="video">

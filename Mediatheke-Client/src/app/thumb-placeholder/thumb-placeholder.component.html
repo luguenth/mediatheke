@@ -1,0 +1,11 @@
+<div class="thumb-placeholder"
+    [style.--ph-bg]="bg"
+    [style.--ph-tile-rotation]="rotation + 'deg'">
+    <div class="thumb-placeholder__tile" aria-hidden="true"></div>
+    <img class="thumb-placeholder__symbol"
+        [src]="symbol"
+        [style.width.px]="placement.w"
+        [style.left.%]="placement.x"
+        [style.top.%]="placement.y"
+        aria-hidden="true">
+</div>

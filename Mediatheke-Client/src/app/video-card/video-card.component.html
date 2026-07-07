@@ -1,7 +1,10 @@
 <div class="videocard" (click)="mediaService.goToVideo(video)" [style.background-color]="backgroundColor">
-  <div class="videocard-img-top" [ngStyle]="{'background-image': 'url(' + this.imgSrc + ')'}"
+  <app-thumb-placeholder *ngIf="!imgSrc || imgError" [variant]="video.id"></app-thumb-placeholder>
+  <img *ngIf="imgSrc && !imgError"
+    class="videocard-img-top"
+    [src]="imgSrc"
+    alt=""
     (error)="handleImageError()">
-  </div>
 
   <div class="videocard-duration">{{ video.duration | duration }}</div>
 

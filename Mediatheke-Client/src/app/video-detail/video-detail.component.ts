@@ -20,7 +20,6 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   recommendedVideos: IVideo[] = [];
   seriesVideos: IVideo[] = [];
   subscriptions: Subscription[] = [];
-  currentTime: number = 0;
   urlTime: number = 0;
   isSeries: boolean = false;
   isSeriesLoading: boolean = false;
@@ -63,10 +62,6 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(routeSub);
     this.loadFlaggedItems();
-  }
-
-  setCurrentTime(time: number) {
-    this.currentTime = time;
   }
 
   resetComponentState() {

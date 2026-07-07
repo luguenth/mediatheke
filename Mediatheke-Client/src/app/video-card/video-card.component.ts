@@ -14,6 +14,7 @@ export class VideoCardComponent implements OnInit {
   @Input() details: boolean = true;  // default value
   public backgroundColor: string = 'initial';  // default value
   public imgSrc: string = '';
+  public imgError = false;
 
   constructor(
     private el: ElementRef,
@@ -26,16 +27,21 @@ export class VideoCardComponent implements OnInit {
 
   ngOnInit() {
     if (this.video.thumbnail) {
-      this.imgSrc = this.video.thumbnail;
+      this.setImg(this.video.thumbnail);
     } else {
       this.mediaService.getThumbnail(this.video).subscribe(thumbnail => {
-        this.imgSrc = thumbnail.url;
+        this.setImg(thumbnail.url);
       });
     }
   }
 
+  private setImg(url: string): void {
+    this.imgError = false;
+    this.imgSrc = url;
+  }
 
   handleImageError() {
+    this.imgError = true;
     this.updateBackgroundColor();
     //this.replaceImageWithErrorElement();
   }

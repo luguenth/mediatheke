@@ -8,8 +8,10 @@ import { Component, Input, OnInit } from '@angular/core';
 export class ShareComponent implements OnInit {
 
   @Input() currentTime: number = 0;
+  @Input() variant: 'full' | 'icon' = 'full';
   shareLink: string = '';
   includeTimestamp: boolean = true;
+  copied = false;
 
   constructor() { }
 
@@ -21,7 +23,10 @@ export class ShareComponent implements OnInit {
   }
 
   copyToClipboard() {
-    navigator.clipboard.writeText(this.shareLink);
+    navigator.clipboard.writeText(this.shareLink).then(() => {
+      this.copied = true;
+      setTimeout(() => (this.copied = false), 1500);
+    });
   }
 
   toggleTimestamp() {

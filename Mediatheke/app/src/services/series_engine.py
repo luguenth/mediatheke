@@ -101,12 +101,17 @@ def classify_by_rules(item: MediaItem) -> Classification | None:
         if not _is_valid_series_name(series_name):
             continue  # extracted name is garbage; try next rule
 
+        episode_num = _to_int(groups.get("episode"))
+        # Skip year patterns (e.g. "Auskreuzung (2011)") — not episode numbers.
+        if 1900 <= episode_num <= 2099:
+            continue
+
         return Classification(
             media_item_id=item.id,
             title=item.title,
             series_name=series_name,
             season_number=_to_int(groups.get("season")) or rule.default_season,
-            episode_number=_to_int(groups.get("episode")),
+            episode_number=episode_num,
             episode_title=(groups.get("episode_title") or "").strip(),
             source=f"rule:{rule.id}",
         )
