@@ -3,7 +3,7 @@ from ..search import service
 import logging
 
 
-@app.task()
+@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=10)
 def init_typesense(force_delete=False):
     logging.info("Initializing Typesense")
     search_engine = service.get_search_engine()
