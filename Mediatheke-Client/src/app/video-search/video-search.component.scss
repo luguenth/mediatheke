@@ -23,8 +23,8 @@
     font-size: 2rem;
     cursor: text;
 
-    border-radius: 34px;
-    border: 3px solid black;
+    border-radius: var(--radius-xl);
+    border: var(--border-thick) var(--color-key-black);
 
 }
 
@@ -87,8 +87,8 @@ img {
 }
 
 .remove-bottom-corners{
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-bottom-left-radius: var(--radius-none);
+    border-bottom-right-radius: var(--radius-none);
 }
 
 .results {
@@ -101,7 +101,7 @@ img {
     max-height: 60vh;
     overflow: scroll;
 
-    border-bottom-left-radius: 34px;
-    border-bottom-right-radius: 34px;
+    border-bottom-left-radius: var(--radius-xl);
+    border-bottom-right-radius: var(--radius-xl);
 }
 

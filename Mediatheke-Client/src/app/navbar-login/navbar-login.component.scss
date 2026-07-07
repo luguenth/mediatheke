@@ -11,15 +11,15 @@
     }
 
     input[type="text"] {
-        border-bottom: 3px solid var(--color-contrast-text);
-        border-right: 3px solid var(--color-contrast-text);
-        border-left: 3px solid var(--color-contrast-text);
-    }
+            border-bottom: var(--border-thick) var(--color-contrast-text);
+            border-right: var(--border-thick) var(--color-contrast-text);
+            border-left: var(--border-thick) var(--color-contrast-text);
+        }
 
-    input[type="password"] {
-        border-right: 3px solid var(--color-contrast-text);
-        border-left: 3px solid var(--color-contrast-text);
-    }
+        input[type="password"] {
+            border-right: var(--border-thick) var(--color-contrast-text);
+            border-left: var(--border-thick) var(--color-contrast-text);
+        }
 
     button[type="submit"] {
         grid-column: 2; // Second column

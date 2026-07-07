@@ -16,7 +16,7 @@
 /* make input big poppy flat and rounded corners */
 input {
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-xs);
     padding: 10px;
     font-size: 1.2rem;
     background-color: var(--color-primary);

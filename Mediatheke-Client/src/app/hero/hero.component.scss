@@ -8,7 +8,7 @@
   padding-top: 50px;
   background-image: url('/assets/hero/tile.svg');
   background-repeat: repeat;
-  border-bottom: 3px solid var(--color-key-black);
+  border-bottom: var(--border-thick) var(--color-key-black);
   font-size: 2rem;
   text-transform: lowercase;
 

@@ -30,7 +30,7 @@ ul.video-list {
     width: 120px;
     height: 80px;
     margin-right: 20px;
-    border: 3px solid var(--color-key-yellow);
+    border: var(--border-thick) var(--color-key-yellow);
 
     @media (max-width: 1000px) {
         width: 100px;
@@ -52,7 +52,7 @@ ul.video-list {
 .duration {
     position: absolute;
     color: var(--color-contrast-text);
-    border-radius: 0;
+    border-radius: var(--radius-none);
     top: 10px;
     right: 10px;
     padding: 4px 6px;

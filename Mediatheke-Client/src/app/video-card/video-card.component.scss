@@ -5,7 +5,7 @@
     overflow: hidden;
     transition: transform 0.3s ease, z-index 0s 0.3s ease;
     cursor: pointer;
-    border: 3px solid var(--color-key-black);
+    border: var(--border-thick) var(--color-key-black);
 }
 
 .videocard::before {
@@ -57,7 +57,7 @@
     line-height: 1.2;
     display: block;
     background-color: white;
-    border: 3px solid var(--color-key-yellow);
+    border: var(--border-thick) var(--color-key-yellow);
     padding: 3px 6px;
 }
 
@@ -68,10 +68,10 @@
     margin-left: 10px;
     margin-bottom: -3px;
     margin-right: 60px;
-    border-radius: 0;
+    border-radius: var(--radius-none);
     font-size: 0.8rem;
     line-height: 1.1;
-    border: 3px solid var(--color-key-yellow);
+    border: var(--border-thick) var(--color-key-yellow);
     display: inline-block;
 
 }
@@ -79,7 +79,7 @@
 .videocard-duration {
     position: absolute;
     color: var(--color-contrast-text);
-    border-radius: 0;
+    border-radius: var(--radius-none);
     top: 10px;
     right: 10px;
     padding: 4px 6px;
@@ -112,7 +112,7 @@ progress {
     top: -16px;
     position: relative;
     width: 100%;
-    border-radius: 0;
+    border-radius: var(--radius-none);
     border: none;
     z-index: 100;
     background-color: transparent;

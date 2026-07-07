@@ -40,6 +40,24 @@
     --color-always-white: #ffffff;
 
     --color-badge-background: #000000b7;
+
+    /* Border primitives */
+    --border-width-thick: 3px;
+    --border-width-thin: 2px;
+
+    --border-thick: var(--border-width-thick) solid;
+    --border-thin: var(--border-width-thin) solid;
+    --border-dashed: var(--border-width-thick) dashed;
+
+    /* Border radius */
+    --radius-none: 0rem;
+    --radius-xs: 0.25rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1.25rem;
+    --radius-xl: 34px;
+    --radius-pill: calc(infinity * 1px);
+    --radius-round: 50%;
 }
 
 body {
@@ -63,5 +81,4 @@ body[data-theme="dark"] {
 /* light mode */
 body[data-theme="light"] {
     background-color: var(--color-background-wrapper);
-    filter: saturate(0);
 }

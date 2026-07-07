@@ -9,8 +9,8 @@
 ::ng-deep .nav-tabs .nav-link {
     background-color: var(--color-key-black);
     color: var(--color-always-white);
-    border: 3px solid var(--color-key-black);
-    border-radius: 0;
+    border: var(--border-thick) var(--color-key-black);
+        border-radius: var(--radius-none);
     border-bottom: none;
     margin-right: 10px;
 

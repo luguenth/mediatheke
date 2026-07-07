@@ -78,8 +78,8 @@
             cursor: pointer;
             font-family: inherit;
             background-color: transparent;
-            border: 3px dashed var(--color-key-black);
-            color: var(--color-text);
+            border: var(--border-dashed) var(--color-key-black);
+                        color: var(--color-text);
             transition: background-color 0.2s ease, transform 0.2s ease;
 
             &:hover {
@@ -115,15 +115,15 @@
             gap: 12px;
             width: 220px;
             min-height: 200px;
-            border: 3px dashed var(--color-key-black-transparent);
-            opacity: 0.7;
+            border: var(--border-dashed) var(--color-key-black-transparent);
+                        opacity: 0.7;
 
-            .spinner {
-                width: 28px;
-                height: 28px;
-                border: 3px solid var(--color-key-black-transparent);
+                        .spinner {
+                            width: 28px;
+                            height: 28px;
+                            border: var(--border-thick) var(--color-key-black-transparent);
                 border-top-color: var(--color-key-black);
-                border-radius: 50%;
+                border-radius: var(--radius-round);
                 animation: topic-row-spin 0.8s linear infinite;
             }
 

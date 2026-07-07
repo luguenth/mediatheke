@@ -18,8 +18,8 @@
 /* Popover container itself — themed to match the player menus */
 :host ::ng-deep popover-container {
     background-color: var(--color-key-yellow) !important;
-    border: 3px solid var(--color-key-black) !important;
-    border-radius: 0.75rem !important;
+    border: var(--border-thick) var(--color-key-black) !important;
+    border-radius: var(--radius-md) !important;
     padding: 0.75rem !important;
     box-shadow: none !important;
 }
@@ -62,8 +62,8 @@ body[data-theme="dark"] :host ::ng-deep popover-container {
     font-variant-numeric: tabular-nums;
     color: var(--color-key-black);
     background-color: var(--color-always-white);
-    border: 2px solid var(--color-key-black);
-    border-radius: 0.25rem;
+    border: var(--border-thin) var(--color-key-black);
+    border-radius: var(--radius-xs);
     outline: none;
 }
 
@@ -78,8 +78,8 @@ body[data-theme="dark"] :host ::ng-deep popover-container {
     font-weight: 600;
     color: var(--color-key-black);
     background-color: var(--color-key-yellow);
-    border: 2px solid var(--color-key-black);
-    border-radius: calc(infinity * 1px);
+    border: var(--border-thin) var(--color-key-black);
+    border-radius: var(--radius-pill);
     cursor: pointer;
     transition: background-color 100ms ease-out, color 100ms ease-out;
 }

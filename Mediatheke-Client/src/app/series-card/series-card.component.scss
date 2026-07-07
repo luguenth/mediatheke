@@ -4,9 +4,9 @@
     height: 200px;
     overflow: hidden;
     cursor: pointer;
-    border: 3px solid var(--color-key-black);
-    transition: transform 0.3s ease;
-}
+    border: var(--border-thick) var(--color-key-black);
+        transition: transform 0.3s ease;
+    }
 
 .videocard:hover {
     transform: scale(1.02);
@@ -50,21 +50,21 @@
     line-height: 1.2;
     display: block;
     background-color: white;
-    border: 3px solid var(--color-key-yellow);
-    padding: 3px 6px;
-    text-transform: lowercase;
-}
+    border: var(--border-thick) var(--color-key-yellow);
+        padding: 3px 6px;
+        text-transform: lowercase;
+    }
 
-.videocard-topic {
-    color: var(--color-always-black);
-    background-color: var(--color-key-magenta);
-    padding: 4px 6px;
-    margin-left: 10px;
-    margin-bottom: -3px;
-    margin-right: 60px;
-    font-size: 0.8rem;
-    line-height: 1.1;
-    border: 3px solid var(--color-key-yellow);
+    .videocard-topic {
+        color: var(--color-always-black);
+        background-color: var(--color-key-magenta);
+        padding: 4px 6px;
+        margin-left: 10px;
+        margin-bottom: -3px;
+        margin-right: 60px;
+        font-size: 0.8rem;
+        line-height: 1.1;
+        border: var(--border-thick) var(--color-key-yellow);
     display: inline-block;
     text-transform: lowercase;
 }
