@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 import time
 import logging
 import requests
+from celery import chain
 
 
 @app.task()
@@ -46,12 +47,28 @@ def import_filmliste(full: bool = True):
     import_event.media_item_count = added_items
     db.commit()
 
-    # reload the server's recommendation engine with the fresh data
-    try:
-        requests.post("http://server:8000/series-detection/reload-recommendations", timeout=120)
-        logging.info("Triggered recommendation engine reload after import")
-    except Exception as e:
-        logging.warning(f"Failed to trigger recommendation engine reload: {e}")
+    chain(
+        run_make_series.s(),
+        reload_recommendations.s(),
+    ).delay()
+
+
+@app.task()
+def run_make_series(dry_run=False):
+    """Bulk series classification and variant cleanup after import."""
+    from ..mediaitem.scripts.make_series import main as _main
+    _main(dry_run=dry_run)
+
+
+@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=30)
+def reload_recommendations():
+    """Reload the server's recommendation engine and clear its cache."""
+    requests.post(
+        "http://server:8000/series-detection/reload-recommendations",
+        timeout=120,
+    )
+    logging.info("Reloaded recommendation engine on server")
+
 
 @app.task()
 def daily_full_import():

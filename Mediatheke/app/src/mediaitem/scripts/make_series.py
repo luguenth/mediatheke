@@ -103,6 +103,7 @@ def main(dry_run=False):
 
         print('Committing changes')
         db.commit()
+        db.close()
     else:
         for data in update_data:
             print(f"Would update {data}")
