@@ -43,7 +43,6 @@ export class VideoTopicRowComponent implements OnInit {
     private storageService: StorageService
   ) { }
 
-  constructor(
   ngOnInit(): void {
     switch (this.options.type) {
       case options_type.recommended:
