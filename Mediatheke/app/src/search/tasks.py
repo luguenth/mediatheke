@@ -14,7 +14,10 @@ def init_typesense(force_delete=False):
     
     if force_delete:
         logging.info("Deleting the media items collection.")
-        search_engine.delete_collection()
+        try:
+            search_engine.delete_collection()
+        except Exception:
+            logging.info("Collection already gone, continuing.")
         logging.info("Creating the media items collection.")
         search_engine.create_collection()
         
@@ -26,3 +29,11 @@ def init_typesense(force_delete=False):
         search_engine.index_media_items()
         
     logging.info("Initializing Typesense done.")
+
+
+@app.task(autoretry_for=(Exception,), max_retries=2, default_retry_delay=60)
+def reindex_typesense():
+    """Force-rebuild the Typesense index from the current database state."""
+    logging.info("Force-reindexing Typesense")
+    init_typesense(force_delete=True)
+    logging.info("Typesense reindex complete")

@@ -101,7 +101,7 @@ class SearchEngine:
       del batch
       print("Uploading batch to Typesense")
       try:
-          result = self.client.collections['mediaitems'].documents.import_(jsonl_str)
+          result = self.client.collections['mediaitems'].documents.import_(jsonl_str, {'action': 'upsert'})
           if "success" not in result:
               print(f"Error while importing documents: {result}")
       except Exception as e:

@@ -32,6 +32,10 @@ app.conf.beat_schedule = {
         'task': 'app.src.filmliste.tasks.daily_full_import',
         'schedule': crontab(hour=3, minute=0),  # Run every day at 3am
     },
+    'reindex-typesense-weekly': {
+        'task': 'app.src.search.tasks.reindex_typesense',
+        'schedule': crontab(hour=4, minute=0, day_of_week=0),  # Every Sunday at 4am
+    },
 }
 
 

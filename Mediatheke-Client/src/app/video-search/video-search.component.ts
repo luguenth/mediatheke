@@ -1,48 +1,63 @@
-import { Component, ElementRef, ViewChild, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { SearchService } from '../services/search.service';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-video-search',
   templateUrl: './video-search.component.html',
   styleUrls: ['./video-search.component.scss']
 })
-export class VideoSearchComponent implements OnInit {
+export class VideoSearchComponent implements OnDestroy {
   @ViewChild('searchInput', { static: false }) searchInput!: ElementRef;
-  search?: string;
+
+  search: string = '';
   inputFocused: boolean = false;
+  blurTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  private searchSubject: Subject<string> = new Subject();
+  private searchSubject = new Subject<string>();
+  private searchSub: Subscription;
 
-  constructor(
-    public searchService: SearchService,
-    private cdRef: ChangeDetectorRef  // Inject ChangeDetectorRef
-  ) {
-    // Initialize debouncing
-    this.searchSubject.pipe(
-      debounceTime(300)  // Set the debounce time (in milliseconds)
-    ).subscribe(searchTextValue => {
-      this.searchService.searchVideos(searchTextValue);
+  constructor(public searchService: SearchService) {
+    this.searchSub = this.searchSubject.pipe(
+      debounceTime(250),
+      distinctUntilChanged()
+    ).subscribe(query => {
+      this.searchService.searchVideos(query);
     });
   }
 
-  ngOnInit(): void {
+  ngOnDestroy() {
+    this.searchSub.unsubscribe();
   }
 
-  searchVideo(query: string = ""): void {
-    this.searchSubject.next(query);  // Use next() to trigger the Subject
-    this.cdRef.detectChanges();  // Trigger change detection
+  onInput(query: string): void {
+    if (query.length >= 2) {
+      this.searchSubject.next(query);
+    } else {
+      this.searchService.clear();
+    }
+  }
+
+  onFocus(): void {
+    if (this.blurTimeout) {
+      clearTimeout(this.blurTimeout);
+      this.blurTimeout = null;
+    }
+    this.inputFocused = true;
+  }
+
+  onBlur(): void {
+    this.blurTimeout = setTimeout(() => {
+      this.inputFocused = false;
+    }, 200);
   }
 
   focusInput(): void {
     this.searchInput.nativeElement.focus();
   }
 
-  handleInputBlur() {
-    // Delay setting inputFocused to false to allow time for click events on search results to be processed
-    // TODO: With Angular's HostListener, you can listen for clicks on the entire document and then decide whether to keep the results displayed or not.
-    setTimeout(() => this.inputFocused = false, 200); // delay in milliseconds
+  get showDropdown(): boolean {
+    return this.inputFocused && this.search.length >= 2;
   }
 }

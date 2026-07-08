@@ -52,6 +52,10 @@ def import_filmliste(full: bool = True):
         reload_recommendations.s(),
     ).delay()
 
+    if full:
+        from ..search.tasks import reindex_typesense
+        reindex_typesense.delay()
+
 
 @app.task()
 def run_make_series(dry_run=False):

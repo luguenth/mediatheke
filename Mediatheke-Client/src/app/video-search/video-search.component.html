@@ -1,12 +1,28 @@
-<div class="search-bar"
-  [ngClass]="{'focused': inputFocused, 'remove-bottom-corners': (search?.length! > 1 && inputFocused)}">
-  <input #searchInput [(ngModel)]="search" class="form-control" placeholder="stöbern" (keyup)="searchVideo(search)"
-    (focus)="inputFocused = true" (blur)="handleInputBlur()">
-  <img src="/assets/ui/search01.svg" width="32" height="32" (click)="focusInput()" [ngClass]="{'invert': inputFocused}">
-  <div *ngIf="searchService.isSearching" class="spinner-border" role="status">
-    <span class="sr-only">Searching...</span>
+<div class="search-wrap">
+  <div class="search-bar"
+    [class.focused]="inputFocused"
+    [class.has-results]="showDropdown">
+    <img *ngIf="!inputFocused || search.length === 0"
+      src="/assets/ui/search01.svg" width="24" height="24" class="search-icon"
+      (click)="focusInput()" alt="Search">
+    <input #searchInput
+      [(ngModel)]="search"
+      class="search-input"
+      placeholder="stöbern"
+      (ngModelChange)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()">
+    <div class="spinner" [class.active]="searchService.isSearching" aria-label="Searching"></div>
+    <button class="clear-btn"
+      [class.visible]="inputFocused && search.length > 0"
+      (mousedown)="$event.preventDefault()"
+      (click)="search=''; onInput(''); searchInput.focus()"
+      aria-label="Clear search">
+      &times;
+    </button>
   </div>
-</div>
-<div class="results" *ngIf="inputFocused">
-  <app-video-search-results></app-video-search-results>
+
+  <div class="search-dropdown" *ngIf="showDropdown">
+    <app-video-search-results></app-video-search-results>
+  </div>
 </div>

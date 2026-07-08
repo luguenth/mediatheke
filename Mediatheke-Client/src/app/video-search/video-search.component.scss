@@ -1,107 +1,136 @@
-.suggestions-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); // Adjust the number 3 to your desired number of columns.
-    gap: 10px; // Space between grid items
+.search-wrap {
+    position: relative;
+    width: 90%;
+    margin-left: auto;
+    font-size: 1.125rem;
 }
+
+/* ── search bar ─────────────────────────────────── */
 
 .search-bar {
     display: flex;
     align-items: center;
-    width: 90%;
-    height: calc(68px * 1);
-
-    padding-left: 50px;
-    padding-right: 10px;
-
-    /* should be centered in all directions */
-    margin-left: auto;
-    margin-right: 0;
-    margin-top: 10px;
-    margin-bottom: 10px;
-
-
-    font-size: 2rem;
-    cursor: text;
-
+    gap: 10px;
+    height: 48px;
+    padding: 0 16px;
     border-radius: var(--radius-xl);
-    border: var(--border-thick) var(--color-key-black);
-
-}
-
-img {
-    margin-right: 10px;
-}
-
-.invert {
-    filter: invert(1);
-}
-
-
-.form-control {
-    border: none;
-    /* Feel free to change the color */
-    outline: none;
-    font-size: 2rem;
-    text-transform: lowercase;
-    background-color: transparent;
-    text-align: center;
-
-    &::placeholder {
-        color: grey;
-        margin-left: 10px;
-    }
-
-    &:focus {
-        color: white;
-        border: none;
-        outline: none;
-        box-shadow: none;
-
-        &::placeholder {
-            color: grey;
-        }
-
-        /* invert image element */
-        img {
-            filter: invert(1);
-            background-color: white;
-        }
-    }
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: var(--border-thin) rgba(0, 0, 0, 0.12);
+    color: var(--color-text);
+    cursor: text;
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        border-radius 0.25s ease;
 }
 
 .search-bar.focused {
-    background-color: black;
-    color: white;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-color: var(--color-key-black);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
 }
 
-/* Make sure the text color changes when focused */
-.search-bar.focused .form-control {
-    color: white;
-}
-
-.spinner-border {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.remove-bottom-corners{
+.search-bar.has-results {
     border-bottom-left-radius: var(--radius-none);
     border-bottom-right-radius: var(--radius-none);
 }
 
-.results {
-    background-color: #000;
-    color: white;
-    margin-top: -10px;
-    width: 90%;
-    margin-left: auto;
+/* ── icon ───────────────────────────────────────── */
 
-    max-height: 60vh;
-    overflow: scroll;
-
-    border-bottom-left-radius: var(--radius-xl);
-    border-bottom-right-radius: var(--radius-xl);
+.search-icon {
+    flex-shrink: 0;
+    opacity: 0.45;
 }
 
+/* ── input ──────────────────────────────────────── */
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    text-align: center;
+    text-transform: lowercase;
+
+    &::placeholder {
+        color: var(--color-badge-background);
+        text-align: center;
+        text-transform: lowercase;
+    }
+}
+
+/* ── spinner ────────────────────────────────────── */
+
+.spinner {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    border-top-color: var(--color-key-black);
+    border-radius: 50%;
+    visibility: hidden;
+
+    &.active {
+        visibility: visible;
+        animation: spin 0.6s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── clear button ───────────────────────────────── */
+
+.clear-btn {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--color-text);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    transition: background 0.15s ease;
+
+    &.visible {
+        visibility: visible;
+    }
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* ── dropdown ───────────────────────────────────── */
+
+.search-dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: var(--color-background);
+    border: var(--border-thin) var(--color-key-black);
+    border-top: none;
+    border-bottom-left-radius: var(--radius-xl);
+    border-bottom-right-radius: var(--radius-xl);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    color: var(--color-text);
+    z-index: 10;
+}

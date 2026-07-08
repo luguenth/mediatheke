@@ -1,8 +1,8 @@
-<!-- Add this div to display suggestions in a grid -->
 <div class="result-wrap" *ngIf="searchService.suggestions$ | async as suggestions">
     <div class="suggestions">
-        <!-- if *ngIf="suggestions.length = 0" then show "no results" -->
-        <h2 *ngIf="suggestions.length == 0">Keine Ergebnisse</h2>
+        <p class="suggestions-empty" *ngIf="suggestions.length === 0 && !searchService.isSearching">
+            Keine Ergebnisse
+        </p>
         <app-video-small-list [videos]="suggestions"></app-video-small-list>
     </div>
 </div>

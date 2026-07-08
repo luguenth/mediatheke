@@ -126,6 +126,8 @@ nav {
 .grid-item-search {
     grid-column: 2;
     height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 .grid-item-user {
