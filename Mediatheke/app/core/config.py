@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-3.5-turbo-16k"
     openai_provider: str = ""
     filmliste_mirrors: str
+    oidc_client_id: str = ""
+    oidc_client_secret: str = ""
+    oidc_server_metadata_url: str = ""
+    oidc_redirect_uri: str = ""
 
     class Config:
         """Define name and path of .env file."""
