@@ -31,6 +31,7 @@ import { SincePipe } from './shared/since.pipe';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { VideoSeriesNavComponent } from './video-series-nav/video-series-nav.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { HeroComponent } from './hero/hero.component';
 import { VideoSmallListComponent } from './video-small-list/video-small-list.component';
 import { VideoTopicRowComponent } from './video-topic-row/video-topic-row.component';
@@ -81,6 +82,7 @@ import { ThumbPlaceholderComponent } from './thumb-placeholder/thumb-placeholder
       registrationStrategy: 'registerWhenStable:30000'
     }),
     TabsModule.forRoot(),
+    ModalModule.forRoot(),
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

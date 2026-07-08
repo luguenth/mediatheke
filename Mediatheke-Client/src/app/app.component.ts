@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { UserService } from './services/userService';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +10,23 @@ import { Router } from '@angular/router';
 export class AppComponent {
 
   constructor(
-    public router: Router
+    public router: Router,
+    private route: ActivatedRoute,
+    private userService: UserService,
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const token = params['token'];
+      if (token) {
+        this.userService.setToken(token);
+        // Clean up the URL by removing the token query param
+        this.router.navigate([], {
+          queryParams: { token: undefined },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      }
+    });
+  }
 }

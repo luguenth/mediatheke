@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { BackendService } from '../services/backend';
 import { UserService } from '../services/userService';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-navbar-login',
@@ -8,76 +9,30 @@ import { UserService } from '../services/userService';
   styleUrls: ['./navbar-login.component.scss']
 })
 export class NavbarLoginComponent {
-  showLoginForm: boolean = false;
-  username: string = '';
-  password: string = '';
-  authStatus: boolean = false;
-  showErrorAnimation: boolean = false;
-  tooManyLoginAttempts: boolean = false;
+  @ViewChild('loginModal') loginModalTemplate!: TemplateRef<any>;
+  modalRef?: BsModalRef;
 
-  constructor(private backendService: BackendService, public userService: UserService) { }
+  constructor(
+    private backendService: BackendService,
+    public userService: UserService,
+    private modalService: BsModalService
+  ) { }
 
-  onSubmit() {
-    if (this.username && this.password) {
-      this.backendService.login(this.username, this.password).subscribe({
-        next: data => {
-          this.showErrorAnimation = false; // reset the error animation
-        },
-        error: err => {
-          // make case for different errors
-          switch (err.status) {
-            case 401:
-              console.error('Login failed: Invalid username or password');
-              this.showErrorAnimation = true; // show the error animation
-              setTimeout(() => this.showErrorAnimation = false, 500); // reset the error animation after the animation duration
-              break;
-            case 429:
-              console.error('Login failed: Too many login attempts');
-              this.tooManyLoginAttempts = true; // show the error animation
-              setTimeout(() => this.tooManyLoginAttempts = false, 60000); // reset the error animation after the animation duration
-              break;
-            default:
-              console.error('Login failed:', err);
-          }
-        }
-      });
-    } else {
-      console.error('Username and password are required');
-      this.showErrorAnimation = true; // show the error animation
-      setTimeout(() => this.showErrorAnimation = false, 500); // reset the error animation after the animation duration
-    }
+  openLoginModal() {
+    this.modalRef = this.modalService.show(this.loginModalTemplate, { class: 'modal-sm' });
   }
 
-  toggleLogin() {
-    this.showLoginForm = !this.showLoginForm;
+  closeModal() {
+    this.modalRef?.hide();
   }
 
-  checkAuthStatus() {
-    this.userService.isAuthenticated$.subscribe({
-      next: data => {
-        this.authStatus = data;
-      },
-      error: err => {
-        console.error('Check auth status failed:', err);
-      }
-    });
-
-    this.backendService.checkAuthStatus().subscribe({
-      next: data => {
-        this.authStatus = data.authenticated;
-      },
-      error: err => {
-        console.error('Check auth status failed:', err);
-      }
-    });
+  oidcLogin() {
+    window.location.href = '/api/auth/oidc/login';
   }
-
 
   onLogout() {
     this.backendService.logout().subscribe({
-      next: _ => {
-        this.showLoginForm = false;
-      },
+      next: _ => { },
       error: err => {
         console.error('Logout failed:', err);
       }
