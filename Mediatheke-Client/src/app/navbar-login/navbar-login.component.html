@@ -1,27 +1,28 @@
 <ng-container *ngIf="userService.isAuthenticated$ | async; else loginTemplate">
   <div class="logged-in-container">
     <span class="user-greet" *ngIf="userService.username$ | async as user">
-      Hello, {{user}}! <i-bs name="person-circle"></i-bs>
+      Hello, {{user}}!
     </span>
     <button class="logout-button" (click)="onLogout()">
-      <i-bs name="box-arrow-right"></i-bs>
+      <i-bs name="box-arrow-right" width="20" height="20"></i-bs>
     </button>
   </div>
 </ng-container>
 
 <ng-template #loginTemplate>
-  <button class="login-btn" (click)="openLoginModal()">Login</button>
+  <button class="login-btn" (click)="openLoginModal()">
+    <i-bs name="person" width="24" height="24"></i-bs>
+  </button>
 </ng-template>
 
 <ng-template #loginModal>
   <div class="modal-header">
-    <h4 class="modal-title">Login</h4>
+    <h4 class="modal-title">Sign in</h4>
     <button type="button" class="close" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <p>Sign in using your SSO provider.</p>
     <button class="sso-btn" (click)="oidcLogin()">
       <i-bs name="shield-lock" width="20" height="20"></i-bs>
       Sign in with SSO

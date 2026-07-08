@@ -1,11 +1,25 @@
+:host {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+}
+
 .login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
-  border: var(--border-thick) solid var(--color-contrast-background);
-  color: var(--color-contrast-background);
-  font-size: 1rem;
-  font-weight: bold;
+  border: none;
+  color: var(--color-text);
   cursor: pointer;
-  padding: 6px 20px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+}
+
+.login-btn:hover {
+  color: var(--color-contrast-text);
+  background-color: var(--color-contrast-background);
 }
 
 .sso-btn {
@@ -21,11 +35,11 @@
   background-color: var(--color-contrast-background);
   color: var(--color-contrast-text);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .sso-btn:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .logged-in-container {
@@ -35,7 +49,7 @@
 
   .user-greet {
     font-size: 1rem;
-    color: var(--color-contrast-background);
+    color: var(--color-text);
   }
 
   .logout-button {
@@ -44,6 +58,13 @@
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    color: var(--color-contrast-background);
+    color: var(--color-text);
+  }
+
+  .logout-button:hover {
+    color: var(--color-contrast-text);
+    background-color: var(--color-contrast-background);
+    border-radius: var(--radius-sm);
+    padding: 4px;
   }
 }

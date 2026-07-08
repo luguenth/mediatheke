@@ -14,20 +14,7 @@
         <app-video-player [video]="video" [urlTime]="urlTime"></app-video-player>
       </div>
 
-      <div *ngIf="video" class="commands container">
-        <ng-container *ngIf="userService.role$ | async as role">
-          <app-recommend [video]="video" *ngIf="role === 'admin'"></app-recommend>
-          <button class="command-button" (click)="mightBeASeries()">
-            <i-bs name="list" width="24" height="24" *ngIf="!isSeriesLoading"></i-bs>
-            <div class="spinner-grow" role="status" *ngIf="isSeriesLoading" style="width: 20px; height: 20px;">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <span *ngIf="isSeries"> Nicht mehr als Serie markieren</span>
-            <span *ngIf="!isSeries"> Als Serie markieren</span>
-          </button>
-        </ng-container>
-      </div>
-      <details class="container" *ngIf="env.production === false">
+      <details class="container" *ngIf="env.production === false && (userService.isAuthenticated$ | async)">
         <summary>Debug</summary>
         <pre>{{video | json}}</pre>
 
@@ -116,9 +103,15 @@
 
       <!-- Video Details -->
       <div class="details container" *ngIf="video">
+        <button class="detail-star" [class.active]="isRecommended" (click)="toggleRecommend()">
+          <i-bs [name]="isRecommended ? 'star-fill' : 'star'" width="22" height="22"></i-bs>
+        </button>
         <div class="video-header">
           <div class="topic">
             <a [routerLink]="['/topic', video.topic]"> {{ video.topic }}</a>
+          </div>
+          <div class="series-info" *ngIf="video.series_name">
+            {{ video.series_name }} &bull; Staffel {{ video.season_number }} &bull; Episode {{ video.episode_number }}
           </div>
           <h2>{{ video.title }}</h2>
         </div>

@@ -82,3 +82,67 @@ body[data-theme="dark"] {
 body[data-theme="light"] {
     background-color: var(--color-background-wrapper);
 }
+
+/* Frosted glass modal */
+.frosted-modal .modal-content {
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: var(--border-thin) rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.frosted-modal .modal-header {
+    border-bottom: var(--border-thin) rgba(0, 0, 0, 0.08);
+}
+
+.frosted-modal .close {
+    color: var(--color-text);
+    opacity: 0.5;
+    text-shadow: none;
+}
+
+.frosted-modal .close:hover {
+    opacity: 1;
+}
+
+body[data-theme="dark"] .frosted-modal .modal-content {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .frosted-modal .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme="dark"] .frosted-modal .close {
+    color: var(--color-text);
+}
+
+/* Frosted glass popover */
+.popover {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: var(--border-thin) rgba(0, 0, 0, 0.1) !important;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem;
+    color: var(--color-text);
+}
+
+.popover .popover-body {
+    padding: 6px 12px;
+}
+
+.popover .arrow {
+    display: none !important;
+}
+
+body[data-theme="dark"] .popover {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}

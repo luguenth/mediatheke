@@ -35,6 +35,7 @@ bs4 = "*"
 beautifulsoup4 = "*"
 fastapi-cache2 = {extras = ["redis"], version = "*"}
 authlib = "*"
+itsdangerous = "*"
 
 [dev-packages]
 

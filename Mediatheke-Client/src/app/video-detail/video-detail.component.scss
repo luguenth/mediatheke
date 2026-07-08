@@ -88,6 +88,7 @@
 }
 
 .details {
+    position: relative;
     background: unset;
     border: unset;
 
@@ -97,6 +98,13 @@
     }
 
     .video-header {
+        .series-info {
+            font-size: 1.1rem;
+            color: #E07CBE;
+            margin-bottom: 6px;
+            opacity: 0.85;
+        }
+
         h2 {
             font-size: 2.3rem;
             margin-bottom: 10px;
@@ -140,6 +148,28 @@
 
     .website-link {
         font-size: 1rem;
+    }
+
+    .detail-star {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+        color: #E07CBE;
+        cursor: pointer;
+        padding: 4px;
+        opacity: 0.6;
+        transition: opacity 0.15s, transform 0.15s;
+
+        &:hover {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        &.active {
+            opacity: 1;
+        }
     }
 }
 

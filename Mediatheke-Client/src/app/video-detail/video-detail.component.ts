@@ -22,12 +22,11 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   seriesVideos: IVideo[] = [];
   subscriptions: Subscription[] = [];
   urlTime: number = 0;
-  isSeries: boolean = false;
-  isSeriesLoading: boolean = false;
   seriesDetectionJobs: ISeriesDetectionJob[] = [];
   detectionMethod: string = 'regex';
   env = environment;
   flaggedItems: any[] = [];
+  isRecommended: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,6 +58,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
       this.getRecommendedVideos();
       this.triggerSeriesDetectionForAll();
+      this.checkRecommendation();
     });
 
     this.subscriptions.push(routeSub);
@@ -69,6 +69,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
     this.video = undefined;
     this.recommendedVideos = [];
     this.recommendationsLoaded = false;
+    this.isRecommended = false;
     this.seriesVideos = [];
     this.seriesDetectionJobs = [];
   }
@@ -112,19 +113,6 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  mightBeASeries() {
-    this.isSeriesLoading = true;
-    this.backendService.mightBeASeries(this.videoId).subscribe(data => {
-      this.seriesVideos = data.sort((a, b) => {
-        if (a.season_number !== b.season_number) {
-          return a.season_number - b.season_number;
-        }
-        this.isSeriesLoading = false;
-        return a.episode_number - b.episode_number;
-      });
-    });
-  }
-
   formatJobResult(resultJson: string | null): string {
     if (!resultJson) return '—';
     try {
@@ -138,6 +126,20 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
 
   navigateToEpisode(episode: IVideo) {
     this.router.navigate(['/video-detail', episode.id]);
+  }
+
+  checkRecommendation() {
+    this.mediaService.isRecommended(this.video!).subscribe(data => {
+      this.isRecommended = data;
+    });
+  }
+
+  toggleRecommend() {
+    this.mediaService.recommend(this.video!).subscribe(success => {
+      if (success) {
+        this.isRecommended = !this.isRecommended;
+      }
+    });
   }
 
   loadFlaggedItems() {

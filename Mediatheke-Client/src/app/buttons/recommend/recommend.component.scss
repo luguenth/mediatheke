@@ -1,35 +1,41 @@
 .command-button {
-    flex: 1;
-    text-align: center;
-    padding: 10px;
-    width: 100%;
-    border: none;
-    background-color: var(--color-background);
-    color: var(--color-text);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  cursor: pointer;
 
-    &:hover {
-        background-color: var(--color-contrast-background);
-        color: var(--color-contrast-text);
-    }
+  &:hover {
+    background-color: var(--color-contrast-background);
+    color: var(--color-contrast-text);
+  }
 
-
+  &.active {
+    color: var(--color-highlight);
+  }
 }
 
 .videocard-recommend-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 50px;
-    height: 50px;
-    z-index: 3;
-    color: var(--color-always-white);
-}
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 32px;
+  height: 32px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-always-white);
+  border-radius: var(--radius-round);
+  cursor: pointer;
 
-.videocard:hover .videocard-recommend-button {
-    display: block;
-}
-
-:host ::ng-deep popover-container {
-    top: -12px !important;
-    margin-left: 0px;
+  &:hover {
+    color: var(--color-highlight);
+  }
 }

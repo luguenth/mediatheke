@@ -19,7 +19,7 @@ export class NavbarLoginComponent {
   ) { }
 
   openLoginModal() {
-    this.modalRef = this.modalService.show(this.loginModalTemplate, { class: 'modal-sm' });
+    this.modalRef = this.modalService.show(this.loginModalTemplate, { class: 'modal-sm frosted-modal' });
   }
 
   closeModal() {
