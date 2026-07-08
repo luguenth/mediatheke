@@ -18,6 +18,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   videoId: string = '';
   video?: IVideo;
   recommendedVideos: IVideo[] = [];
+  recommendationsLoaded: boolean = false;
   seriesVideos: IVideo[] = [];
   subscriptions: Subscription[] = [];
   urlTime: number = 0;
@@ -67,6 +68,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   resetComponentState() {
     this.video = undefined;
     this.recommendedVideos = [];
+    this.recommendationsLoaded = false;
     this.seriesVideos = [];
     this.seriesDetectionJobs = [];
   }
@@ -78,6 +80,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
   getRecommendedVideos() {
     const recSub = this.backendService.getRecommendedVideos(this.videoId).subscribe(data => {
       this.recommendedVideos = data;
+      this.recommendationsLoaded = true;
     });
 
     this.subscriptions.push(recSub);

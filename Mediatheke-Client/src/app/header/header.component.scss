@@ -9,7 +9,6 @@
     top: 0;
     left: 0;
     right: 0;
-    overflow: hidden;
 
     /* GPU layer promotion — prevents Chrome backdrop-filter flickering */
     transform: translateZ(0);

@@ -5,7 +5,7 @@
     overflow: hidden;
     cursor: pointer;
     border-radius: var(--radius-sm);
-    box-shadow: 0 0 0 var(--border-width-thick) var(--color-key-black);
+        box-shadow: 0 0 0 var(--border-width-thick) var(--color-key-black);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     will-change: transform;
 

@@ -138,12 +138,17 @@
         <div class="video-list">
           <span class="similar">Ähnlich: </span>
           <app-video-card *ngFor="let video of recommendedVideos" [video]="video"></app-video-card>
-          <div *ngIf="recommendedVideos.length == 0" class="loading">
+          <div *ngIf="!recommendationsLoaded" class="loading">
             <div class="spinner-border text-primary text-center loading-spinner" role="status">
               <span class="sr-only">Loading...</span>
             </div>
             <div class="loading-text text-center">
               <p>Loading recommended videos...</p>
+            </div>
+          </div>
+          <div *ngIf="recommendationsLoaded && recommendedVideos.length === 0" class="loading">
+            <div class="loading-text text-center">
+              <p>Keine Empfehlungen für dieses Video</p>
             </div>
           </div>
         </div>

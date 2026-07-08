@@ -1,6 +1,7 @@
 from typing import Union, List, TypeVar
 from sqlalchemy.orm import Session, Query
 from sqlalchemy import func, or_, text, tuple_, and_, asc, desc
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from collections import defaultdict
 from unidecode import unidecode
@@ -136,7 +137,7 @@ def get_or_create_media_item_bulk(db: Session, media_items: list[dict], import_e
                 'channel_id': channel.id,
                 'import_event_id': import_event.id
             })
-            new_media_items.append(MediaItem(**item_data_to_insert))
+            new_media_items.append(item_data_to_insert)
             unique_url_timestamps.add((url_website, timestamp))
         except Exception as e:
             print(f"Error with item: {item}")
@@ -144,7 +145,16 @@ def get_or_create_media_item_bulk(db: Session, media_items: list[dict], import_e
 
     if new_media_items:
         try:
-            db.bulk_save_objects(new_media_items)
+            stmt = insert(MediaItem).values(new_media_items)
+            stmt = stmt.on_conflict_do_update(
+                index_elements=['url_website', 'timestamp'],
+                set_={
+                    'title': stmt.excluded.title,
+                    'description': stmt.excluded.description,
+                },
+                where=MediaItem.title.ilike('%(audiodeskription)%')
+            )
+            db.execute(stmt)
             db.commit()
             return len(new_media_items)
         except IntegrityError as ie:
