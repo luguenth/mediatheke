@@ -103,7 +103,7 @@
 
       <!-- Video Details -->
       <div class="details container" *ngIf="video">
-        <button class="detail-star" [class.active]="isRecommended" (click)="toggleRecommend()">
+        <button class="detail-star" *ngIf="userService.isAuthenticated$ | async" [class.active]="isRecommended" (click)="toggleRecommend()">
           <i-bs [name]="isRecommended ? 'star-fill' : 'star'" width="22" height="22"></i-bs>
         </button>
         <div class="video-header">
